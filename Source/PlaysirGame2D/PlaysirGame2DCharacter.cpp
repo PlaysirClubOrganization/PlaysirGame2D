@@ -97,10 +97,11 @@ APlaysirGame2DCharacter::APlaysirGame2DCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Animation
 
-void APlaysirGame2DCharacter::Attack()
+void APlaysirGame2DCharacter::A_Attack()
 {
+	//Debug
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Attack")));
-	IsAttacking = true;
+	A_IsAttacking = true;
 }
 
 void APlaysirGame2DCharacter::UpdateAnimation()
@@ -134,6 +135,7 @@ void APlaysirGame2DCharacter::SetupPlayerInputComponent(class UInputComponent* I
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	InputComponent->BindAxis("MoveRight", this, &APlaysirGame2DCharacter::MoveRight);
+	InputComponent->BindAction("Attack", IE_Pressed, this, &APlaysirGame2DCharacter::A_Attack);
 
 	InputComponent->BindTouch(IE_Pressed, this, &APlaysirGame2DCharacter::TouchStarted);
 	InputComponent->BindTouch(IE_Released, this, &APlaysirGame2DCharacter::TouchStopped);
@@ -149,12 +151,20 @@ void APlaysirGame2DCharacter::MoveRight(float Value)
 
 void APlaysirGame2DCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
+	//Debug
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Jumping")));
+
+	A_IsAttacking = false;
+
 	// jump on any touch
 	Jump();
 }
 
 void APlaysirGame2DCharacter::TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
+	A_IsAttacking = false;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Stop Jumping")));
 	StopJumping();
 }
 

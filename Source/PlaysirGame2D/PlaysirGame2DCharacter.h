@@ -30,6 +30,10 @@ class APlaysirGame2DCharacter : public APaperCharacter
 	UTextRenderComponent* TextComponent;
 	virtual void Tick(float DeltaSeconds) override;
 protected:
+	//is the playerA attack
+	bool A_IsAttacking;
+
+
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
 	class UPaperFlipbook* RunningAnimation;
@@ -38,11 +42,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
 
-	// The animation to play while player A is attacking 
+	// The animation to play while PlayerA is attacking 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* AttackAnimation;
 	
-	void Attack();
+	//trigger the Attack of the PlayerA
+	void A_Attack();
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
