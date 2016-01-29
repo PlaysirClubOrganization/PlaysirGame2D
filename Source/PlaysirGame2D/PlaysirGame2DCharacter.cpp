@@ -19,7 +19,7 @@ struct FConstructorStatics
 	FConstructorStatics()
 		: RunningAnimationAsset(TEXT("/Game/2dSideScroller/Sprites/RunningAnimation.RunningAnimation"))
 		, IdleAnimationAsset(TEXT("/Game/2dSideScroller/Sprites/IdleAnimation.IdleAnimation"))
-		, AttackAnimationAsset(TEXT("/Game/2dSideScroller/Sprites/test2.test2"))
+		, AttackAnimationAsset(TEXT("/Game/2dSideScroller/Sprites/testAttack_A.testAttack_A"))
 
 	{
 	}
@@ -103,14 +103,27 @@ void APlaysirGame2DCharacter::A_Attack()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Attack")));
 	A_IsAttacking = true;
 }
+void APlaysirGame2DCharacter::A_StopAttack()
+{
+	//Debug
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Stop Attack")));
+	A_IsAttacking = false;
+}
 
 void APlaysirGame2DCharacter::UpdateAnimation()
 {
 	const FVector PlayerVelocity = GetVelocity();
 	const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
 
+	UPaperFlipbook* DesiredAnimation;
+	
+	// Are the Player A attacks?
+	if (A_IsAttacking)
+		DesiredAnimation = AttackAnimation;
 	// Are we moving or standing still?
-	UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+	else				
+		DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+
 	if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
 	{
 		GetSprite()->SetFlipbook(DesiredAnimation);
@@ -136,6 +149,7 @@ void APlaysirGame2DCharacter::SetupPlayerInputComponent(class UInputComponent* I
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	InputComponent->BindAxis("MoveRight", this, &APlaysirGame2DCharacter::MoveRight);
 	InputComponent->BindAction("Attack", IE_Pressed, this, &APlaysirGame2DCharacter::A_Attack);
+	InputComponent->BindAction("Attack", IE_Released, this, &APlaysirGame2DCharacter::A_StopAttack);
 
 	InputComponent->BindTouch(IE_Pressed, this, &APlaysirGame2DCharacter::TouchStarted);
 	InputComponent->BindTouch(IE_Released, this, &APlaysirGame2DCharacter::TouchStopped);
@@ -143,6 +157,8 @@ void APlaysirGame2DCharacter::SetupPlayerInputComponent(class UInputComponent* I
 
 void APlaysirGame2DCharacter::MoveRight(float Value)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Move")));
+
 	/*UpdateChar();*/
 
 	// Apply the input to the character motion
@@ -151,10 +167,7 @@ void APlaysirGame2DCharacter::MoveRight(float Value)
 
 void APlaysirGame2DCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
-	//Debug
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Jumping")));
-
-	A_IsAttacking = false;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Jump")));
 
 	// jump on any touch
 	Jump();
@@ -162,9 +175,6 @@ void APlaysirGame2DCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, 
 
 void APlaysirGame2DCharacter::TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
-	A_IsAttacking = false;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Stop Jumping")));
 	StopJumping();
 }
 

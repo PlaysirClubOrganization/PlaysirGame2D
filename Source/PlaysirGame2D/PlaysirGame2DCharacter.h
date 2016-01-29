@@ -49,6 +49,9 @@ protected:
 	//trigger the Attack of the PlayerA
 	void A_Attack();
 
+	//Stop  the Attack of the PlayerA
+	void A_StopAttack();
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
