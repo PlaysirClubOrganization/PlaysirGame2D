@@ -7,7 +7,11 @@
 		{
 			"Name": "PlaysirGame2D",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Paper2D",
+				"Engine"
+			]
 		}
 	],
 	"Plugins": [

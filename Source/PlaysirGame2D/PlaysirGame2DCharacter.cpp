@@ -20,7 +20,6 @@ struct FConstructorStatics
 		: RunningAnimationAsset(TEXT("/Game/2dSideScroller/Sprites/RunningAnimation.RunningAnimation"))
 		, IdleAnimationAsset(TEXT("/Game/2dSideScroller/Sprites/IdleAnimation.IdleAnimation"))
 		, AttackAnimationAsset(TEXT("/Game/2dSideScroller/Sprites/testAttack_A.testAttack_A"))
-
 	{
 	}
 };
@@ -92,6 +91,9 @@ APlaysirGame2DCharacter::APlaysirGame2DCharacter()
 	// Enable replication on the Sprite component so animations show up when networked
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
+
+
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -99,8 +101,9 @@ APlaysirGame2DCharacter::APlaysirGame2DCharacter()
 
 void APlaysirGame2DCharacter::A_Attack()
 {
+
 	//Debug
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Attack")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Attack")));
 	A_IsAttacking = true;
 }
 void APlaysirGame2DCharacter::A_StopAttack()
@@ -157,7 +160,6 @@ void APlaysirGame2DCharacter::SetupPlayerInputComponent(class UInputComponent* I
 
 void APlaysirGame2DCharacter::MoveRight(float Value)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Move")));
 
 	/*UpdateChar();*/
 

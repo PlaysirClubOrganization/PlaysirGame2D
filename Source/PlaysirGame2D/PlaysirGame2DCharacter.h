@@ -2,6 +2,7 @@
 
 #pragma once
 
+
 #include "PaperCharacter.h"
 #include "PlaysirGame2DCharacter.generated.h"
 
@@ -27,11 +28,22 @@ class APlaysirGame2DCharacter : public APaperCharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+
+
 	UTextRenderComponent* TextComponent;
 	virtual void Tick(float DeltaSeconds) override;
 protected:
-	//is the playerA attack
+	//is the CharacterA attack
 	bool A_IsAttacking;
+
+	//life of the CharacterA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerA)
+	int A_Life;
+
+	//Experience of the CharacterA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerA)
+	int A_Experience;
+
 
 
 	// The animation to play while running around
