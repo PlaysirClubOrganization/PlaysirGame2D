@@ -1,7 +1,8 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #pragma once
-
+#include "PaperCharacter.h"
+#include "PaperFlipbook.h"
 #include "PaperCharacter.h"
 #include "AzraelCharacter.generated.h"
 
@@ -12,55 +13,68 @@
 //   The CharacterMovementComponent (inherited from ACharacter) handles movement of the collision capsule
 //   The Sprite component (inherited from APaperCharacter) handles the visuals
 
-class UTextRenderComponent;
 
-UCLASS(config=Game)
+
+UCLASS(abstract)
 class AAzraelCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
-
-	/** Side view camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera, meta=(AllowPrivateAccess="true"))
-	class UCameraComponent* SideViewCameraComponent;
-
-	/** Camera boom positioning the camera beside the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	UTextRenderComponent* TextComponent;
-	virtual void Tick(float DeltaSeconds) override;
 protected:
-	// The animation to play while running around
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
-	class UPaperFlipbook* RunningAnimation;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Animation")
+	UPaperFlipbook*  _currentAnim;
 
-	// The animation to play while idle (standing still)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-	class UPaperFlipbook* IdleAnimation;
+	TMap<uint8, UPaperFlipbook*> m_animationMap;
 
-	/** Called to choose the correct animation to play based on the character's movement state */
-	void UpdateAnimation();
+	enum AnimationState : uint8 {
+		Appear_Animation,
+		Idle_Animation,
+		Run_Animation,
+		Attack_Animation,
+		Jump_Animation,
+		Die_Animation
+	};
 
-	/** Called for side to side input */
-	void MoveRight(float Value);
 
-	void UpdateCharacter();
+	/*The Type of the Character : 
+			- Zombie
+			- Vampire
+			- Golem ,etc..
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
+	FString _identity;
 
-	/** Handle touch inputs. */
-	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
+	int _life;
 
-	/** Handle touch stop event. */
-	void TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location);
-
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-	// End of APawn interface
 
 public:
-	AAzraelCharacter();
 
-	/** Returns SideViewCameraComponent subobject **/
-	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	virtual void init();
+
+	UFUNCTION(BlueprintCallable,Category = StateMachine)
+	virtual void Attack() PURE_VIRTUAL(AAzraelCharacter::Attack, ;);
+
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+	virtual void Appear() PURE_VIRTUAL(AAzraelCharacter::Appear, ;);
+	
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+	virtual void Dead() PURE_VIRTUAL(AAzraelCharacter::Dead, ;);
+
+	/** Called to choose the correct animation to play based on the character's movement state */
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+	virtual void UpdateAnimation() PURE_VIRTUAL(AAzraelCharacter::UpdateAnimation, ;);;
+
+	virtual void Tick(float DeltaSeconds);
+
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+	virtual void UpdateCharacter() PURE_VIRTUAL(AAzraelCharacter::UpdateCharacter, ;);
+
+	/** Called for side to side input */
+	void MoveRight(float Value) PURE_VIRTUAL(AAzraelCharacter::MoveRight, ;);
+
+
+	virtual TMap<uint8, UPaperFlipbook* > getAnimationPaper();
+
+	virtual UPaperFlipbook * getFlipbook(uint8 idAnim);
+
 };
