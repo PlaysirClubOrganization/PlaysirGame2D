@@ -13,7 +13,7 @@
 * FConstructorStatics will automatically load the different sprite of the any character by giving
 * the right id in the init function.
 *
-* @warning : The project must bu construct 
+* @warning : The project must bu construct
 */
 struct FConstructorStatics
 {
@@ -47,7 +47,7 @@ void AAzraelCharacter::init()
 	static FConstructorStatics ConstructorStatics(_identity);
 	for (int i = 0; i < ConstructorStatics.AnimationInstance.Num(); i++)
 	{
-		getAnimationPaper().Add(i,ConstructorStatics.AnimationInstance[i]->Get());
+		getAnimationPaper().Add(i, ConstructorStatics.AnimationInstance[i]->Get());
 	}
 
 }

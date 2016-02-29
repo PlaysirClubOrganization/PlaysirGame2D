@@ -7,10 +7,7 @@
 		{
 			"Name": "Azrael",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Paper2D"
-			]
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

@@ -21,7 +21,7 @@ class AAzraelCharacter : public APaperCharacter
 	GENERATED_BODY()
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Animation")
-	UPaperFlipbook*  _currentAnim;
+		UPaperFlipbook*  _currentAnim;
 
 	TMap<uint8, UPaperFlipbook*> m_animationMap;
 
@@ -35,39 +35,39 @@ protected:
 	};
 
 
-	/*The Type of the Character : 
-			- Zombie
-			- Vampire
-			- Golem ,etc..
+	/*The Type of the Character :
+	- Zombie
+	- Vampire
+	- Golem ,etc..
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
-	FString _identity;
+		FString _identity;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
-	int _life;
+		int _life;
 
 
 public:
 
 	virtual void init();
 
-	UFUNCTION(BlueprintCallable,Category = StateMachine)
-	virtual void Attack() PURE_VIRTUAL(AAzraelCharacter::Attack, ;);
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+		virtual void Attack() PURE_VIRTUAL(AAzraelCharacter::Attack, ;);
 
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void Appear() PURE_VIRTUAL(AAzraelCharacter::Appear, ;);
-	
+		virtual void Appear() PURE_VIRTUAL(AAzraelCharacter::Appear, ;);
+
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void Dead() PURE_VIRTUAL(AAzraelCharacter::Dead, ;);
+		virtual void Dead() PURE_VIRTUAL(AAzraelCharacter::Dead, ;);
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void UpdateAnimation() PURE_VIRTUAL(AAzraelCharacter::UpdateAnimation, ;);;
+		virtual void UpdateAnimation() PURE_VIRTUAL(AAzraelCharacter::UpdateAnimation, ;);;
 
 	virtual void Tick(float DeltaSeconds);
 
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void UpdateCharacter() PURE_VIRTUAL(AAzraelCharacter::UpdateCharacter, ;);
+		virtual void UpdateCharacter() PURE_VIRTUAL(AAzraelCharacter::UpdateCharacter, ;);
 
 	/** Called for side to side input */
 	void MoveRight(float Value) PURE_VIRTUAL(AAzraelCharacter::MoveRight, ;);
