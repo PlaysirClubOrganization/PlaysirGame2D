@@ -3,7 +3,9 @@
 #pragma once
 #include "PaperCharacter.h"
 #include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
 #include "PaperCharacter.h"
+#include "PaperFlipbook.h"
 #include "AzraelCharacter.generated.h"
 
 // This class is the default character for Azrael, and it is responsible for all
@@ -14,7 +16,6 @@
 //   The Sprite component (inherited from APaperCharacter) handles the visuals
 
 
-
 UCLASS(abstract)
 class AAzraelCharacter : public APaperCharacter
 {
@@ -23,15 +24,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Animation")
 		UPaperFlipbook*  _currentAnim;
 
-	TMap<uint8, UPaperFlipbook*> m_animationMap;
+	TArray<UPaperFlipbook*> * m_animationMap;
 
 	enum AnimationState : uint8 {
 		Appear_Animation,
 		Idle_Animation,
-		Run_Animation,
+		Walk_Animation,
 		Attack_Animation,
 		Jump_Animation,
-		Die_Animation
+		Dead_Animation
 	};
 
 
@@ -41,40 +42,47 @@ protected:
 	- Golem ,etc..
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
-		FString _identity;
+	FString _identity;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
-		int _life;
-
+	int _life;
 
 public:
 
-	virtual void init();
+	virtual void Init();
 
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-		virtual void Attack() PURE_VIRTUAL(AAzraelCharacter::Attack, ;);
+	virtual void Attack() PURE_VIRTUAL(AAzraelCharacter::Attack, ;);
 
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-		virtual void Appear() PURE_VIRTUAL(AAzraelCharacter::Appear, ;);
+	virtual void Idle() PURE_VIRTUAL(AAzraelCharacter::Idle, ;);
 
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-		virtual void Dead() PURE_VIRTUAL(AAzraelCharacter::Dead, ;);
+	virtual void Appear() PURE_VIRTUAL(AAzraelCharacter::Appear, ;);
+
+	virtual void Dead() PURE_VIRTUAL(AAzraelCharacter::Dead, ;);
 
 	/** Called to choose the correct animation to play based on the character's movement state */
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-		virtual void UpdateAnimation() PURE_VIRTUAL(AAzraelCharacter::UpdateAnimation, ;);;
+	virtual void UpdateAnimation() PURE_VIRTUAL(AAzraelCharacter::UpdateAnimation, ;);;
 
 	virtual void Tick(float DeltaSeconds);
 
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-		virtual void UpdateCharacter() PURE_VIRTUAL(AAzraelCharacter::UpdateCharacter, ;);
+	virtual void UpdateCharacter() PURE_VIRTUAL(AAzraelCharacter::UpdateCharacter, ;);
 
 	/** Called for side to side input */
 	void MoveRight(float Value) PURE_VIRTUAL(AAzraelCharacter::MoveRight, ;);
 
+	UFUNCTION(BlueprintPure, Category = SpriteInfo)
+	float GetCurrentSpriteLength();
 
-	virtual TMap<uint8, UPaperFlipbook* > getAnimationPaper();
 
-	virtual UPaperFlipbook * getFlipbook(uint8 idAnim);
+	virtual TArray<UPaperFlipbook* > * GetAnimationPaper();
+
+	virtual UPaperFlipbook * GetFlipbook(AnimationState idAnim);
+
+	virtual void SetCurrentAnim(UPaperFlipbook * Flipbook);
+
+
+	UPaperFlipbook * GetCurrentSprite();
+	virtual FString GetIdentity() { return _identity; }
+	virtual int GetLife() { return _life; }
 
 };

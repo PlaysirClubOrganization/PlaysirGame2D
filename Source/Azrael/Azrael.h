@@ -8,3 +8,6 @@
 // Place any includes here that are needed by the majority of your .cpp files
 
 #include "EngineMinimal.h"
+
+TArray<FString> GetAllFilesInDirectory(const FString directory, const bool fullPath,
+	const FString onlyFilesStartingWith, const FString onlyFilesWithExtension);
