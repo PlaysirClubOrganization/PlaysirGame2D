@@ -26,14 +26,6 @@ protected:
 
 	TArray<UPaperFlipbook*> * m_animationMap;
 
-	enum AnimationState : uint8 {
-		Appear_Animation,
-		Idle_Animation,
-		Walk_Animation,
-		Attack_Animation,
-		Jump_Animation,
-		Dead_Animation
-	};
 
 
 	/*The Type of the Character :
@@ -84,5 +76,6 @@ public:
 	UPaperFlipbook * GetCurrentSprite();
 	virtual FString GetIdentity() { return _identity; }
 	virtual int GetLife() { return _life; }
+
 
 };

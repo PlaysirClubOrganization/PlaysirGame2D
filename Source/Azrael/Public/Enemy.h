@@ -60,12 +60,37 @@ public:
 	UFUNCTION()
 	virtual void BeginPlay();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Dead();
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Init();
 	
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Idle();
+
+	wchar_t * StrCncatCharW(wchar_t * dst, std::string src);
 };
+
+static std::string GetAnimationName(int anim)
+{
+	switch (anim)
+	{
+	case 0:
+		return "appear.appear";
+	case 1:
+		return "idle.idle";
+	case 2:
+		return "walk.walk";
+	case 3:
+		return "attack.attack";
+	case 4:
+		return "jump.jump";
+	case 5:
+		return "die.die";
+	default:
+		return "idle.idle";
+	}
+
+}
+

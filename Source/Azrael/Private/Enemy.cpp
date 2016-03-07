@@ -2,7 +2,9 @@
 
 #include "Azrael.h"
 #include "TimerManager.h"
+#include <iostream>
 #include "Enemy.h"
+
 
 /*
 * FConstructorStatics will automatically load the different sprite of the any character by giving
@@ -16,17 +18,16 @@ struct FConstructorStatics
 	FConstructorStatics(AEnemy *enemy)
 		: AnimationInstance(TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>>())
 	{
-		FString myFString;
-		if (enemy->GetIdentity().EndsWith("AI"))
-			myFString = ("/Game/Azrael/Sprites/Enemy/" + enemy->GetIdentity());
-		else
-			myFString = "/Game/Azrael/Enemy/Zombie/Flipbook/appear.appear";
-
-		const TCHAR *  t = *myFString;
-		AnimationInstance.Add(ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>(TEXT("/Game/Azrael/Enemy/Zombie/Flipbook/appear.appear")));
-		AnimationInstance.Add(ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>(TEXT("/Game/Azrael/Enemy/Zombie/Flipbook/idle.idle")));
+		wchar_t *dst = (L"/Game/Azrael/Enemy/Zombie/Flipbook/\0");
+		
+		for (int i = 0; i < 6; i++)
+		{
+			wchar_t * d = enemy->StrCncatCharW(dst, GetAnimationName(i));
+			AnimationInstance.Add(ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>(d));
+		}
 
 	}
+
 	~FConstructorStatics()
 	{
 	}
@@ -37,7 +38,7 @@ AEnemy::AEnemy()
 {
 	m_animationMap = new TArray<UPaperFlipbook *>();
 	FConstructorStatics ConstructorStatics(this);
-	for (uint8 i = 0; i < ConstructorStatics.AnimationInstance.Num();++i)
+	for (int i = 0; i < ConstructorStatics.AnimationInstance.Num();++i)
 	{
 		GetAnimationPaper()->Add(ConstructorStatics.AnimationInstance[i].Get());
 	}
@@ -48,10 +49,7 @@ AEnemy::AEnemy()
 }
 AEnemy::~AEnemy()
 {
-	//for (uint8 i = 0; i < m_animationMap->Num();++i)
-	//{
-	//	delete (*m_animationMap)[i];
-	//}
+
 }
 void AEnemy::Appear()
 {
@@ -114,4 +112,22 @@ void AEnemy::Idle()
 	_isAppearing = false;
 	GetCharacterMovement()->StopMovementImmediately();
 	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
+}
+
+wchar_t * AEnemy::StrCncatCharW(wchar_t * dst, std::string src)
+{
+	int n = 35;
+	wchar_t * d;
+	d = (wchar_t *)malloc(sizeof(wchar_t) * (n + src.size()));
+	/* Find the end of dst and adjust bytes left but don't go past end */
+	for (int i = 0; i < n; ++i)
+	{
+		d[i] = dst[i];
+	}
+	for (int i = 0; i < src.size(); ++i)
+	{
+		d[n + i] = src[i];
+	}
+	d[n + src.size()] = L'\0';
+	return d;
 }
