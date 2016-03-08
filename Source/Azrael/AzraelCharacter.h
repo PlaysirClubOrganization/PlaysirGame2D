@@ -22,20 +22,11 @@ class AAzraelCharacter : public APaperCharacter
 	GENERATED_BODY()
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Animation")
-		UPaperFlipbook*  _currentAnim;
+	UPaperFlipbook*  _currentAnim;
 
 	TArray<UPaperFlipbook*> * m_animationMap;
 
-
-
-	/*The Type of the Character :
-	- Zombie
-	- Vampire
-	- Golem ,etc..
-	*/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
-	FString _identity;
-
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
 	int _life;
@@ -74,8 +65,11 @@ public:
 
 
 	UPaperFlipbook * GetCurrentSprite();
-	virtual FString GetIdentity() { return _identity; }
-	virtual int GetLife() { return _life; }
+
+	
+	virtual int GetLife();
+
+
 
 
 };

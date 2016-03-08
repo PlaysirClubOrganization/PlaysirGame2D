@@ -9,18 +9,14 @@
 #include <iostream>
 #include "EngineMinimal.h"
 
-TArray<FString> GetAllFilesInDirectory(const FString directory, const bool fullPath,
-	const FString onlyFilesStartingWith, const FString onlyFilesWithExtension);
 
 
 
 static enum AnimationState : uint8 {
-	Appear_Animation,
-	Idle_Animation,
-	Walk_Animation,
-	Attack_Animation,
-	Jump_Animation,
-	Dead_Animation,
-	MAX_ENUM
+	Appear_Animation,// UMETA(DisplayName = "Appear_Animation"),
+	Idle_Animation,//UMETA(DisplayName = "Idle_Animation"),
+	Walk_Animation,//UMETA(DisplayName = "Walk_Animation"),
+	Attack_Animation,// UMETA(DisplayName = "Attack_Animation"),
+	Jump_Animation,//UMETA(DisplayName = "Jump_Animation"),
+	Dead_Animation //UMETA(DisplayName = "Dead_Animation")
 };
-

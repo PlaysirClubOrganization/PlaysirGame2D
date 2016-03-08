@@ -3,8 +3,23 @@
 #pragma once
 #include "Perception/PawnSensingComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "Azrael.h"
 #include "AzraelCharacter.h"
 #include "Enemy.generated.h"
+
+/*The Type of the Character :
+- Zombie
+- Vampire
+- Golem ,etc..
+*/
+UENUM(BlueprintType)
+enum class Identity_AI : uint8 {
+	Zombie UMETA(DisplayName = "Zombie"),
+	Vampire UMETA(DisplayName = "Vampire")
+};
+
+
+
 
 /**
 *
@@ -15,6 +30,10 @@ class AZRAEL_API AEnemy : public AAzraelCharacter
 	GENERATED_BODY()
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
+		Identity_AI _identity;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		int _nbKilled ;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
@@ -31,9 +50,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		UPawnSensingComponent * _pawnSensing;
-
-
-
 
 public:
 	
@@ -69,8 +85,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Idle();
 
+	std::string GetType();
+
+	virtual Identity_AI GetIdentity();
+
 	wchar_t * StrCncatCharW(wchar_t * dst, std::string src);
+	wchar_t * StrCncatCharW(wchar_t * dst, std::string src,int n);
+
+
+
 };
+
 
 static std::string GetAnimationName(int anim)
 {

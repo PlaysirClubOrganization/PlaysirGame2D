@@ -46,3 +46,8 @@ UPaperFlipbook * AAzraelCharacter::GetCurrentSprite()
 	return _currentAnim;
 }
 
+int AAzraelCharacter::GetLife()
+{
+	return _life;
+}
+
