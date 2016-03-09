@@ -12,7 +12,7 @@
 *
 * @warning : The project must bu construct
 */
-struct FConstructorStatics
+static struct FConstructorStatics
 {
 	TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>> AnimationInstance;
 	FConstructorStatics(AEnemy *enemy)
@@ -21,17 +21,18 @@ struct FConstructorStatics
 		wchar_t * tmp = L"/Game/Azrael/Enemy/\0";
 		std::string t = enemy->GetType();
 		wchar_t *dst = enemy->StrCncatCharW(tmp, enemy->GetType(),19);
-		
-		for (int i = 0; i < 6; i++)
+		wchar_t * d;
+		for (int i = 0; i < 5; i++)
 		{
-			wchar_t * d = enemy->StrCncatCharW(dst, GetAnimationName(i));
+			d = enemy->StrCncatCharW(dst, GetAnimationName(i));
 			AnimationInstance.Add(ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>(d));
 		}
-
+		free(d);
 	}
 
 	~FConstructorStatics()
 	{
+
 	}
 
 };
@@ -52,7 +53,6 @@ AEnemy::AEnemy()
 }
 AEnemy::~AEnemy()
 {
-
 }
 void AEnemy::Appear()
 {
@@ -138,8 +138,7 @@ Identity_AI AEnemy::GetIdentity()
 
 wchar_t * AEnemy::StrCncatCharW(wchar_t * dst, std::string src,int n)
 {
-	wchar_t * d;
-	d = (wchar_t *)malloc(sizeof(wchar_t) * (n + src.size()));
+	wchar_t * d = (wchar_t *)malloc(sizeof(wchar_t) * (n+1+src.size()));
 	/* Find the end of dst and adjust bytes left but don't go past end */
 	for (int i = 0; i < n; ++i)
 	{
@@ -157,7 +156,7 @@ wchar_t * AEnemy::StrCncatCharW(wchar_t * dst, std::string src)
 {
 	int n = 35;
 	wchar_t * d;
-	d = (wchar_t *)malloc(sizeof(wchar_t) * (n + src.size()));
+	d = (wchar_t *)malloc(sizeof(wchar_t) * (n+1 + src.size()));
 	/* Find the end of dst and adjust bytes left but don't go past end */
 	for (int i = 0; i < n; ++i)
 	{
