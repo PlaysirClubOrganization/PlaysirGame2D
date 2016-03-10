@@ -22,7 +22,7 @@
 - Golem ,etc..
 */
 UENUM(BlueprintType)
-enum class Identity_AI : uint8 {
+enum class Identity : uint8 {
 	Zombie UMETA(DisplayName = "Zombie"),
 	Vampire UMETA(DisplayName = "Vampire"),
 	Golem UMETA(DisplayName = "Golem"),
@@ -30,6 +30,10 @@ enum class Identity_AI : uint8 {
 	MAX_ENUM_IDENTITY
 };
 
+/****************************************************************************/
+/* This class is the base class of All the Pawn, The controlled Pawn or AI  */
+/* @info : this class is abstract											*/
+/****************************************************************************/
 
 UCLASS(abstract)
 class AAzraelCharacter : public APaperCharacter
@@ -43,13 +47,18 @@ protected:
 	// An array Of the PaperFlipbook of the pawn
 	TArray<UPaperFlipbook*> * m_animationArray;
 
+	//The timer which be used to delegate method in order to play some
+	// flipbook (for example playing the death anim before destroying it)
 	FTimerHandle CountdownTimerHandle;
 
+	//This Identity of the Pawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
-	Identity_AI _identity;
+	Identity _identity;
 
+	//The life of the Pawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
 	int _life ;
+
 	//Is the life of the pawn is less  than 0
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
 	bool _isDead;
@@ -76,14 +85,14 @@ protected:
 
 public:
 
-	//@unusedNow Called in the constructor 
+	//@used in the ChildClass Called in the constructor 
 	virtual void Init();
 
 	/** When the Pawn Attack we set the Attack_Animation PaperFlipbook
 	*
 	*/
 	UFUNCTION(BlueprintNativeEvent)
-	void	Attack();
+	void Attack();
 
 	/** When the Pawn Idle we set the Idle_Animation PaperFlipbook
 	*
@@ -102,11 +111,11 @@ public:
 	virtual void Dead() PURE_VIRTUAL(AAzraelCharacter::Dead, ;);
 
 	/** Called to choose the correct animation to play based on the character's movement state */
-	virtual void UpdateAnimation() PURE_VIRTUAL(AAzraelCharacter::UpdateAnimation, ;);;
+	virtual void UpdateAnimation();
 
 	virtual void Tick(float DeltaSeconds);
 
-	virtual void UpdateCharacter() PURE_VIRTUAL(AAzraelCharacter::UpdateCharacter, ;);
+	virtual void UpdateCharacter();
 
 	/** Called for side to side input */
 	void MoveRight(float Value) PURE_VIRTUAL(AAzraelCharacter::MoveRight, ;);
@@ -147,9 +156,9 @@ public:
 	virtual int GetLife();
 
 	/**
-	*@return the of the path of the flipbook directory
+	*@return the of the path of the Flipbook directory
 	*
-	*	exemple for Zombie => '\Zombie\Flipbook\' 
+	*	example for Zombie => '\Zombie\Flipbook\' 
 	*/
 	std::string GetType();
 
@@ -157,13 +166,12 @@ public:
 	*@return the Identity of the pawn as an Enum instance of Identity
 	* {Zombie,Vampire,Golem,Skeleton,... }
 	*/
-	Identity_AI GetIdentity();
+	Identity GetIdentity();
 
 	/**
 	*Used to concat wchar_t with string
 	*/
 	static wchar_t * StrCncatCharW(wchar_t * dst, std::string src);
-	static wchar_t * StrCncatCharW(wchar_t * dst, std::string src, int n);
 
 };
 
@@ -214,6 +222,7 @@ static struct FConstructorStatics
 	FConstructorStatics(AAzraelCharacter *perso)
 		: AnimationInstance(TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>>())
 	{
+
 		//The beginning of the path of the sprite
 		wchar_t * tmp = L"/Game/Azrael/Enemy/\0";
 
@@ -222,15 +231,16 @@ static struct FConstructorStatics
 
 		//Concat the beginning of the path of the sprite and the AI'type 
 		// exemple => "/Game/Azrael/Enemy/ + Zombie/Flipbook/
-		wchar_t *dst = perso->StrCncatCharW(tmp, perso->GetType(), 19);
+		wchar_t *dst = perso->StrCncatCharW(tmp, perso->GetType());
 
 		//For loop in order to Get all sprites Animation which are in the folder
 		for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; i++)
 		{
+			auto path = perso->StrCncatCharW(dst, GetAnimationName(i));
 			//Adding the PaperFlipbook in the TArray
 			//GetAnimationName return a string : appear.apper, idle.idle, etc...
 			AnimationInstance.Add(ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>
-				(perso->StrCncatCharW(dst, GetAnimationName(i))));
+				(path));
 		}
 	}
 

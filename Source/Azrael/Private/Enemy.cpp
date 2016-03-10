@@ -14,15 +14,14 @@
 /****************************************************************************/
 AEnemy::AEnemy()
 {
+
 	//Test for the Zombie (identity must be set before calling the FConstructorStatics
-	_identity = Identity_AI::Zombie;
-
-
+	_identity = Identity::Zombie;
 	//Transferring the Animation loaded in FConstructorStatics Struct into
 	// the parameter m_animationMap
 	m_animationArray = new TArray<UPaperFlipbook *>();
 	FConstructorStatics ConstructorStatics(this);
-	for (int i = 0; i < ConstructorStatics.AnimationInstance.Num();++i)
+	for (int i = 0; i < ConstructorStatics.AnimationInstance.Num(); ++i)
 	{
 		GetAnimationPaper()->Add(ConstructorStatics.AnimationInstance[i].Get());
 	}
@@ -44,28 +43,7 @@ void AEnemy::Appear()
 
 void AEnemy::UpdateAnimation()
 {
-	//if Life is less than 0 the Ai is dying
-	//else we check if the velocity of the AI is null
-	float speed = GetVelocity().SizeSquared();
-
-	if (_isAttacking)
-	{
-		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Attack_Animation));
-
-	}
-	else if (GetLife() <= 0)
-	{
-		Dead();
-		return;
-	}
-	else if (!speed)
- 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
-	else 
-			GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Walk_Animation));
-//	else if(_isJumping)
-	//	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Jump_Animation));
-		
-
+	Super::UpdateAnimation();
 }
 
 /*Unused for now*/
@@ -79,23 +57,24 @@ void AEnemy::UpdateCharacter()
 	UpdateAnimation();
 
 	APawn * Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (GetDistanceTo(Player) < 200.0f) {
-		_isAttacking = true;
-		auto t = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
- 		if ( t != TIME_FOR_ATTACK)
-		{
-			SetPlayerAttacked(true);
-			GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack,TIME_FOR_ATTACK, false);
+	if(Player)
+		if (GetDistanceTo(Player) < 200.0f) {
+			_isAttacking = true;
+			auto t = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
+ 			if ( t != TIME_FOR_ATTACK)
+			{
+				SetPlayerAttacked(true);
+				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack,TIME_FOR_ATTACK, false);
+			}
+			else
+				SetPlayerAttacked(false);
 		}
 		else
+		{
 			SetPlayerAttacked(false);
-	}
-	else
-	{
-		SetPlayerAttacked(false);
-		_isAttacking = false;
+			_isAttacking = false;
 
-	}
+		}
 
 }
 
