@@ -78,6 +78,8 @@ public:
 
 
 
+	Identity_AI GetIdentity();
+
 	static wchar_t * StrCncatCharW(wchar_t * dst, std::string src);
 	static wchar_t * StrCncatCharW(wchar_t * dst, std::string src, int n);
 
