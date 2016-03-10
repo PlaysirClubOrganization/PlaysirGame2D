@@ -8,13 +8,14 @@
 /**
  * 
  */
-UCLASS(abstract)
+UCLASS()
 class AZRAEL_API AAbstractPlayer : public AAzraelCharacter
 {
 	GENERATED_BODY()
 	
 public:
 	
+	AAbstractPlayer();
 	virtual void	UpdateAnimation();
 
 	virtual void	MoveRight(float Value);

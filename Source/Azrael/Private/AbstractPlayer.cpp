@@ -4,7 +4,10 @@
 #include "AbstractPlayer.h"
 
 
+AAbstractPlayer::AAbstractPlayer()
+{
 
+}
 
 void AAbstractPlayer::UpdateAnimation()
 {
