@@ -26,28 +26,17 @@ class AZRAEL_API AEnemy : public AAzraelCharacter
 protected:
 
 
-
+	/*Used for the Zombie_AI and Skeleton_AI
+	*
+	*	If the AI is killed we respawn the Ai with 
+	*	a reduced life proportional to the nbKilled  
+	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		int _nbKilled ;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _isAppearing;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "  AI")
 		bool _isPatrolling;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _isDead;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _isWalking;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _isJumping;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _isAttacking;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _playerDetected;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")

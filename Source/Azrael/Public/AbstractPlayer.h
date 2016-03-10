@@ -38,7 +38,5 @@ public:
 
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachinePlayer")
-		bool _isAttacked;
-	
+
 };
