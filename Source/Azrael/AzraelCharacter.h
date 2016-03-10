@@ -16,6 +16,18 @@
 //   The Sprite component (inherited from APaperCharacter) handles the visuals
 
 
+/*The Type of the Character :
+- Zombie
+- Vampire
+- Golem ,etc..
+*/
+UENUM(BlueprintType)
+enum class Identity_AI : uint8 {
+	Zombie UMETA(DisplayName = "Zombie"),
+	Vampire UMETA(DisplayName = "Vampire")
+};
+
+
 UCLASS(abstract)
 class AAzraelCharacter : public APaperCharacter
 {
@@ -28,6 +40,8 @@ protected:
 
 	FTimerHandle CountdownTimerHandle;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
+		Identity_AI _identity;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
 	int _life ;
@@ -106,3 +120,48 @@ static std::string GetAnimationName(int anim)
 	}
 
 }
+
+
+
+
+
+/*
+* FConstructorStatics will automatically load the different sprite of the any character by giving
+* the right id in the init function.
+*
+* @warning : The project must bu construct
+*/
+static struct FConstructorStatics
+{
+	//An Array which stores the 2D Animation Instance (UPaperFlipbook)
+	TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>> AnimationInstance;
+
+	//Constructor
+	FConstructorStatics(AAzraelCharacter *perso)
+		: AnimationInstance(TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>>())
+	{
+		//The beginning of the path of the sprite
+		wchar_t * tmp = L"/Game/Azrael/Enemy/\0";
+
+		//Getting the type of the AI (Zombie, Vampire, ...)
+		std::string t = perso->GetType();
+
+		//Concat the beginning of the path of the sprite and the AI'type 
+		// exemple => "/Game/Azrael/Enemy/ + Zombie/Flipbook/
+		wchar_t *dst = perso->StrCncatCharW(tmp, perso->GetType(), 19);
+
+		//For loop in order to Get all sprites Animation which are in the folder
+		for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; i++)
+		{
+			//Adding the PaperFlipbook in the TArray
+			//GetAnimationName return a string : appear.apper, idle.idle, etc...
+			AnimationInstance.Add(ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>
+				(perso->StrCncatCharW(dst, GetAnimationName(i))));
+		}
+	}
+
+	~FConstructorStatics()
+	{
+	}
+
+};

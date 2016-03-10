@@ -13,18 +13,6 @@
 
 
 
-/*The Type of the Character :
-- Zombie
-- Vampire
-- Golem ,etc..
-*/
-UENUM(BlueprintType)
-enum class Identity_AI : uint8 {
-	Zombie UMETA(DisplayName = "Zombie"),
-	Vampire UMETA(DisplayName = "Vampire")
-};
-
-
 
 
 /**
@@ -37,8 +25,7 @@ class AZRAEL_API AEnemy : public AAzraelCharacter
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
-		Identity_AI _identity;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		int _nbKilled ;
