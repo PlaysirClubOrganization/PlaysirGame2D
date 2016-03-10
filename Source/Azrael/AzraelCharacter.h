@@ -24,18 +24,20 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Animation")
 	UPaperFlipbook*  _currentAnim;
 
-	TArray<UPaperFlipbook*> * m_animationMap;
+	TArray<UPaperFlipbook*> * m_animationArray;
 
-	
+	FTimerHandle CountdownTimerHandle;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
-	int _life;
+	int _life ;
 
 public:
 
 	virtual void Init();
 
-	virtual void Attack() PURE_VIRTUAL(AAzraelCharacter::Attack, ;);
+	UFUNCTION(BlueprintNativeEvent)
+	void	Attack();
 
 	virtual void Idle() PURE_VIRTUAL(AAzraelCharacter::Idle, ;);
 
@@ -72,4 +74,33 @@ public:
 
 
 
+	std::string GetType();
+
+
+
+	static wchar_t * StrCncatCharW(wchar_t * dst, std::string src);
+	static wchar_t * StrCncatCharW(wchar_t * dst, std::string src, int n);
+
 };
+
+static std::string GetAnimationName(int anim)
+{
+	switch (anim)
+	{
+	case 0:
+		return "appear.appear";
+	case 1:
+		return "idle.idle";
+	case 2:
+		return "walk.walk";
+	case 3:
+		return "attack.attack";
+	case 4:
+		return "jump.jump";
+	case 5:
+		return "die.die";
+	default:
+		return "idle.idle";
+	}
+
+}

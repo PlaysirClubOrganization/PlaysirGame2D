@@ -4,8 +4,14 @@
 #include "Perception/PawnSensingComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "Azrael.h"
+#include "AbstractPlayer.h"
+
 #include "AzraelCharacter.h"
 #include "Enemy.generated.h"
+
+#define TIME_FOR_ATTACK .1f
+
+
 
 /*The Type of the Character :
 - Zombie
@@ -36,6 +42,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		int _nbKilled ;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _isAppearing;
 
@@ -44,9 +51,20 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _isDead;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+		bool _isWalking;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+		bool _isJumping;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+		bool _isAttacking;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _playerDetected;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+		bool _lookAtRight;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		UPawnSensingComponent * _pawnSensing;
@@ -85,37 +103,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Idle();
 
-	std::string GetType();
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+	virtual void Patrol();
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void Attack();
 
-	virtual Identity_AI GetIdentity();
 
-	wchar_t * StrCncatCharW(wchar_t * dst, std::string src);
-	wchar_t * StrCncatCharW(wchar_t * dst, std::string src,int n);
+	void SetPlayerAttacked(bool attack);
+
+	void initAttack();
+
+	int GetDirection();
+
+
 
 
 
 };
 
-
-static std::string GetAnimationName(int anim)
-{
-	switch (anim)
-	{
-	case 0:
-		return "appear.appear";
-	case 1:
-		return "idle.idle";
-	case 2:
-		return "walk.walk";
-	case 3:
-		return "attack.attack";
-	case 4:
-		return "jump.jump";
-	case 5:
-		return "die.die";
-	default:
-		return "idle.idle";
-	}
-
-}
 

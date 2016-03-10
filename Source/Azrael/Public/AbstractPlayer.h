@@ -15,17 +15,29 @@ class AZRAEL_API AAbstractPlayer : public AAzraelCharacter
 	
 public:
 	
-	void	UpdateAnimation();
+	virtual void	UpdateAnimation();
 
-	void	MoveRight(float Value);
+	virtual void	MoveRight(float Value);
 
-	void	UpdateCharacter();
-
-private:
-
-
-
+	virtual void	UpdateCharacter();
 	
+	virtual bool	GetIsAttacked();
+
+	virtual void	SetIsAttacked(bool isAttacked);
 	
+	virtual void	TakeDamages(int damage);
+
+
+	virtual void	Dead();
+
+
+
+
+
+
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachinePlayer")
+		bool _isAttacked;
 	
 };

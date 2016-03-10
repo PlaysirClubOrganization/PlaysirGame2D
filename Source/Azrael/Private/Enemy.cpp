@@ -1,90 +1,105 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Azrael.h"
+#include "AzraelCharacter.h"
 #include "TimerManager.h"
 #include <iostream>
 #include "Enemy.h"
 
-
-/*
-* FConstructorStatics will automatically load the different sprite of the any character by giving
-* the right id in the init function.
-*
-* @warning : The project must bu construct
-*/
-static struct FConstructorStatics
-{
-	TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>> AnimationInstance;
-	FConstructorStatics(AEnemy *enemy)
-		: AnimationInstance(TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>>())
-	{
-		wchar_t * tmp = L"/Game/Azrael/Enemy/\0";
-		std::string t = enemy->GetType();
-		wchar_t *dst = enemy->StrCncatCharW(tmp, enemy->GetType(),19);
-		wchar_t * d;
-		for (int i = 0; i < 5; i++)
-		{
-			d = enemy->StrCncatCharW(dst, GetAnimationName(i));
-			AnimationInstance.Add(ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>(d));
-		}
-		free(d);
-	}
-
-	~FConstructorStatics()
-	{
-
-	}
-
-};
-
+/****************************************************************************/
+/* Constructor of the AEnemy we choose not to make this class Abstract		*/
+/* Because with Unreal API we must call the ContructorHelpers				*/
+/* in the constructor. Thus making this class abstract wasn't a good choice */
+/* for having a generic loader sprite										*/		
+/****************************************************************************/
 AEnemy::AEnemy()
 {
+	//Test for the Zombie (identity must be set before calling the FConstructorStatics
 	_identity = Identity_AI::Zombie;
-	m_animationMap = new TArray<UPaperFlipbook *>();
+
+
+	//Transferring the Animation loaded in FConstructorStatics Struct into
+	// the parameter m_animationMap
+	m_animationArray = new TArray<UPaperFlipbook *>();
 	FConstructorStatics ConstructorStatics(this);
 	for (int i = 0; i < ConstructorStatics.AnimationInstance.Num();++i)
 	{
 		GetAnimationPaper()->Add(ConstructorStatics.AnimationInstance[i].Get());
 	}
-
-
 	_pawnSensing = (UPawnSensingComponent *)
 		GetComponentByClass(UPawnSensingComponent::StaticClass());
 }
+//Amazing a Garbage Collector Exist so we doesn't Care of the destructor
 AEnemy::~AEnemy()
 {
 }
+
 void AEnemy::Appear()
-{
+{	//The AI is appearing (necessary for playing the appear animation)
 	_isAppearing = true;
+	//Setting the Appear Flipbook to the sprite
 	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Appear_Animation));
 }
 
+
 void AEnemy::UpdateAnimation()
 {
-	if (GetLife() <= 0) 
+	//if Life is less than 0 the Ai is dying
+	//else we check if the velocity of the AI is null
+	float speed = GetVelocity().SizeSquared();
+
+	if (_isAttacking)
+	{
+		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Attack_Animation));
+
+	}
+	else if (GetLife() <= 0)
+	{
 		Dead();
-	else if (GetVelocity().IsZero() ||
-			 GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Falling ||
-		     GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
-	
-		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
-	else
-		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Walk_Animation));
-
-
+		return;
+	}
+	else if (!speed)
+ 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
+	else 
+			GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Walk_Animation));
+//	else if(_isJumping)
+	//	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Jump_Animation));
 		
+
 }
 
+/*Unused for now*/
 void AEnemy::MoveRight(float Value)
 {
 
 }
-
+/*Unused for now*/
 void AEnemy::UpdateCharacter()
 {
+	UpdateAnimation();
+
+	APawn * Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (GetDistanceTo(Player) < 200.0f) {
+		_isAttacking = true;
+		auto t = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
+ 		if ( t != TIME_FOR_ATTACK)
+		{
+			SetPlayerAttacked(true);
+			GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack,TIME_FOR_ATTACK, false);
+		}
+		else
+			SetPlayerAttacked(false);
+	}
+	else
+	{
+		SetPlayerAttacked(false);
+		_isAttacking = false;
+
+	}
 
 }
+
+
 
 void AEnemy::Tick(float DeltaSeconds)
 {
@@ -97,7 +112,7 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 	Init();
 	Appear();
-
+	
 }
 
 void AEnemy::Dead()
@@ -108,6 +123,7 @@ void AEnemy::Dead()
 void AEnemy::Init()
 {
 	Super::Init();
+
 }
 
 void AEnemy::Idle()
@@ -117,55 +133,55 @@ void AEnemy::Idle()
 	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
 }
 
-std::string AEnemy::GetType()
+void AEnemy::Patrol()
 {
-	return ("Zombie/Flipbook/");
-	switch (GetIdentity())
+	if (GetTransform().GetRotation().Z < 0.1f)
 	{
-	case Identity_AI::Zombie:
-		return std::string("Zombie/Flipbook/");
-	case Identity_AI::Vampire:
-		return "Vampire/Flipbook";
-	default:
-		return "Zombie/Flipbook/";
+		SetActorRotation(FRotator(0.0, 180.0f, 0.0f));	
+		_lookAtRight = true;
+	}
+	else
+	{
+		SetActorRotation(FRotator(0.0, 0.0f, 0.0f));
+		_lookAtRight = false;
+	}
+		
+}
+
+void AEnemy::Attack_Implementation()
+{
+	AAbstractPlayer * Player = (AAbstractPlayer *)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (Player)
+	{
+		if (!Player->GetIsAttacked())
+		{
+			Player->GetCharacterMovement()->Velocity = FVector(GetDirection()*-1000.f, 0.f, 0.f);
+			GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+			Player->TakeDamages(20);
+		}
 	}
 }
 
-Identity_AI AEnemy::GetIdentity()
+int AEnemy::GetDirection()
 {
-	return _identity;
+	return (int)_lookAtRight * 2 - 1;
 }
 
-wchar_t * AEnemy::StrCncatCharW(wchar_t * dst, std::string src,int n)
+void AEnemy::SetPlayerAttacked(bool attack)
 {
-	wchar_t * d = (wchar_t *)malloc(sizeof(wchar_t) * (n+1+src.size()));
-	/* Find the end of dst and adjust bytes left but don't go past end */
-	for (int i = 0; i < n; ++i)
-	{
-		d[i] = dst[i];
-	}
-	for (int i = 0; i < src.size(); ++i)
-	{
-		d[n + i] = src[i];
-	}
-	d[n + src.size()] = L'\0';
-	return d;
+	AAbstractPlayer * Player = (AAbstractPlayer *)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	Player->SetIsAttacked(attack);
 }
 
-wchar_t * AEnemy::StrCncatCharW(wchar_t * dst, std::string src)
-{
-	int n = 35;
-	wchar_t * d;
-	d = (wchar_t *)malloc(sizeof(wchar_t) * (n+1 + src.size()));
-	/* Find the end of dst and adjust bytes left but don't go past end */
-	for (int i = 0; i < n; ++i)
-	{
-		d[i] = dst[i];
-	}
-	for (int i = 0; i < src.size(); ++i)
-	{
-		d[n + i] = src[i];
-	}
-	d[n + src.size()] = L'\0';
-	return d;
-}
+
+
+
+
+
+
+
+
+
+
+
+
