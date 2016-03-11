@@ -8,6 +8,12 @@
 #include "PaperFlipbook.h"
 #include "AzraelCharacter.generated.h"
 
+
+#define TIMER_DEFAULT 0.12f
+#define TIME_FOR_ATTACK .1f
+
+
+
 // This class is the default character for Azrael, and it is responsible for all
 // physical interaction between the player and the world.
 //

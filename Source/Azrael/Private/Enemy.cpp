@@ -36,8 +36,7 @@ AEnemy::~AEnemy()
 void AEnemy::Appear()
 {	//The AI is appearing (necessary for playing the appear animation)
 	_isAppearing = true;
-	//Setting the Appear Flipbook to the sprite
-	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Appear_Animation));
+	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Idle, GetCurrentSpriteLength(), false);
 }
 
 
@@ -46,11 +45,7 @@ void AEnemy::UpdateAnimation()
 	Super::UpdateAnimation();
 }
 
-/*Unused for now*/
-void AEnemy::MoveRight(float Value)
-{
 
-}
 /*Unused for now*/
 void AEnemy::UpdateCharacter()
 {
@@ -73,9 +68,7 @@ void AEnemy::UpdateCharacter()
 		{
 			SetPlayerAttacked(false);
 			_isAttacking = false;
-
 		}
-
 }
 
 
@@ -90,8 +83,7 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	Init();
-	Appear();
-	
+	Appear();	
 }
 
 void AEnemy::Dead()
@@ -102,7 +94,6 @@ void AEnemy::Dead()
 void AEnemy::Init()
 {
 	Super::Init();
-
 }
 
 void AEnemy::Idle()

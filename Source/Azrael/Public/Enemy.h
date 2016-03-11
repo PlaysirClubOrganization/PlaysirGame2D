@@ -9,9 +9,6 @@
 #include "AzraelCharacter.h"
 #include "Enemy.generated.h"
 
-#define TIME_FOR_ATTACK .1f
-
-
 
 
 
@@ -58,9 +55,6 @@ public:
 	UFUNCTION()
 	virtual void UpdateAnimation();
 
-	/** Called for side to side input */
-	UFUNCTION()
-	virtual void MoveRight(float Value);
 
 	UFUNCTION()
 	virtual void UpdateCharacter();
