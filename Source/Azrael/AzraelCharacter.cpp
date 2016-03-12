@@ -55,10 +55,28 @@ void AAzraelCharacter::UpdateAnimation()
 void AAzraelCharacter::Init()
 {
 }
+void AAzraelCharacter::Appear()
+{	//The AI is appearing (necessary for playing the appear animation)
+	_isAppearing = true;
+	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Idle, GetCurrentSpriteLength(), false);
+}
+void AAzraelCharacter::Idle()
+{
+	_isAppearing = false;
+	GetCharacterMovement()->StopMovementImmediately();
+	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
+}
 
 void AAzraelCharacter::Attack_Implementation()
 {
 
+}
+
+void AAzraelCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	Init();
+	Appear();
 }
 
 void AAzraelCharacter::Tick(float DeltaSeconds)

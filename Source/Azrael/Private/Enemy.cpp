@@ -33,11 +33,7 @@ AEnemy::~AEnemy()
 {
 }
 
-void AEnemy::Appear()
-{	//The AI is appearing (necessary for playing the appear animation)
-	_isAppearing = true;
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Idle, GetCurrentSpriteLength(), false);
-}
+
 
 
 void AEnemy::UpdateAnimation()
@@ -79,29 +75,13 @@ void AEnemy::Tick(float DeltaSeconds)
 	UpdateCharacter();
 }
 
-void AEnemy::BeginPlay()
-{
-	Super::BeginPlay();
-	Init();
-	Appear();	
-}
+
 
 void AEnemy::Dead()
 {
 	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));
 }
 
-void AEnemy::Init()
-{
-	Super::Init();
-}
-
-void AEnemy::Idle()
-{
-	_isAppearing = false;
-	GetCharacterMovement()->StopMovementImmediately();
-	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
-}
 
 void AEnemy::Patrol()
 {

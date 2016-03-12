@@ -91,7 +91,8 @@ protected:
 
 public:
 
-	//@used in the ChildClass Called in the constructor 
+	//@used in the ChildClass Called in the constructor
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Init();
 
 	/** When the Pawn Attack we set the Attack_Animation PaperFlipbook
@@ -103,12 +104,14 @@ public:
 	/** When the Pawn Idle we set the Idle_Animation PaperFlipbook
 	*
 	*/
-	virtual void Idle() PURE_VIRTUAL(AAzraelCharacter::Idle, ;);
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+	virtual void Idle();
 
 	/** When the Pawn Appear we set the Appear_Animation PaperFlipbook
 	*	and set the _isAppearParameter to true
 	*/
-	virtual void Appear() PURE_VIRTUAL(AAzraelCharacter::Appear, ;);
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+	virtual void Appear();
 
 	/**
 	* When the life of the Pawn is less (or equal) than 0
@@ -118,6 +121,10 @@ public:
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	virtual void UpdateAnimation();
+
+	UFUNCTION()
+	virtual void BeginPlay();
+
 
 	virtual void Tick(float DeltaSeconds);
 
@@ -147,7 +154,7 @@ public:
 
 	/**
 	* @param [UPaperFlipbook *] flipbook : the new animation flipbook
-	* Update the animation to flipbook
+	* Update the current  animation to flipbook
 	*/
 	virtual void SetCurrentAnim(UPaperFlipbook * Flipbook);
 

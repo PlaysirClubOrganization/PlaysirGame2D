@@ -2,6 +2,7 @@
 
 #include "Azrael.h"
 #include "AbstractPlayer.h"
+#include "EngineGlobals.h"
 
 
 AAbstractPlayer::AAbstractPlayer()
@@ -59,3 +60,4 @@ void AAbstractPlayer::Dead()
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 	Destroy();
 }
+

@@ -48,30 +48,18 @@ public:
 
 	~AEnemy();
 
-	UFUNCTION(BlueprintCallable, Category = Initialisation)
-	virtual void Appear();
-
 	/** Called to choose the correct animation to play based on the character's movement state */
 	UFUNCTION()
 	virtual void UpdateAnimation();
-
 
 	UFUNCTION()
 	virtual void UpdateCharacter();
 
 	virtual void Tick(float DeltaSeconds);
 
-	UFUNCTION()
-	virtual void BeginPlay();
 
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Dead();
-	
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void Init();
-	
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void Idle();
 
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Patrol();
@@ -79,12 +67,11 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void Attack();
 
+	virtual void SetPlayerAttacked(bool attack);
 
-	void SetPlayerAttacked(bool attack);
+	//virtual void initAttack();
 
-	void initAttack();
-
-	int GetDirection();
+	virtual int GetDirection();
 
 
 

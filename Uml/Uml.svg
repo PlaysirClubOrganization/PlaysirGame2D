@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="61cm" height="64cm" viewBox="-57 -181 1214 1273" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="530" y="-38" width="510.5" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="530" y="-38" width="510.5" height="28"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:normal" x="785.25" y="-18">AzraelCharacter</text>
+    <rect style="fill: #ffffff" x="530" y="-10" width="510.5" height="148"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="530" y="-10" width="510.5" height="148"/>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="3.2">#_currentAnim: UPaperFlipbook*  </text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="19.2">#m_animationArray: TArray&lt;UPaperFlipbook*&gt; * </text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="35.2">#CountdownTimerHandle: FTimerHandle </text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="51.2">#_identity: Identity </text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="67.2">#_life: int</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="83.2">#_isDead: bool</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="99.2">#_isAppearing: bool</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="115.2">#_isJumping: bool</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="131.2">#_isAttacking: bool</text>
+    <rect style="fill: #ffffff" x="530" y="138" width="510.5" height="260"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="530" y="138" width="510.5" height="260"/>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="151.2">+Init(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="167.2">+Attack(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="183.2">+Idle(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="199.2">+Appear(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="215.2">+Dead(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="231.2">+UpdateAnimation(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="247.2">+UpdateCharacter(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="263.2">+GetCurrentSpriteLength(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="279.2">+GetAnimationPaper(): TArray&lt;UPaperFlipbook* &gt; * </text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="295.2">+GetFlipbook(idAnim:AnimationState): UPaperFlipbook * </text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="311.2">+SetCurrentAnim(Flipbook:UPaperFlipbook * ): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="327.2">+GetCurrentSprite(): UPaperFlipbook *</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="343.2">+GetLife(): int</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="359.2">+GetType(): std::string</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="375.2">+GetIdentity(): Identity</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="533" y="391.2">+StrCncatCharW(dst:wchar_t * ,src:std::string): static wchar_t * </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="487.819" y="568.464" width="294.9" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="487.819" y="568.464" width="294.9" height="28"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="635.269" y="588.464">AbstractPlayer</text>
+    <rect style="fill: #ffffff" x="487.819" y="596.464" width="294.9" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="487.819" y="596.464" width="294.9" height="8"/>
+    <rect style="fill: #ffffff" x="487.819" y="604.464" width="294.9" height="52"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="487.819" y="604.464" width="294.9" height="52"/>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="490.819" y="617.664">+GetIsAttacked(): bool</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="490.819" y="633.664">+SetIsAttacked(isAttacked:bool): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="490.819" y="649.664">+TakeDamages(damages:int): void</text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="837.319" y="530.964" width="310.3" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="837.319" y="530.964" width="310.3" height="28"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="992.469" y="550.964">Enemy</text>
+    <rect style="fill: #ffffff" x="837.319" y="558.964" width="310.3" height="84"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="837.319" y="558.964" width="310.3" height="84"/>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="840.319" y="572.164">#_nbKilled: bool</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="840.319" y="588.164">#_isPatrolling: bool</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="840.319" y="604.164">#_playerDetected: bool</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="840.319" y="620.164">#_lookAtRight: bool</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="840.319" y="636.164">+_pawnSensing: UPawnSensingComponent * </text>
+    <rect style="fill: #ffffff" x="837.319" y="642.964" width="310.3" height="52"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="837.319" y="642.964" width="310.3" height="52"/>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="840.319" y="656.164">+Patrol(): void</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="840.319" y="672.164">+GetDirection(): int</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="840.319" y="688.164">+SetPlayerAttacked(attack:bool): void</text>
+    <rect style="fill: #ffffff" x="1101.62" y="528.964" width="54" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 6; stroke: #000000" x="1101.62" y="528.964" width="54" height="8"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="785.25,417.243 785.25,483.233 635.269,483.233 635.269,567.459 "/>
+    <polygon style="fill: #ffffff" points="793.25,417.243 785.25,401.243 777.25,417.243 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="793.25,417.243 785.25,401.243 777.25,417.243 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="785.25,416.236 785.25,483.714 992.469,483.714 992.469,530.964 "/>
+    <polygon style="fill: #ffffff" points="793.25,416.236 785.25,400.236 777.25,416.236 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="793.25,416.236 785.25,400.236 777.25,416.236 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="-55.8682" y="12.714" width="135.7" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-55.8682" y="12.714" width="135.7" height="28"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="11.9818" y="32.714">Enum : Identity</text>
+    <rect style="fill: #ffffff" x="-55.8682" y="40.714" width="135.7" height="68"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-55.8682" y="40.714" width="135.7" height="68"/>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="-52.8682" y="53.914">+Zombie</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="-52.8682" y="69.914">+Vampire</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="-52.8682" y="85.914">+Golem</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="-52.8682" y="101.914">+Skeleton</text>
+    <rect style="fill: #ffffff" x="-55.8682" y="108.714" width="135.7" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-55.8682" y="108.714" width="135.7" height="8"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="128.032" y="2.71403" width="195.9" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="128.032" y="2.71403" width="195.9" height="28"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="225.982" y="22.714">Enum : AnimationState</text>
+    <rect style="fill: #ffffff" x="128.032" y="30.714" width="195.9" height="100"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="128.032" y="30.714" width="195.9" height="100"/>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="131.032" y="43.914">+Appear</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="131.032" y="59.914">+Idle</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="131.032" y="75.914">+Walk</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="131.032" y="91.914">+Attack</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="131.032" y="107.914">+Jump</text>
+    <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="131.032" y="123.914">+Dead</text>
+    <rect style="fill: #ffffff" x="128.032" y="130.714" width="195.9" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="128.032" y="130.714" width="195.9" height="8"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="712.132" y="-179.786" width="146.25" height="44"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="712.132" y="-179.786" width="146.25" height="44"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="785.257" y="-164.586">&lt;&lt;UE4&gt;&gt;</text>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="785.257" y="-143.786">APaperCharacter</text>
+    <rect style="fill: #ffffff" x="712.132" y="-135.786" width="146.25" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="712.132" y="-135.786" width="146.25" height="8"/>
+    <rect style="fill: #ffffff" x="712.132" y="-127.786" width="146.25" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="712.132" y="-127.786" width="146.25" height="8"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="785.257,-100.542 785.257,-78.8925 785.25,-78.8925 785.25,-39.0067 "/>
+    <polygon style="fill: #ffffff" points="793.257,-100.542 785.257,-116.542 777.257,-100.542 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="793.257,-100.542 785.257,-116.542 777.257,-100.542 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="580.257" y="787.464" width="110.1" height="44"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="580.257" y="787.464" width="110.1" height="44"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="635.307" y="802.664">&lt;&lt;Blueprint&gt;&gt;</text>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="635.307" y="823.464">Hero</text>
+    <rect style="fill: #ffffff" x="580.257" y="831.464" width="110.1" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="580.257" y="831.464" width="110.1" height="8"/>
+    <rect style="fill: #ffffff" x="580.257" y="839.464" width="110.1" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="580.257" y="839.464" width="110.1" height="8"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="635.269,675.706 635.269,721.963 635.307,721.963 635.307,786.456 "/>
+    <polygon style="fill: #ffffff" points="643.269,675.706 635.269,659.706 627.269,675.706 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="643.269,675.706 635.269,659.706 627.269,675.706 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="754.257" y="1030.46" width="110.1" height="44"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="754.257" y="1030.46" width="110.1" height="44"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="809.307" y="1045.66">&lt;&lt;Blueprint&gt;&gt;</text>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="809.307" y="1066.46">Zombie</text>
+    <rect style="fill: #ffffff" x="754.257" y="1074.46" width="110.1" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="754.257" y="1074.46" width="110.1" height="8"/>
+    <rect style="fill: #ffffff" x="754.257" y="1082.46" width="110.1" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="754.257" y="1082.46" width="110.1" height="8"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="992.469,714.205 992.469,862.713 809.307,862.713 809.307,1029.46 "/>
+    <polygon style="fill: #ffffff" points="1000.47,714.205 992.469,698.205 984.469,714.205 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1000.47,714.205 992.469,698.205 984.469,714.205 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="890.157" y="1029.46" width="110.1" height="44"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="890.157" y="1029.46" width="110.1" height="44"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="945.207" y="1044.66">&lt;&lt;Blueprint&gt;&gt;</text>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="945.207" y="1065.46">Vampire</text>
+    <rect style="fill: #ffffff" x="890.157" y="1073.46" width="110.1" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="890.157" y="1073.46" width="110.1" height="8"/>
+    <rect style="fill: #ffffff" x="890.157" y="1081.46" width="110.1" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="890.157" y="1081.46" width="110.1" height="8"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="992.469,713.2 992.469,861.71 945.207,861.71 945.207,1028.46 "/>
+    <polygon style="fill: #ffffff" points="1000.47,713.2 992.469,697.2 984.469,713.2 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1000.47,713.2 992.469,697.2 984.469,713.2 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1023.06" y="1027.46" width="110.1" height="44"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1023.06" y="1027.46" width="110.1" height="44"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:monospace;font-style:normal;font-weight:normal" x="1078.11" y="1042.66">&lt;&lt;Blueprint&gt;&gt;</text>
+    <text style="fill: #000000;text-anchor:middle;font-size:16;font-family:sanserif;font-style:normal;font-weight:700" x="1078.11" y="1063.46">Golem</text>
+    <rect style="fill: #ffffff" x="1023.06" y="1071.46" width="110.1" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1023.06" y="1071.46" width="110.1" height="8"/>
+    <rect style="fill: #ffffff" x="1023.06" y="1079.46" width="110.1" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1023.06" y="1079.46" width="110.1" height="8"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="992.469,714.205 992.469,861.213 1078.11,861.213 1078.11,1026.46 "/>
+    <polygon style="fill: #ffffff" points="1000.47,714.205 992.469,698.205 984.469,714.205 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1000.47,714.205 992.469,698.205 984.469,714.205 "/>
+  </g>
+</svg>
