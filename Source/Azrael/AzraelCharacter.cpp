@@ -54,6 +54,7 @@ void AAzraelCharacter::UpdateAnimation()
 
 void AAzraelCharacter::Init()
 {
+
 }
 void AAzraelCharacter::Appear()
 {	//The AI is appearing (necessary for playing the appear animation)
@@ -84,7 +85,6 @@ void AAzraelCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	UpdateCharacter();
 }
-
 
 float AAzraelCharacter::GetCurrentSpriteLength()
 {	
