@@ -26,12 +26,23 @@ void AItem::Tick( float DeltaTime )
 
 }
 
-bool AItem::DestroyOnActor(UClass *ClassTarger, AActor * ActorToDestroy)
+bool AItem::DestroyOnActor(UClass *ClassTarget,AActor* actorBeginOverlap, AActor * ActorToDestroy)
 {
-	bool res = UKismetMathLibrary::EqualEqual_ClassClass(ClassTarger, ActorToDestroy->GetClass());
+	if (!actorBeginOverlap || !ActorToDestroy)
+		return false;
+	bool res = UKismetMathLibrary::EqualEqual_ClassClass(ClassTarget, actorBeginOverlap->GetClass());
 
 	if (res)
 		ActorToDestroy->Destroy();
+	return res;
+}
+
+bool AItem::SelfDestroyOnActor(UClass *ClassTarget, AActor* actorBeginOverlap)
+{
+	bool res = UKismetMathLibrary::EqualEqual_ClassClass(ClassTarget, actorBeginOverlap->GetClass());
+
+	if (res)
+		Destroy();
 	return res;
 }
 
