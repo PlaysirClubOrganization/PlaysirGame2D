@@ -2,6 +2,7 @@
 
 #include "Azrael.h"
 #include "Item.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 
@@ -27,8 +28,10 @@ void AItem::Tick( float DeltaTime )
 
 bool AItem::DestroyOnActor(UClass *ClassTarger, AActor * ActorToDestroy)
 {
-	ClassTarger->GetClass()->is
+	bool res = UKismetMathLibrary::EqualEqual_ClassClass(ClassTarger, ActorToDestroy->GetClass());
 
-	return true;
+	if (res)
+		ActorToDestroy->Destroy();
+	return res;
 }
 
