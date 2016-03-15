@@ -56,10 +56,6 @@ void AAzraelCharacter::Init()
 {
 	//Init the m_animationArray which will contains all the Pawn'sFlipbooks
 	m_animationArray = new TArray<UPaperFlipbook *>();
-	//Let make the Panw appear
-	Appear();
-
-
 }
 
 void AAzraelCharacter::Appear()
@@ -88,11 +84,15 @@ void AAzraelCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	Init();
+	//Let make the Panw appear
+	Appear();
+
+
 }
 
 void AAzraelCharacter::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeconds*.2f);
+	Super::Tick(DeltaSeconds);
 	UpdateCharacter();
 }
 
