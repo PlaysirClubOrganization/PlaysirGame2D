@@ -15,13 +15,12 @@
 /**
 *
 */
-UCLASS()
+UCLASS(abstract)
 class AZRAEL_API AEnemy : public AAzraelCharacter
 {
 	GENERATED_BODY()
 
 protected:
-
 
 	/*Used for the Zombie_AI and Skeleton_AI
 	*
@@ -36,26 +35,26 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _playerDetected;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _lookAtRight;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+		bool _isImmobile;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		UPawnSensingComponent * _pawnSensing;
+
 
 public:
 	
-	AEnemy();
+	UFUNCTION(BlueprintCallable, Category = Constructor)
+	virtual void Init();
 
-	~AEnemy();
-
-	/** Called to choose the correct animation to play based on the character's movement state */
-	UFUNCTION()
-	virtual void UpdateAnimation();
 
 	UFUNCTION()
 	virtual void UpdateCharacter();
 
-	virtual void Tick(float DeltaSeconds);
 
 
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
@@ -69,8 +68,6 @@ public:
 
 	virtual void SetPlayerAttacked(bool attack);
 
-	//virtual void initAttack();
-
 	virtual int GetDirection();
 
 
@@ -78,5 +75,4 @@ public:
 
 
 };
-
 

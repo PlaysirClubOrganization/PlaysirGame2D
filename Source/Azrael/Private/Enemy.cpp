@@ -6,76 +6,70 @@
 #include <iostream>
 #include "Enemy.h"
 
+
 /****************************************************************************/
 /* Constructor of the AEnemy we choose not to make this class Abstract		*/
 /* Because with Unreal API we must call the ContructorHelpers				*/
 /* in the constructor. Thus making this class abstract wasn't a good choice */
 /* for having a generic loader sprite										*/		
 /****************************************************************************/
-AEnemy::AEnemy()
-{
-
-	//Test for the Zombie (identity must be set before calling the FConstructorStatics
-	_identity = Identity::Zombie;
+//AEnemy::AEnemy()
+//{
+	//m_animationArray = new TArray<UPaperFlipbook *>();
 	//Transferring the Animation loaded in FConstructorStatics Struct into
 	// the parameter m_animationMap
-	m_animationArray = new TArray<UPaperFlipbook *>();
-	FConstructorStatics ConstructorStatics(this);
-	for (int i = 0; i < ConstructorStatics.AnimationInstance.Num(); ++i)
+	//FConstructorStatics ConstructorStatics(this);
+	//for (int i = 0; i < ConstructorStatics.AnimationInstance.Num(); ++i)
+	//{
+	//	GetAnimationPaper()->Add(ConstructorStatics.AnimationInstance[i].Get());
+	//}
+	//_pawnSensing = (UPawnSensingComponent *)
+	//GetComponentByClass(UPawnSensingComponent::StaticClass());
+//}
+void AEnemy::Init()
+{
+	Super::Init();
+	//Transferring the Animation loaded in FConstructorStatics Struct into
+	// the parameter m_animationMap
+		
+	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
 	{
-		GetAnimationPaper()->Add(ConstructorStatics.AnimationInstance[i].Get());
+		FString path = "/Game/Azrael/Enemy/";
+		path += GetTypeAsFString()+ GetAnimationNameAsFString(i);
+		GetAnimationPaper()->Add(LoadFlipbook(*path));
 	}
 	_pawnSensing = (UPawnSensingComponent *)
 		GetComponentByClass(UPawnSensingComponent::StaticClass());
 }
 //Amazing a Garbage Collector Exist so we doesn't Care of the destructor
-AEnemy::~AEnemy()
-{
-}
-
-
-
-
-void AEnemy::UpdateAnimation()
-{
-	Super::UpdateAnimation();
-}
-
+//AEnemy::~AEnemy()
+//{
+//}
 
 /*Unused for now*/
 void AEnemy::UpdateCharacter()
 {
-	UpdateAnimation();
-
-	APawn * Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if(Player)
-		if (GetDistanceTo(Player) < 200.0f) {
+	Super::UpdateCharacter();
+	AAbstractPlayer * Player = GetPlayer();
+	if (Player)
+		if (GetDistanceTo(Player) < 180.0f && !_isAttacking ) {
 			_isAttacking = true;
-			auto t = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
- 			if ( t != TIME_FOR_ATTACK)
+			auto timer = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
+			if (timer != GetFlipbook(Attack_Animation)->GetTotalDuration())
 			{
+				GetCharacterMovement()->StopMovementImmediately();
 				SetPlayerAttacked(true);
-				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack,TIME_FOR_ATTACK, false);
+				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack, GetFlipbook(Attack_Animation)->GetTotalDuration(), false);
 			}
-			else
-				SetPlayerAttacked(false);
 		}
-		else
-		{
+		else {
 			SetPlayerAttacked(false);
-			_isAttacking = false;
+		}
+
+		if (_isPatrolling && !_isImmobile) {
+			GetCharacterMovement()->Velocity = FVector(GetDirection()*-100.f, 0.f, 0.f);
 		}
 }
-
-
-
-void AEnemy::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-	UpdateCharacter();
-}
-
-
 
 void AEnemy::Dead()
 {
@@ -100,16 +94,21 @@ void AEnemy::Patrol()
 
 void AEnemy::Attack_Implementation()
 {
-	AAbstractPlayer * Player = (AAbstractPlayer *)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	AAbstractPlayer * Player = GetPlayer();
 	if (Player)
 	{
 		if (!Player->GetIsAttacked())
 		{
-			Player->GetCharacterMovement()->Velocity = FVector(GetDirection()*-1000.f, 0.f, 0.f);
-			GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-			Player->TakeDamages(20);
+			if (GetDistanceTo(Player) < 180.0f && _isAttacking && Player->GetLife()>0)
+			{
+				Player->GetCharacterMovement()->Velocity = FVector(GetDirection()*-1000.f, 0.f, 0.f);
+				GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+				Player->TakeDamages(20);
+			}
 		}
 	}
+	_isAttacking = false;
+
 }
 
 int AEnemy::GetDirection()
@@ -119,7 +118,7 @@ int AEnemy::GetDirection()
 
 void AEnemy::SetPlayerAttacked(bool attack)
 {
-	AAbstractPlayer * Player = (AAbstractPlayer *)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	AAbstractPlayer * Player = GetPlayer();
 	Player->SetIsAttacked(attack);
 }
 

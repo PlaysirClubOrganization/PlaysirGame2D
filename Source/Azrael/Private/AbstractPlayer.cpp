@@ -7,33 +7,31 @@
 
 AAbstractPlayer::AAbstractPlayer()
 {
+
 	_identity = Identity::Golem;
 	_life = 19;
 	//Transferring the Animation loaded in FConstructorStatics Struct into
 	// the parameter m_animationMap
-	m_animationArray = new TArray<UPaperFlipbook *>();
-	FConstructorStatics ConstructorStatics(this);
-	for (int i = 0; i < ConstructorStatics.AnimationInstance.Num(); ++i)
+	//FConstructorStatics ConstructorStatics(this);
+	//for (int i = 0; i < ConstructorStatics.AnimationInstance.Num(); ++i)
+	//{
+	//	GetAnimationPaper()->Add(ConstructorStatics.AnimationInstance[i].Get());
+	//}
+	Init();
+}
+
+void AAbstractPlayer::Init()
+{
+	Super::Init();
+	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
 	{
-		GetAnimationPaper()->Add(ConstructorStatics.AnimationInstance[i].Get());
+		FString path = "/Game/Azrael/Enemy/";
+		path += GetTypeAsFString() + GetAnimationNameAsFString(i);
+		GetAnimationPaper()->Add(LoadFlipbook(*path));
 	}
 }
 
-void AAbstractPlayer::UpdateAnimation()
-{
-	Super::UpdateAnimation();
 
-}
-
-void AAbstractPlayer::MoveRight(float Value)
-{
-
-}
-
-void AAbstractPlayer::UpdateCharacter()
-{
-	Super::UpdateCharacter();
-}
 
 bool AAbstractPlayer::GetIsAttacked()
 {

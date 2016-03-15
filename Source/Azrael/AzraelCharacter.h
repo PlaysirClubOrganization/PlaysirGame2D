@@ -10,16 +10,13 @@
 
 
 #define TIMER_DEFAULT 0.12f
-#define TIME_FOR_ATTACK .1f
+#define TIME_FOR_ATTACK .19f
 
 
 
 // This class is the default character for Azrael, and it is responsible for all
 // physical interaction between the player and the world.
 //
-//   The capsule component (inherited from ACharacter) handles collision with the world
-//   The CharacterMovementComponent (inherited from ACharacter) handles movement of the collision capsule
-//   The Sprite component (inherited from APaperCharacter) handles the visuals
 
 
 /*The Type of the Character :
@@ -29,10 +26,10 @@
 */
 UENUM(BlueprintType)
 enum class Identity : uint8 {
+	Skeleton UMETA(DisplayName = "Skeleton"),
 	Zombie UMETA(DisplayName = "Zombie"),
 	Vampire UMETA(DisplayName = "Vampire"),
 	Golem UMETA(DisplayName = "Golem"),
-	Skeleton UMETA(DisplayName = "Skeleton"),
 	MAX_ENUM_IDENTITY
 };
 
@@ -51,14 +48,14 @@ protected:
 	UPaperFlipbook*  _currentAnim;
 
 	// An array Of the PaperFlipbook of the pawn
-	TArray<UPaperFlipbook*> * m_animationArray;
+	TArray<UPaperFlipbook*>  * m_animationArray;
 
 	//The timer which be used to delegate method in order to play some
 	// flipbook (for example playing the death anim before destroying it)
 	FTimerHandle CountdownTimerHandle;
 
 	//This Identity of the Pawn
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Identity)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Identity)
 	Identity _identity;
 
 	//The life of the Pawn
@@ -122,7 +119,7 @@ public:
 	/** Called to choose the correct animation to play based on the character's movement state */
 	virtual void UpdateAnimation();
 
-	UFUNCTION()
+	/*Event UE4 API : this is executed when the level begins*/
 	virtual void BeginPlay();
 
 
@@ -174,6 +171,7 @@ public:
 	*	example for Zombie => '\Zombie\Flipbook\' 
 	*/
 	std::string GetType();
+	FString GetTypeAsFString();
 
 	/**
 	*@return the Identity of the pawn as an Enum instance of Identity
@@ -192,7 +190,7 @@ public:
 
 
 
-
+/*Used for the FConstructorStatics*/
 
 static std::string GetAnimationName(int anim)
 {
@@ -213,9 +211,29 @@ static std::string GetAnimationName(int anim)
 	default:
 		return "idle.idle";
 	}
-
 }
 
+/*Used for the LoadObjFromPath*/
+static FString GetAnimationNameAsFString(int anim)
+{
+	switch (anim)
+	{
+	case 0:
+		return "appear.appear";
+	case 1:
+		return "idle.idle";
+	case 2:
+		return "walk.walk";
+	case 3:
+		return "attack.attack";
+	case 4:
+		return "jump.jump";
+	case 5:
+		return "die.die";
+	default:
+		return "idle.idle";
+	}
+}
 
 
 
@@ -262,3 +280,21 @@ static struct FConstructorStatics
 	}
 
 };
+
+//TEMPLATE Load Obj From Path
+template <typename ObjClass>
+static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path)
+{
+	if (Path == NAME_None) return NULL;
+	//~
+
+	return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
+}
+// Load PS From Path 
+static FORCEINLINE UPaperFlipbook* LoadFlipbook(const FName& Path)
+{
+	if (Path == NAME_None) return NULL;
+	//~
+
+	return LoadObjFromPath<UPaperFlipbook>(Path);
+}

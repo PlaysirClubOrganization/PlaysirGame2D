@@ -9,7 +9,7 @@
 #include <iostream>
 #include "EngineMinimal.h"
 
-
+#define GetPlayer() (AAbstractPlayer *)UGameplayStatics::GetPlayerPawn(GetWorld(), 0) 
 
 
 static enum AnimationState : uint8 {
@@ -21,3 +21,21 @@ static enum AnimationState : uint8 {
 	Dead_Animation, //UMETA(DisplayName = "Dead_Animation")
 	MAX_ENUM_ANIMATION_STATE
 };
+
+
+
+UENUM(BlueprintType)
+enum class Item_Collectable : uint8 {
+	Coin UMETA(DisplayName = "Coin"),
+	Key UMETA(DisplayName = "Key"),
+	KeyHold UMETA(DisplayName = "KeyHold"),
+	Potion UMETA(DisplayName = "Potion"),
+	MAX_ENUM_ITEM
+};
+
+UENUM(BlueprintType)
+enum class Item_Trap : uint8 {
+	Spike UMETA(DisplayName = "Spike"),
+	MAX_ENUM_TRAP
+};
+

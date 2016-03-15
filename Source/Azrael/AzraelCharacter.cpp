@@ -54,17 +54,28 @@ void AAzraelCharacter::UpdateAnimation()
 
 void AAzraelCharacter::Init()
 {
+	//Init the m_animationArray which will contains all the Pawn'sFlipbooks
+	m_animationArray = new TArray<UPaperFlipbook *>();
+	//Let make the Panw appear
+	Appear();
+
 
 }
+
 void AAzraelCharacter::Appear()
 {	//The AI is appearing (necessary for playing the appear animation)
 	_isAppearing = true;
+	//New the Pawn Idles so we call the Idle function after that the appear animation ends
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Idle, GetCurrentSpriteLength(), false);
 }
+
 void AAzraelCharacter::Idle()
 {
+	//the Pawn finish to appear
 	_isAppearing = false;
+	//Inialize the velocity, when the Panw is Idle the velocity is null
 	GetCharacterMovement()->StopMovementImmediately();
+	//Set the right sprite
 	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
 }
 
@@ -77,12 +88,11 @@ void AAzraelCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	Init();
-	Appear();
 }
 
 void AAzraelCharacter::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaSeconds*.2f);
 	UpdateCharacter();
 }
 
@@ -127,6 +137,24 @@ std::string AAzraelCharacter::GetType()
 		return std::string("Vampire/Flipbook/");
 	case Identity::Golem:
 		return std::string("Golem/Flipbook/");
+	case Identity::Skeleton:
+		return "Skeleton/Flipbook/";
+	default:
+		return "Zombie/Flipbook/";
+	}
+}
+FString AAzraelCharacter::GetTypeAsFString()
+{
+	switch (GetIdentity())
+	{
+	case Identity::Zombie:
+		return "Zombie/Flipbook/";
+	case Identity::Vampire:
+		return "Vampire/Flipbook/";
+	case Identity::Golem:
+		return "Golem/Flipbook/";
+	case Identity::Skeleton:
+		return "Skeleton/Flipbook/";
 	default:
 		return "Zombie/Flipbook/";
 	}

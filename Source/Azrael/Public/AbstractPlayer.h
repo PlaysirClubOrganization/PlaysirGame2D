@@ -20,16 +20,14 @@ protected:
 public:
 	
 	AAbstractPlayer();
-	virtual void	UpdateAnimation();
 
-	virtual void	MoveRight(float Value);
+	virtual void Init();
 
-	virtual void	UpdateCharacter();
-	
 	virtual bool	GetIsAttacked();
 
 	virtual void	SetIsAttacked(bool isAttacked);
 	
+	UFUNCTION(BlueprintCallable, Category = Damage)
 	virtual void	TakeDamages(int damage);
 
 
