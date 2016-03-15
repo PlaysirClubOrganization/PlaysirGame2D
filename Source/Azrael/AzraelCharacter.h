@@ -30,6 +30,7 @@ enum class Identity : uint8 {
 	Zombie UMETA(DisplayName = "Zombie"),
 	Vampire UMETA(DisplayName = "Vampire"),
 	Golem UMETA(DisplayName = "Golem"),
+	Player UMETA(DisplayName = "Player"),
 	MAX_ENUM_IDENTITY
 };
 
@@ -43,9 +44,6 @@ class AAzraelCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
 protected:
-	//The current PaperFlipbook of the Pawn
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Animation")
-	UPaperFlipbook*  _currentAnim;
 
 	// An array Of the PaperFlipbook of the pawn
 	TArray<UPaperFlipbook*>  * m_animationArray;

@@ -7,16 +7,8 @@
 
 AAbstractPlayer::AAbstractPlayer()
 {
-
-	_identity = Identity::Golem;
+	_identity = Identity::Player;
 	_life = 19;
-	//Transferring the Animation loaded in FConstructorStatics Struct into
-	// the parameter m_animationMap
-	//FConstructorStatics ConstructorStatics(this);
-	//for (int i = 0; i < ConstructorStatics.AnimationInstance.Num(); ++i)
-	//{
-	//	GetAnimationPaper()->Add(ConstructorStatics.AnimationInstance[i].Get());
-	//}
 	Init();
 }
 

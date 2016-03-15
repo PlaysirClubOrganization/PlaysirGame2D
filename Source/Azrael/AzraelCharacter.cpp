@@ -86,8 +86,6 @@ void AAzraelCharacter::BeginPlay()
 	Init();
 	//Let make the Panw appear
 	Appear();
-
-
 }
 
 void AAzraelCharacter::Tick(float DeltaSeconds)
@@ -113,13 +111,12 @@ UPaperFlipbook * AAzraelCharacter::GetFlipbook(AnimationState idAnim)
 
 void AAzraelCharacter::SetCurrentAnim(UPaperFlipbook * Flipbook)
 {
-	_currentAnim = Flipbook;
+	GetSprite()->SetFlipbook(Flipbook);
 }
 
 UPaperFlipbook * AAzraelCharacter::GetCurrentSprite()
 {
-	_currentAnim = GetSprite()->GetFlipbook();
-	return _currentAnim;
+	return GetSprite()->GetFlipbook();
 }
 
 int AAzraelCharacter::GetLife()
