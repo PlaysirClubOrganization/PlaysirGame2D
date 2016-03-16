@@ -6,11 +6,9 @@
 #include "PaperFlipbookComponent.h"
 #include "PaperCharacter.h"
 #include "PaperFlipbook.h"
+#include "Azrael.h"
 #include "AzraelCharacter.generated.h"
 
-
-#define TIMER_DEFAULT 0.12f
-#define TIME_FOR_ATTACK .19f
 
 
 
@@ -19,20 +17,6 @@
 //
 
 
-/*The Type of the Character :
-- Zombie
-- Vampire
-- Golem ,etc..
-*/
-UENUM(BlueprintType)
-enum class Identity : uint8 {
-	Skeleton UMETA(DisplayName = "Skeleton"),
-	Zombie UMETA(DisplayName = "Zombie"),
-	Vampire UMETA(DisplayName = "Vampire"),
-	Golem UMETA(DisplayName = "Golem"),
-	Player UMETA(DisplayName = "Player"),
-	MAX_ENUM_IDENTITY
-};
 
 /****************************************************************************/
 /* This class is the base class of All the Pawn, The controlled Pawn or AI  */
@@ -112,7 +96,11 @@ public:
 	* When the life of the Pawn is less (or equal) than 0
 	* we put the Dead_animationa and destroy the Pawn
 	*/	
-	virtual void Dead() PURE_VIRTUAL(AAzraelCharacter::Dead, ;);
+	virtual void Dead();
+
+
+	UFUNCTION(BlueprintCallable, Category = Damage)
+	void TakeDamages(int damage);
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	virtual void UpdateAnimation();
@@ -161,7 +149,80 @@ public:
 	/**
 	* @return the life of the Pawn
 	*/
-	virtual int GetLife();
+	virtual int GetLife() const;
+
+
+	virtual void SetLife(int life);
+
+	/**
+	* @return if the Pawn is Dying
+	*/
+	virtual bool IsDead() const;
+
+	/**
+	* @return if the Pawn is Appearing
+	*/
+	virtual bool IsAppearing() const;
+
+	/**
+	* @return if the Pawn is Walking
+	*/
+	virtual bool IsWalking() const;
+	
+	/**
+	* @return if the Pawn is Attacked
+	*/
+	virtual bool IsAttacked() const;
+
+	/**
+	* @return if the Pawn is Attacking
+	*/
+	virtual bool IsAttacking() const;
+
+	/**
+	* @return if the Pawn is Jumping
+	*/
+	virtual bool IsPawnJumping() const;
+
+	/**
+	* @param : isJumping
+	* enable or disable the jump stateMachine
+	*/
+	virtual void SetJumping(bool isJumping);
+	
+	/**
+	* @param : isAttacking
+	* enable or disable the attack stateMachine
+	*/
+	virtual void SetAttacking(bool isAttacking);
+	
+	/**
+	* @param : isAttacked
+	* enable or disable the attacked stateMachine
+	*/
+	virtual void SetAttacked(bool isAttacked);
+	
+	/**
+	* @param : isWalking
+	* enable or disable the walk stateMachine
+	*/
+	virtual void SetWalking(bool isWalking);
+	
+	/**
+	* @param : isAppearing
+	* enable or disable the appear stateMachine
+	*/
+	virtual void SetAppearing(bool isAppearing);
+	
+	/**
+	* @param : isDead
+	* enable or disable the dead stateMachine
+	*/
+	virtual void SetDead(bool isDead);
+
+
+
+
 
 	/**
 	*@return the of the path of the Flipbook directory
@@ -177,122 +238,6 @@ public:
 	*/
 	Identity GetIdentity();
 
-	/**
-	*Used to concat wchar_t with string
-	*/
-	static wchar_t * StrCncatCharW(wchar_t * dst, std::string src);
-
 };
 
 
-
-
-
-/*Used for the FConstructorStatics*/
-
-static std::string GetAnimationName(int anim)
-{
-	switch (anim)
-	{
-	case 0:
-		return "appear.appear";
-	case 1:
-		return "idle.idle";
-	case 2:
-		return "walk.walk";
-	case 3:
-		return "attack.attack";
-	case 4:
-		return "jump.jump";
-	case 5:
-		return "die.die";
-	default:
-		return "idle.idle";
-	}
-}
-
-/*Used for the LoadObjFromPath*/
-static FString GetAnimationNameAsFString(int anim)
-{
-	switch (anim)
-	{
-	case 0:
-		return "appear.appear";
-	case 1:
-		return "idle.idle";
-	case 2:
-		return "walk.walk";
-	case 3:
-		return "attack.attack";
-	case 4:
-		return "jump.jump";
-	case 5:
-		return "die.die";
-	default:
-		return "idle.idle";
-	}
-}
-
-
-
-
-/*
-* FConstructorStatics will automatically load the different sprite of the any character by giving
-* the right id in the init function.
-*
-* @warning : The project must bu construct
-*/
-static struct FConstructorStatics
-{
-	//An Array which stores the 2D Animation Instance (UPaperFlipbook)
-	TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>> AnimationInstance;
-
-	//Constructor
-	FConstructorStatics(AAzraelCharacter *perso)
-		: AnimationInstance(TArray<ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>>())
-	{
-
-		//The beginning of the path of the sprite
-		wchar_t * tmp = L"/Game/Azrael/Enemy/\0";
-
-		//Getting the type of the AI (Zombie, Vampire, ...)
-		std::string t = perso->GetType();
-
-		//Concat the beginning of the path of the sprite and the AI'type 
-		// exemple => "/Game/Azrael/Enemy/ + Zombie/Flipbook/
-		wchar_t *dst = perso->StrCncatCharW(tmp, perso->GetType());
-
-		//For loop in order to Get all sprites Animation which are in the folder
-		for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; i++)
-		{
-			auto path = perso->StrCncatCharW(dst, GetAnimationName(i));
-			//Adding the PaperFlipbook in the TArray
-			//GetAnimationName return a string : appear.apper, idle.idle, etc...
-			AnimationInstance.Add(ConstructorHelpers::FObjectFinderOptional<UPaperFlipbook>
-				(path));
-		}
-	}
-
-	~FConstructorStatics()
-	{
-	}
-
-};
-
-//TEMPLATE Load Obj From Path
-template <typename ObjClass>
-static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path)
-{
-	if (Path == NAME_None) return NULL;
-	//~
-
-	return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
-}
-// Load PS From Path 
-static FORCEINLINE UPaperFlipbook* LoadFlipbook(const FName& Path)
-{
-	if (Path == NAME_None) return NULL;
-	//~
-
-	return LoadObjFromPath<UPaperFlipbook>(Path);
-}

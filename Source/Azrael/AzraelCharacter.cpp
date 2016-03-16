@@ -16,8 +16,14 @@
 
 void AAzraelCharacter::UpdateCharacter()
 {
+	if (GetVelocity().Z == 0.0)
+		SetJumping(false);
+	else
+		SetJumping(true);
+	
 	UpdateAnimation();
 }
+
 
 void AAzraelCharacter::UpdateAnimation()
 {
@@ -25,11 +31,12 @@ void AAzraelCharacter::UpdateAnimation()
 	//else we check if the velocity of the AI is null
 	float speed = GetVelocity().SizeSquared();
 
-	if(_isAppearing)
+
+	if(IsAppearing())
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Appear_Animation));
-	else if (_isAttacking)
+	else if (IsAttacking())
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Attack_Animation));
-	else if (_isDead)
+	else if (IsDead())
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));
 	else if (!speed)
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
@@ -60,7 +67,7 @@ void AAzraelCharacter::Init()
 
 void AAzraelCharacter::Appear()
 {	//The AI is appearing (necessary for playing the appear animation)
-	_isAppearing = true;
+	SetAppearing(true);
 	//New the Pawn Idles so we call the Idle function after that the appear animation ends
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Idle, GetCurrentSpriteLength(), false);
 }
@@ -68,7 +75,7 @@ void AAzraelCharacter::Appear()
 void AAzraelCharacter::Idle()
 {
 	//the Pawn finish to appear
-	_isAppearing = false;
+	SetAppearing(false);
 	//Inialize the velocity, when the Panw is Idle the velocity is null
 	GetCharacterMovement()->StopMovementImmediately();
 	//Set the right sprite
@@ -79,6 +86,26 @@ void AAzraelCharacter::Attack_Implementation()
 {
 
 }
+
+void AAzraelCharacter::Dead()
+{
+	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+	Destroy();
+}
+
+
+void AAzraelCharacter::TakeDamages(int damage)
+{
+	_life -= damage;
+	SetAppearing(false);
+	if (_life <= 0) {
+		SetDead(true);
+		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));
+		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Dead, GetCurrentSpriteLength()-.1f, false);
+	}
+}
+
+
 
 void AAzraelCharacter::BeginPlay()
 {
@@ -119,9 +146,74 @@ UPaperFlipbook * AAzraelCharacter::GetCurrentSprite()
 	return GetSprite()->GetFlipbook();
 }
 
-int AAzraelCharacter::GetLife()
+int AAzraelCharacter::GetLife() const
 {
 	return _life;
+}
+
+void AAzraelCharacter::SetLife(int life)
+{ 
+	_life = life; 
+}
+
+bool AAzraelCharacter::IsDead() const
+{
+	return _isDead;
+}
+
+bool AAzraelCharacter::IsAppearing() const
+{
+	return _isAppearing;
+}
+
+bool AAzraelCharacter::IsWalking() const
+{
+	return _isWalking;
+}
+
+bool AAzraelCharacter::IsAttacked() const
+{
+	return _isAttacking;
+}
+
+bool AAzraelCharacter::IsAttacking() const
+{
+	return _isAttacking;
+}
+
+bool AAzraelCharacter::IsPawnJumping() const
+{
+	return _isJumping;
+}
+
+void AAzraelCharacter::SetJumping(bool isJumping)
+{
+	_isJumping = isJumping;
+}
+
+void AAzraelCharacter::SetAttacking(bool isAttacking)
+{
+	_isAttacking = isAttacking;
+}
+
+void AAzraelCharacter::SetAttacked(bool isAttacked)
+{
+	_isAttacked = isAttacked;
+}
+
+void AAzraelCharacter::SetWalking(bool isWalking)
+{
+	_isWalking = isWalking;
+}
+
+void AAzraelCharacter::SetAppearing(bool isAppearing)
+{
+	_isAppearing = isAppearing;
+}
+
+void AAzraelCharacter::SetDead(bool isDead)
+{
+	_isDead = isDead;
 }
 
 std::string AAzraelCharacter::GetType()
@@ -160,33 +252,5 @@ FString AAzraelCharacter::GetTypeAsFString()
 Identity AAzraelCharacter::GetIdentity()
 {
 	return _identity;
-}
-
-/************************************************************************/
-/*	Function for concat wchar_t and string                              */
-/************************************************************************/
-wchar_t * AAzraelCharacter::StrCncatCharW(wchar_t * dst, std::string src)
-{
-	//Getting the lenght of the wchar_t
-	int n= wcslen(dst);
-	
-	//Allocate the precise size for the final wchar_t
-	wchar_t * d = (wchar_t *)malloc(sizeof(wchar_t) * (1 + n + src.size()));
-	
-	// make the affectation d = dst we cannot concat dst with str directly 
-	// because of the precise memory that we need also we will have some 
-	// Chinese and Arabic and Mesopotamians letter in our result 
-	for (int i = 0; i < n; ++i)
-	{
-		d[i] = dst[i];
-	}
-	//Now we append the src
-	for (int i = 0; i < src.size(); ++i)
-	{
-		d[n + i] = src[i];
-	}
-	//We finish a wchar_t t with the \0 character
-	d[n + src.size()] = L'\0';
-	return d;
 }
 

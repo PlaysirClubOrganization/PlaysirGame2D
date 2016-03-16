@@ -3,7 +3,6 @@
 #include "Azrael.h"
 #include "AzraelCharacter.h"
 #include "TimerManager.h"
-#include <iostream>
 #include "Enemy.h"
 
 
@@ -26,6 +25,7 @@
 	//_pawnSensing = (UPawnSensingComponent *)
 	//GetComponentByClass(UPawnSensingComponent::StaticClass());
 //}
+
 void AEnemy::Init()
 {
 	Super::Init();
@@ -34,46 +34,40 @@ void AEnemy::Init()
 		
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
 	{
-		FString path = "/Game/Azrael/Enemy/";
+		FString path = ENEMY_PATH_FOLDER ;
 		path += GetTypeAsFString()+ GetAnimationNameAsFString(i);
 		GetAnimationPaper()->Add(LoadFlipbook(*path));
 	}
 	_pawnSensing = (UPawnSensingComponent *)
 		GetComponentByClass(UPawnSensingComponent::StaticClass());
 }
-//Amazing a Garbage Collector Exist so we doesn't Care of the destructor
-//AEnemy::~AEnemy()
-//{
-//}
 
 /*Unused for now*/
 void AEnemy::UpdateCharacter()
 {
 	Super::UpdateCharacter();
+	
 	AAbstractPlayer * Player = GetPlayer();
 	if (Player)
-		if (GetDistanceTo(Player) < 180.0f && !_isAttacking ) {
-			_isAttacking = true;
+
+		if (GetDistanceTo(Player) < 180.0f && !IsAttacking() && !IsPawnJumping()) {
+			SetAttacking(true);
 			auto timer = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
 			if (timer != GetFlipbook(Attack_Animation)->GetTotalDuration())
 			{
 				GetCharacterMovement()->StopMovementImmediately();
 				SetPlayerAttacked(true);
-				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack, GetFlipbook(Attack_Animation)->GetTotalDuration(), false);
+				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack, GetFlipbook(Attack_Animation)->GetTotalDuration()/2.0, false);
 			}
 		}
 		else {
 			SetPlayerAttacked(false);
 		}
-
-		if (_isPatrolling && !_isImmobile) {
+		if (IsPawnJumping())
+			GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		else if (_isPatrolling && !_isImmobile) {
 			GetCharacterMovement()->Velocity = FVector(GetDirection()*-100.f, 0.f, 0.f);
 		}
-}
-
-void AEnemy::Dead()
-{
-	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));
 }
 
 
@@ -99,7 +93,7 @@ void AEnemy::Attack_Implementation()
 	{
 		if (!Player->GetIsAttacked())
 		{
-			if (GetDistanceTo(Player) < 180.0f && _isAttacking && Player->GetLife()>0)
+			if (GetDistanceTo(Player) < 180.0f && IsAttacking() && Player->GetLife()>=0)
 			{
 				Player->GetCharacterMovement()->Velocity = FVector(GetDirection()*-1000.f, 0.f, 0.f);
 				GetWorldTimerManager().ClearTimer(CountdownTimerHandle);

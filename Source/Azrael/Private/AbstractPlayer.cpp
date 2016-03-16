@@ -2,27 +2,22 @@
 
 #include "Azrael.h"
 #include "AbstractPlayer.h"
-#include "EngineGlobals.h"
 
 
-AAbstractPlayer::AAbstractPlayer()
-{
-	_identity = Identity::Player;
-	_life = 19;
-	Init();
-}
 
 void AAbstractPlayer::Init()
 {
 	Super::Init();
+	_identity = Identity::Golem;
+	_life = 50;
+	
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
 	{
-		FString path = "/Game/Azrael/Enemy/";
+		FString path = ENEMY_PATH_FOLDER;
 		path += GetTypeAsFString() + GetAnimationNameAsFString(i);
 		GetAnimationPaper()->Add(LoadFlipbook(*path));
 	}
 }
-
 
 
 bool AAbstractPlayer::GetIsAttacked()
@@ -35,19 +30,22 @@ void AAbstractPlayer::SetIsAttacked(bool isAttacked)
 	_isAttacked = isAttacked;
 }
 
-void AAbstractPlayer::TakeDamages(int damage)
+void AAbstractPlayer::AddCoin()
 {
-
-	_life -= damage;
-	if (_life <= 0) {
-		_isDead = true;
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAbstractPlayer::Dead, GetCurrentSpriteLength() - .1f , false);
-	}
+	_coin++;
 }
 
-void AAbstractPlayer::Dead()
+void AAbstractPlayer::SaveData(UAzraelSaver * saver)
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-	Destroy();
+	saver->life = _life;
+	saver->count = _coin;
+	saver->level = ++_level;
+
 }
 
+void AAbstractPlayer::LoadData(UAzraelSaver * saver)
+{
+ 	_life = saver->life;
+	_coin = saver->count;
+	_level = saver->level;
+}

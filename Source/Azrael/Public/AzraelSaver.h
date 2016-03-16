@@ -17,13 +17,16 @@ class AZRAEL_API UAzraelSaver : public USaveGame
 public:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-		FString PlayerName;
+	FString SaveSlotName;
 
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		FString SaveSlotName;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Player)
+	int life;
 
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		uint32 UserIndex;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Player)
+	int level;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,  Category = Player)
+	int count;
 
 	UAzraelSaver();
 };

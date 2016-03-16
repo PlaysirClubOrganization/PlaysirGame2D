@@ -2,24 +2,20 @@
 
 #pragma once
 #include "AzraelSaver.h"
+#include "AzraelSaver.h"
 #include "AzraelCharacter.h"
 #include "AbstractPlayer.generated.h"
 
 /**
  * 
  */
-UCLASS()
+UCLASS(abstract)
 class AZRAEL_API AAbstractPlayer : public AAzraelCharacter
 {
 	GENERATED_BODY()
-protected:
-
-
-
 
 public:
 	
-	AAbstractPlayer();
 
 	virtual void Init();
 
@@ -27,15 +23,23 @@ public:
 
 	virtual void	SetIsAttacked(bool isAttacked);
 	
-	UFUNCTION(BlueprintCallable, Category = Damage)
-	virtual void	TakeDamages(int damage);
+	UFUNCTION(BlueprintCallable, Category = Action)
+	virtual void AddCoin();
 
+	UFUNCTION(BlueprintCallable, Category = Saver)
+	virtual void SaveData(UAzraelSaver * saver);
 
-	virtual void	Dead();
-
+	UFUNCTION(BlueprintCallable, Category = Saver)
+	virtual void LoadData(UAzraelSaver * saver);
 
 
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
+	int _coin;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
+	int _level;
+
 
 };

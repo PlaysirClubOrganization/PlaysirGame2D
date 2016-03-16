@@ -36,11 +36,21 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _playerDetected;
 
+	/*
+	* Is the Pawn's looking at right or left
+	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _lookAtRight;
 
+	/*
+	*	If the true the Pawn is stopped and doesn't move
+	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool _isImmobile;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+		bool _isTrapDetected;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		UPawnSensingComponent * _pawnSensing;
@@ -48,6 +58,9 @@ protected:
 
 public:
 	
+	/******************************************************************************/
+	/* Init function, here we load the Paperflipbooks and the the appear animation*/
+	/******************************************************************************/
 	UFUNCTION(BlueprintCallable, Category = Constructor)
 	virtual void Init();
 
@@ -55,10 +68,11 @@ public:
 	UFUNCTION()
 	virtual void UpdateCharacter();
 
-
-
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void Dead();
+	/**************************************************************************************/
+	/* Whe the Pawn's life is les than 0 we play the dead animation and restart level   */
+	/**************************************************************************************/
+	/*UFUNCTION(BlueprintCallable, Category = StateMachine)
+	virtual void Dead();*/
 
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Patrol();
