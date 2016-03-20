@@ -73,6 +73,7 @@ void AEnemy::UpdateCharacter()
 
 void AEnemy::Patrol()
 {
+	SetAppearing(false);
 	if (GetTransform().GetRotation().Z < 0.1f)
 	{
 		SetActorRotation(FRotator(0.0, 180.0f, 0.0f));	
@@ -83,7 +84,6 @@ void AEnemy::Patrol()
 		SetActorRotation(FRotator(0.0, 0.0f, 0.0f));
 		_lookAtRight = false;
 	}
-		
 }
 
 void AEnemy::Attack_Implementation()
@@ -93,7 +93,7 @@ void AEnemy::Attack_Implementation()
 	{
 		if (!Player->GetIsAttacked())
 		{
-			if (GetDistanceTo(Player) < 180.0f && IsAttacking() && Player->GetLife()>=0)
+			if (GetDistanceTo(Player) < GetRangeAttack() && IsAttacking() && Player->GetLife()>=0)
 			{
 				Player->GetCharacterMovement()->Velocity = FVector(GetDirection()*-1000.f, 0.f, 0.f);
 				GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
@@ -102,7 +102,6 @@ void AEnemy::Attack_Implementation()
 		}
 	}
 	_isAttacking = false;
-
 }
 
 int AEnemy::GetDirection()
@@ -110,21 +109,14 @@ int AEnemy::GetDirection()
 	return (int)_lookAtRight * 2 - 1;
 }
 
+float AEnemy::GetRangeAttack()
+{
+	return _rangeAttack;
+}
+
+
 void AEnemy::SetPlayerAttacked(bool attack)
 {
 	AAbstractPlayer * Player = GetPlayer();
 	Player->SetIsAttacked(attack);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -53,6 +53,7 @@ enum class Identity : uint8 {
 	Skeleton UMETA(DisplayName = "Skeleton"),
 	Zombie UMETA(DisplayName = "Zombie"),
 	Vampire UMETA(DisplayName = "Vampire"),
+	Ghost UMETA(DisplayName = "Ghost"),
 	Golem UMETA(DisplayName = "Golem"),
 	Player UMETA(DisplayName = "Player"),
 	MAX_ENUM_IDENTITY

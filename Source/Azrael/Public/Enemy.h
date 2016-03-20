@@ -54,7 +54,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		UPawnSensingComponent * _pawnSensing;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		float _rangeAttack;
 
 public:
 	
@@ -83,7 +85,7 @@ public:
 	virtual void SetPlayerAttacked(bool attack);
 
 	virtual int GetDirection();
-
+	float GetRangeAttack();
 
 
 

@@ -221,11 +221,11 @@ std::string AAzraelCharacter::GetType()
 	switch (GetIdentity())
 	{
 	case Identity::Zombie:
-		return std::string("Zombie/Flipbook/");
+		return "Zombie/Flipbook/";
 	case Identity::Vampire:
-		return std::string("Vampire/Flipbook/");
+		return "Vampire/Flipbook/";
 	case Identity::Golem:
-		return std::string("Golem/Flipbook/");
+		return "Golem/Flipbook/";
 	case Identity::Skeleton:
 		return "Skeleton/Flipbook/";
 	default:
@@ -242,6 +242,8 @@ FString AAzraelCharacter::GetTypeAsFString()
 		return "Vampire/Flipbook/";
 	case Identity::Golem:
 		return "Golem/Flipbook/";
+	case Identity::Ghost:
+		return "Ghost/Flipbook/";
 	case Identity::Skeleton:
 		return "Skeleton/Flipbook/";
 	default:
