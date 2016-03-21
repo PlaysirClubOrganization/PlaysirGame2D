@@ -58,6 +58,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		float _rangeAttack;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = "AI")
+		float _pawnAttackDamages;
 public:
 	
 	/******************************************************************************/
@@ -87,6 +89,8 @@ public:
 	virtual int GetDirection();
 	float GetRangeAttack();
 
+
+	virtual float GetPawnAttackDamages();
 
 
 

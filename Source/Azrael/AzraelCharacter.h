@@ -100,7 +100,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = Damage)
-	void TakeDamages(int damage);
+	void TakeDamages(int damage, AAzraelCharacter * enemy);
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	virtual void UpdateAnimation();

@@ -13,6 +13,8 @@ class AZRAEL_API ASpiritCharacter : public AAzraelCharacter
 {
 	GENERATED_BODY()
 	
+	virtual void Init();
+
 	
 	
 	

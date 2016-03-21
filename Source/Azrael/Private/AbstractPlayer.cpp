@@ -8,7 +8,7 @@
 void AAbstractPlayer::Init()
 {
 	Super::Init();
-	_identity = Identity::Golem;
+	_identity = Identity::Skeleton;
 	_life = 50;
 	
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)

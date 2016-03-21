@@ -59,6 +59,12 @@ void AAzraelCharacter::UpdateAnimation()
 				  - GetIdentity return the Identity enum of the Pawn									*
 *********************************************************************************************************/
 
+
+/* WARNING
+	The subclass need to call the Init function to load the asset 
+*/
+
+
 void AAzraelCharacter::Init()
 {
 	//Init the m_animationArray which will contains all the Pawn'sFlipbooks
@@ -94,10 +100,11 @@ void AAzraelCharacter::Dead()
 }
 
 
-void AAzraelCharacter::TakeDamages(int damage)
+void AAzraelCharacter::TakeDamages(int damage, AAzraelCharacter * enemy)
 {
 	_life -= damage;
 	SetAppearing(false);
+	SetAttacked(false);
 	if (_life <= 0) {
 		SetDead(true);
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));

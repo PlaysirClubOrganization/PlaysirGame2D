@@ -31,7 +31,6 @@ void AEnemy::Init()
 	Super::Init();
 	//Transferring the Animation loaded in FConstructorStatics Struct into
 	// the parameter m_animationMap
-		
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
 	{
 		FString path = ENEMY_PATH_FOLDER ;
@@ -51,13 +50,13 @@ void AEnemy::UpdateCharacter()
 	if (Player)
 
 		if (GetDistanceTo(Player) < 180.0f && !IsAttacking() && !IsPawnJumping()) {
-			SetAttacking(true);
 			auto timer = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
 			if (timer != GetFlipbook(Attack_Animation)->GetTotalDuration())
 			{
+				SetAttacking(true);
 				GetCharacterMovement()->StopMovementImmediately();
 				SetPlayerAttacked(true);
-				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack, GetFlipbook(Attack_Animation)->GetTotalDuration()/2.0, false);
+				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack, GetFlipbook(Attack_Animation)->GetTotalDuration()/2.0f, true);
 			}
 		}
 		else {
@@ -97,11 +96,11 @@ void AEnemy::Attack_Implementation()
 			{
 				Player->GetCharacterMovement()->Velocity = FVector(GetDirection()*-1000.f, 0.f, 0.f);
 				GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-				Player->TakeDamages(20);
+				Player->TakeDamages(GetPawnAttackDamages(),this);
 			}
 		}
 	}
-	_isAttacking = false;
+	SetAttacking(false);
 }
 
 int AEnemy::GetDirection()
@@ -114,6 +113,11 @@ float AEnemy::GetRangeAttack()
 	return _rangeAttack;
 }
 
+
+float AEnemy::GetPawnAttackDamages()
+{
+	return _pawnAttackDamages;
+}
 
 void AEnemy::SetPlayerAttacked(bool attack)
 {
