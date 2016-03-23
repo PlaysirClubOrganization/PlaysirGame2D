@@ -87,7 +87,7 @@ public:
 	virtual void SetPlayerAttacked(bool attack);
 
 	virtual int GetDirection();
-	float GetRangeAttack();
+	virtual float GetRangeAttack();
 
 
 	virtual float GetPawnAttackDamages();
