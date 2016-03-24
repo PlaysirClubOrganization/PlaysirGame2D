@@ -71,6 +71,40 @@ void AAzraelCharacter::Init()
 	m_animationArray = new TArray<UPaperFlipbook *>();
 }
 
+void AAzraelCharacter::Attack()
+{
+
+	if (receiverAttack)
+	{
+		//Computing the direction of the player from the AI -1 if is at its left
+		// 1 else
+		int direction = (receiverAttack->GetActorLocation().X < GetActorLocation().X) ? -1 : 1;
+		//Compute the vector director between the Ai and the Player
+		FVector directionAI_Player = receiverAttack->GetActorLocation() - GetActorLocation();
+		//Normalize the vector
+		directionAI_Player.Normalize();
+		//computing the cosine between the vector direction and the ForwardVector(1,0,0)
+		float cos = abs(FVector::DotProduct(directionAI_Player, FVector::ForwardVector));
+		//computing the sinus
+		float sin = sqrt(1 - cos*cos);
+
+		//if the Player is currently attacked we cannot attack twice in the same time
+		if (!receiverAttack->GetIsAttacked())
+		{
+			//if the player is in the Range Attack and if the AI is in attack mode and the life of
+			//the Player is greater than 0
+			if (GetDistanceTo(receiverAttack) < GetRangeAttack() /*&& IsAttacking() */ && receiverAttack->GetLife() >= 0)
+			{
+				SetPlayerAttacked(true);
+				receiverAttack->GetCharacterMovement()->Velocity = FVector(direction*1000.f*cos, 0.f, 1000.f*sin);
+				GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+				receiverAttack->TakeDamages(GetPawnAttackDamages());
+			}
+		}
+	}
+	SetAttacking(false);
+}
+
 void AAzraelCharacter::Appear()
 {	//The AI is appearing (necessary for playing the appear animation)
 	SetAppearing(true);
@@ -88,11 +122,6 @@ void AAzraelCharacter::Idle()
 	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
 }
 
-void AAzraelCharacter::Attack_Implementation()
-{
-
-}
-
 void AAzraelCharacter::Dead()
 {
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
@@ -100,12 +129,18 @@ void AAzraelCharacter::Dead()
 }
 
 
-void AAzraelCharacter::TakeDamages(int damage, AAzraelCharacter * enemy)
+void AAzraelCharacter::TakeDamages(int damage)
 {
+	if (!receiverAttack)
+		return;
 	_life -= damage;
 	SetAppearing(false);
 	SetAttacked(false);
 	if (_life <= 0) {
+		if (IsDead()) {
+			Destroy();
+			return;
+		}
 		SetDead(true);
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));
 		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Dead, GetCurrentSpriteLength()-.1f, false);
@@ -223,6 +258,40 @@ void AAzraelCharacter::SetDead(bool isDead)
 	_isDead = isDead;
 }
 
+bool AAzraelCharacter::GetIsAttacked()
+{
+	return _isAttacked;
+}
+
+void AAzraelCharacter::SetIsAttacked(bool isAttacked)
+{
+	_isAttacked = isAttacked;
+}
+
+Identity AAzraelCharacter::GetIdentity()
+{
+	return _identity;
+}
+
+void AAzraelCharacter::SetPlayerAttacked(bool attack)
+{
+	((AAzraelCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->SetIsAttacked(attack);
+}
+
+/************************************************************************/
+/* TODO                                                                 */
+/************************************************************************/
+float AAzraelCharacter::GetPawnAttackDamages()
+{
+	return 1.0f;
+}
+
+float AAzraelCharacter::GetRangeAttack()
+{
+	return 2000.0f;
+}
+
+
 std::string AAzraelCharacter::GetType()
 {
 	switch (GetIdentity())
@@ -257,9 +326,3 @@ FString AAzraelCharacter::GetTypeAsFString()
 		return "Zombie/Flipbook/";
 	}
 }
-
-Identity AAzraelCharacter::GetIdentity()
-{
-	return _identity;
-}
-

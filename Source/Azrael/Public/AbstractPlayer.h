@@ -18,10 +18,6 @@ public:
 	
 
 	virtual void Init();
-
-	virtual bool	GetIsAttacked();
-
-	virtual void	SetIsAttacked(bool isAttacked);
 	
 	UFUNCTION(BlueprintCallable, Category = Action)
 	virtual void AddCoin();

@@ -79,13 +79,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Patrol();
-	
-	UFUNCTION(BlueprintNativeEvent)
-	void Attack();
-
-	virtual void SetPlayerAttacked(bool attack);
 
 	virtual int GetDirection();
+
 	virtual float GetRangeAttack();
 
 

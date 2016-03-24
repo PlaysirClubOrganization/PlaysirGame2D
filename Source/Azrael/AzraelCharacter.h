@@ -22,12 +22,15 @@
 /* This class is the base class of All the Pawn, The controlled Pawn or AI  */
 /* @info : this class is abstract											*/
 /****************************************************************************/
+class AAbstractPlayer;
 
 UCLASS(abstract)
 class AAzraelCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
+	AAzraelCharacter * receiverAttack;
 
 	// An array Of the PaperFlipbook of the pawn
 	TArray<UPaperFlipbook*>  * m_animationArray;
@@ -41,7 +44,7 @@ protected:
 	Identity _identity;
 
 	//The life of the Pawn
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = "Caracteristics")
 	int _life ;
 
 	//Is the life of the pawn is less  than 0
@@ -77,7 +80,7 @@ public:
 	/** When the Pawn Attack we set the Attack_Animation PaperFlipbook
 	*
 	*/
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, Category = Attack)
 	void Attack();
 
 	/** When the Pawn Idle we set the Idle_Animation PaperFlipbook
@@ -100,7 +103,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = Damage)
-	void TakeDamages(int damage, AAzraelCharacter * enemy);
+	void TakeDamages(int damage);
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	virtual void UpdateAnimation();
@@ -218,19 +221,16 @@ public:
 	* @param : isDead
 	* enable or disable the dead stateMachine
 	*/
-	virtual void SetDead(bool isDead);
+	virtual void  SetDead(bool isDead);
 
+	virtual bool  GetIsAttacked();
 
+	virtual void  SetIsAttacked(bool isAttacked);
 
+	virtual float GetPawnAttackDamages();
 
+	virtual float GetRangeAttack();
 
-	/**
-	*@return the of the path of the Flipbook directory
-	*
-	*	example for Zombie => '\Zombie\Flipbook\' 
-	*/
-	std::string GetType();
-	FString GetTypeAsFString();
 
 	/**
 	*@return the Identity of the pawn as an Enum instance of Identity
@@ -238,6 +238,16 @@ public:
 	*/
 	Identity GetIdentity();
 
+	virtual void SetPlayerAttacked(bool attack);
+
+
+	/**
+	*@return the of the path of the Flipbook directory
+	*
+	*	example for Zombie => '\Zombie\Flipbook\'
+	*/
+	std::string GetType();
+	FString GetTypeAsFString();
 };
 
 

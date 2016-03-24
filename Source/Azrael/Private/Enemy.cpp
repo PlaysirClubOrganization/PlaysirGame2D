@@ -38,6 +38,8 @@ void AEnemy::Init()
 	}
 	_pawnSensing = (UPawnSensingComponent *)
 		GetComponentByClass(UPawnSensingComponent::StaticClass());
+	receiverAttack = GetPlayer();
+
 }
 
 /*Unused for now*/
@@ -45,16 +47,15 @@ void AEnemy::UpdateCharacter()
 {
 	Super::UpdateCharacter();
 	
-	AAbstractPlayer * Player = GetPlayer();
-	if (Player)
+	if (receiverAttack)
 
-		if (GetDistanceTo(Player) < GetRangeAttack() && !IsAttacking() && !Player->IsAttacked()) {
+		if (GetDistanceTo(receiverAttack) < GetRangeAttack() && !IsAttacking() && !receiverAttack->IsAttacked()) {
 			auto timer = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
 			if (timer != GetFlipbook(Attack_Animation)->GetTotalDuration())
 			{
 				SetAttacking(true);
 				GetCharacterMovement()->StopMovementImmediately();
-				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AEnemy::Attack, GetFlipbook(Attack_Animation)->GetTotalDuration()/2.0f, false);
+				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Attack, GetFlipbook(Attack_Animation)->GetTotalDuration()/2.0f, false);
 			}
 		}
 		else {
@@ -66,7 +67,6 @@ void AEnemy::UpdateCharacter()
 			GetCharacterMovement()->Velocity = FVector(GetDirection()*-100.f, 0.f, 0.f);
 		}
 }
-
 
 void AEnemy::Patrol()
 {
@@ -83,40 +83,6 @@ void AEnemy::Patrol()
 	}
 }
 
-void AEnemy::Attack_Implementation()
-{
-	AAbstractPlayer * Player = GetPlayer();
-	if(Player)
-	{
-		//Computing the direction of the player from the AI -1 if is at its left
-		// 1 else
-		int direction = (Player->GetActorLocation().X < GetActorLocation().X) ? -1 : 1;
-		//Compute the vector director between the Ai and the Player
-		FVector directionAI_Player = Player->GetActorLocation() - GetActorLocation();
-		//Normalize the vector
-		directionAI_Player.Normalize();
-		//computing the cosine between the vector direction and the ForwardVector(1,0,0)
-		float cos = abs(FVector::DotProduct(directionAI_Player, FVector::ForwardVector));
-		//computing the sinus
-		float sin = sqrt(1 - cos*cos);
-		
-		//if the Player is currently attacked we cannot attack twice in the same time
-		if (!Player->GetIsAttacked())
-		{
-			//if the player is in the Range Attack and if the AI is in attack mode and the life of
-			//the Player is greater than 0
-			if (GetDistanceTo(Player) < GetRangeAttack() && IsAttacking() && Player->GetLife()>=0)
-			{
-				SetPlayerAttacked(true);
-				Player->GetCharacterMovement()->Velocity = FVector(direction*1000.f*cos, 0.f, 1000.f*sin);
-				GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-				Player->TakeDamages(GetPawnAttackDamages(),this);
-			}
-		}
-	}
-	SetAttacking(false);
-}
-
 int AEnemy::GetDirection()
 {
 	return (int)_lookAtRight * 2 - 1;
@@ -127,14 +93,7 @@ float AEnemy::GetRangeAttack()
 	return _rangeAttack;
 }
 
-
 float AEnemy::GetPawnAttackDamages()
 {
 	return _pawnAttackDamages;
-}
-
-void AEnemy::SetPlayerAttacked(bool attack)
-{
-	AAbstractPlayer * Player = GetPlayer();
-	Player->SetIsAttacked(attack);
 }

@@ -3,8 +3,6 @@
 #include "Azrael.h"
 #include "AbstractPlayer.h"
 
-
-
 void AAbstractPlayer::Init()
 {
 	Super::Init();
@@ -19,16 +17,6 @@ void AAbstractPlayer::Init()
 	}
 }
 
-
-bool AAbstractPlayer::GetIsAttacked()
-{
-	return _isAttacked;
-}
-
-void AAbstractPlayer::SetIsAttacked(bool isAttacked)
-{
-	_isAttacked = isAttacked;
-}
 
 void AAbstractPlayer::AddCoin()
 {
