@@ -5,7 +5,6 @@
 #include "PaperFlipbookComponent.h"
 #include "Azrael.h"
 #include "AbstractPlayer.h"
-
 #include "AzraelCharacter.h"
 #include "Enemy.generated.h"
 
