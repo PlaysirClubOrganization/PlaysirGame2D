@@ -114,12 +114,13 @@ void AAzraelCharacter::Appear()
 
 void AAzraelCharacter::Idle()
 {
-	//the Pawn finish to appear
-	SetAppearing(false);
-	//Inialize the velocity, when the Panw is Idle the velocity is null
+	//Intialize the velocity, when the Panw is Idle the velocity is null
 	GetCharacterMovement()->StopMovementImmediately();
 	//Set the right sprite
-	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
+	//GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
+	//the Pawn finish to appear
+	SetAppearing(true);
+
 }
 
 void AAzraelCharacter::Dead()
