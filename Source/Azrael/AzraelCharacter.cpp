@@ -119,7 +119,7 @@ void AAzraelCharacter::Idle()
 	//Set the right sprite
 	//GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
 	//the Pawn finish to appear
-	SetAppearing(true);
+	SetAppearing(false);
 
 }
 
