@@ -2,13 +2,8 @@
 
 #pragma once
 #include "PaperCharacter.h"
-#include "PaperFlipbook.h"
-#include "PaperFlipbookComponent.h"
-#include "PaperCharacter.h"
-#include "PaperFlipbook.h"
 #include "Azrael.h"
 #include "AzraelCharacter.generated.h"
-
 
 
 
@@ -16,60 +11,17 @@
 // physical interaction between the player and the world.
 //
 
-
-
 /****************************************************************************/
 /* This class is the base class of All the Pawn, The controlled Pawn or AI  */
 /* @info : this class is abstract											*/
 /****************************************************************************/
-class AAbstractPlayer;
+class UPaperFlipbook;
+
 
 UCLASS(abstract)
 class AAzraelCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
-	AAzraelCharacter * receiverAttack;
-
-	// An array Of the PaperFlipbook of the pawn
-	TArray<UPaperFlipbook*>  * m_animationArray;
-
-	//The timer which be used to delegate method in order to play some
-	// flipbook (for example playing the death anim before destroying it)
-	FTimerHandle CountdownTimerHandle;
-
-	//This Identity of the Pawn
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Identity)
-	Identity _identity;
-
-	//The life of the Pawn
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = "Caracteristics")
-	int _life ;
-
-	//Is the life of the pawn is less  than 0
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
-	bool _isDead;
-	
-	//Is the Pawn is appearing
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
-	bool _isAppearing;
-
-	//Is the enemy triggers an attack
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isAttacked;
-	
-	// Is the Pawn walking
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isWalking;
-
-	//Is the Pawn Jumping
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isJumping;
-
-	//Is the Pawn Attacking
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isAttacking;
 
 public:
 
@@ -81,7 +33,7 @@ public:
 	*
 	*/
 	UFUNCTION(BlueprintCallable, Category = Attack)
-	void Attack();
+	virtual void Attack();
 
 	/** When the Pawn Idle we set the Idle_Animation PaperFlipbook
 	*
@@ -129,25 +81,25 @@ public:
 	/**
 	*@return the pointer of the Array containing of the PaperFlipbook of the pawn
 	*/
-	virtual TArray<UPaperFlipbook* > * GetAnimationPaper();
+	virtual TArray<class UPaperFlipbook* > * GetAnimationPaper();
 
 	/**
 	*@param [AnimationState] idAnim : The State Animation Desired  
 	*@return the pointer of the Flipbook of the idAnim AnimationState 
 	*	{Appear_Animation ; Idle_Animation ; Attack_Animation, ect..}
 	*/
-	virtual UPaperFlipbook * GetFlipbook(AnimationState idAnim);
+	virtual class UPaperFlipbook * GetFlipbook(AnimationState idAnim);
 
 	/**
 	* @param [UPaperFlipbook *] flipbook : the new animation flipbook
 	* Update the current  animation to flipbook
 	*/
-	virtual void SetCurrentAnim(UPaperFlipbook * Flipbook);
+	virtual void SetCurrentAnim(class UPaperFlipbook * Flipbook);
 
 	/**
 	* @return : The Current Animation PaperFlipbook
 	*/
-	UPaperFlipbook * GetCurrentSprite();
+	class UPaperFlipbook * GetCurrentSprite();
 
 	/**
 	* @return the life of the Pawn
@@ -231,7 +183,6 @@ public:
 
 	virtual float GetRangeAttack();
 
-
 	/**
 	*@return the Identity of the pawn as an Enum instance of Identity
 	* {Zombie,Vampire,Golem,Skeleton,... }
@@ -248,6 +199,51 @@ public:
 	*/
 	std::string GetType();
 	FString GetTypeAsFString();
+
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
+	AAzraelCharacter * receiverAttack;
+
+	// An array Of the PaperFlipbook of the pawn
+	TArray<class UPaperFlipbook*>  * m_animationArray;
+
+	//The timer which be used to delegate method in order to play some
+	// flipbook (for example playing the death anim before destroying it)
+	FTimerHandle CountdownTimerHandle;
+
+	//This Identity of the Pawn
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Identity)
+	Identity _identity;
+
+	//The life of the Pawn
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = "Caracteristics")
+	int _life;
+
+	//Is the life of the pawn is less  than 0
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
+	bool _isDead;
+
+	//Is the Pawn is appearing
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
+	bool _isAppearing;
+
+	//Is the enemy triggers an attack
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
+	bool _isAttacked;
+
+	// Is the Pawn walking
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
+	bool _isWalking;
+
+	//Is the Pawn Jumping
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
+	bool _isJumping;
+
+	//Is the Pawn Attacking
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
+	bool _isAttacking;
+
 };
 
 

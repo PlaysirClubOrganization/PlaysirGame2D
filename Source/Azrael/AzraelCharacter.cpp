@@ -1,7 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
-
 #include "Azrael.h"
 #include "AzraelCharacter.h"
+#include "PaperFlipbookComponent.h"
 
 
 
@@ -164,6 +164,7 @@ void AAzraelCharacter::Tick(float DeltaSeconds)
 	UpdateCharacter();
 }
 
+
 float AAzraelCharacter::GetCurrentSpriteLength()
 {	
 	return GetCurrentSprite()->GetTotalDuration();
@@ -278,6 +279,7 @@ void AAzraelCharacter::SetPlayerAttacked(bool attack)
 {
 	((AAzraelCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->SetIsAttacked(attack);
 }
+
 
 /************************************************************************/
 /* TODO                                                                 */

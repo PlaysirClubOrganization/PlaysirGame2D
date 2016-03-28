@@ -1,16 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Perception/PawnSensingComponent.h"
-#include "PaperFlipbookComponent.h"
 #include "Azrael.h"
-#include "AbstractPlayer.h"
-#include "AzraelCharacter.h"
 #include "Enemy.generated.h"
 
-
-
-
+class AAzraelCharacter;
+class UPawnSensingComponent;
 /**
 *
 */

@@ -2,10 +2,11 @@
 
 #include "Azrael.h"
 #include "AzraelCharacter.h"
+#include "AbstractPlayer.h"
+#include "Perception/PawnSensingComponent.h"
 #include "TimerManager.h"
 #include "Enemy.h"
-
-
+ 
 /****************************************************************************/
 /* Constructor of the AEnemy we choose not to make this class Abstract		*/
 /* Because with Unreal API we must call the ContructorHelpers				*/
@@ -39,7 +40,6 @@ void AEnemy::Init()
 	_pawnSensing = (UPawnSensingComponent *)
 		GetComponentByClass(UPawnSensingComponent::StaticClass());
 	receiverAttack = GetPlayer();
-
 }
 
 /*Unused for now*/

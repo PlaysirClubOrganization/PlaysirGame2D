@@ -3,9 +3,6 @@
 #include "Azrael.h"
 #include "SpiritCharacter.h"
 
-
-
-
 void ASpiritCharacter::Init()
 {
 	Super::Init();
@@ -18,3 +15,16 @@ void ASpiritCharacter::Init()
 		GetAnimationPaper()->Add(LoadFlipbook(*path));
 	}
 }
+
+
+
+void ASpiritCharacter::Attack()
+{
+
+}
+
+float ASpiritCharacter::GetTimeDelayForAttack()
+{
+	return (_delayForAttack > 0.f) ? _delayForAttack : .12f; 
+}
+
