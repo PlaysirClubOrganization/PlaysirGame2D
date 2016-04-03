@@ -24,6 +24,11 @@ class AAzraelCharacter : public APaperCharacter
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = Info)
+	virtual int GetPawnDirection();
+
+	UFUNCTION(BlueprintCallable, Category = Info)
+	virtual void TurnPawnRotation();
 
 	//@used in the ChildClass Called in the constructor
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
@@ -68,8 +73,6 @@ public:
 
 	virtual void UpdateCharacter();
 
-	/** Called for side to side input */
-	void MoveRight(float Value) PURE_VIRTUAL(AAzraelCharacter::MoveRight, ;);
 
 	/**
 	*
@@ -183,13 +186,13 @@ public:
 
 	virtual float GetRangeAttack();
 
+	virtual float GetForceAttack();
+
 	/**
 	*@return the Identity of the pawn as an Enum instance of Identity
 	* {Zombie,Vampire,Golem,Skeleton,... }
 	*/
 	Identity GetIdentity();
-
-	virtual void SetPlayerAttacked(bool attack);
 
 
 	/**
@@ -244,6 +247,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
 	bool _isAttacking;
 
+	/*
+	* Is the Pawn's looking at right or left
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Direction")
+	bool _lookAtRight;
+
+	/*
+	* The Force impact that will affect the enemy
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float _forceAttack;
 };
 
 

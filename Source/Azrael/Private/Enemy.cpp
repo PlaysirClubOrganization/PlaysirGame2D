@@ -59,34 +59,22 @@ void AEnemy::UpdateCharacter()
 			}
 		}
 		else {
-			SetPlayerAttacked(false);
+			receiverAttack->SetAttacked(false);
 		}
 		if (IsPawnJumping())
 			GetCharacterMovement()->SetMovementMode(MOVE_Falling);
 		else if (_isPatrolling && !_isImmobile) {
-			GetCharacterMovement()->Velocity = FVector(GetDirection()*-100.f, 0.f, 0.f);
+			GetCharacterMovement()->Velocity = FVector(GetPawnDirection()*-100.f, 0.f, 0.f);
 		}
 }
 
 void AEnemy::Patrol()
 {
 	SetAppearing(false);
-	if (GetTransform().GetRotation().Z < 0.1f)
-	{
-		SetActorRotation(FRotator(0.0, 180.0f, 0.0f));	
-		_lookAtRight = true;
-	}
-	else
-	{
-		SetActorRotation(FRotator(0.0, 0.0f, 0.0f));
-		_lookAtRight = false;
-	}
+	TurnPawnRotation();
+	
 }
 
-int AEnemy::GetDirection()
-{
-	return (int)_lookAtRight * 2 - 1;
-}
 
 float AEnemy::GetRangeAttack()
 {

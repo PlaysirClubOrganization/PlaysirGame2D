@@ -16,11 +16,16 @@
 
 void AAzraelCharacter::UpdateCharacter()
 {
-	if (GetVelocity().Z == 0.0)
-		SetJumping(false);
+	if (GetVelocity().Z == 0.0)	//if the player has no velocity over the Z axis
+		SetJumping(false);		// the player isn't jumping
 	else
-		SetJumping(true);
+		SetJumping(true);		//else is jumping
 	
+	if (GetVelocity().X == 0.0)
+		SetWalking(false);
+	else
+		SetWalking(true);
+
 	UpdateAnimation();
 }
 
@@ -40,14 +45,14 @@ void AAzraelCharacter::UpdateAnimation()
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));
 	else if (!speed)
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
+	else if(IsPawnJumping())
+		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Jump_Animation));
 	else
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Walk_Animation));
-	//	else if(_isJumping)
-	//	GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Jump_Animation));
 }
 
 /********************************************************************************************************/
-/*    Function :  - Init for initialisation (not used for now)											*
+/*    Method :  - Init for initialisation						 										*
 				  - Attack which manager the damages overrided in the subClasses						*
 				  - Tick Called Every Frame																*
 				  - GetCurrentSpriteLength return the time Lenght of the current Flipbook				*
@@ -60,11 +65,28 @@ void AAzraelCharacter::UpdateAnimation()
 *********************************************************************************************************/
 
 
+int AAzraelCharacter::GetPawnDirection()
+{
+	return (int)(-2 * _lookAtRight) + 1;
+}
+
+void AAzraelCharacter::TurnPawnRotation()
+{
+	if (GetSprite()->GetRelativeTransform().GetRotation().Z < 0.1f)
+	{
+		GetSprite()->SetRelativeRotation(FRotator(0.0, 180.0f, 0.0f));
+		_lookAtRight = true;
+	}
+	else
+	{
+		GetSprite()->SetRelativeRotation(FRotator(0.0, 0.0f, 0.0f));
+		_lookAtRight = false;
+	}
+}
+
 /* WARNING
 	The subclass need to call the Init function to load the asset 
 */
-
-
 void AAzraelCharacter::Init()
 {
 	//Init the m_animationArray which will contains all the Pawn'sFlipbooks
@@ -73,18 +95,18 @@ void AAzraelCharacter::Init()
 
 void AAzraelCharacter::Attack()
 {
-
+	GetSprite()->SetPlayRate(1.0f);
 	if (receiverAttack)
 	{
 		//Computing the direction of the player from the AI -1 if is at its left
 		// 1 else
 		int direction = (receiverAttack->GetActorLocation().X < GetActorLocation().X) ? -1 : 1;
 		//Compute the vector director between the Ai and the Player
-		FVector directionAI_Player = receiverAttack->GetActorLocation() - GetActorLocation();
+		FVector directionBetweenPawn = receiverAttack->GetActorLocation() - GetActorLocation();
 		//Normalize the vector
-		directionAI_Player.Normalize();
+		directionBetweenPawn.Normalize();
 		//computing the cosine between the vector direction and the ForwardVector(1,0,0)
-		float cos = abs(FVector::DotProduct(directionAI_Player, FVector::ForwardVector));
+		float cos = abs(FVector::DotProduct(directionBetweenPawn, FVector::ForwardVector));
 		//computing the sinus
 		float sin = sqrt(1 - cos*cos);
 
@@ -95,9 +117,13 @@ void AAzraelCharacter::Attack()
 			//the Player is greater than 0
 			if (GetDistanceTo(receiverAttack) < GetRangeAttack() /*&& IsAttacking() */ && receiverAttack->GetLife() >= 0)
 			{
-				SetPlayerAttacked(true);
-				receiverAttack->GetCharacterMovement()->Velocity = FVector(direction*1000.f*cos, 0.f, 1000.f*sin);
+				//The target is Attacked
+				receiverAttack->SetAttacked(true);
+				//TODO : Manager physic attack
+				receiverAttack->GetCharacterMovement()->Velocity = FVector(direction*GetForceAttack()*cos, 0.f, GetForceAttack()*sin);
+				//Resetting the Timer
 				GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+				//The target receive the damage
 				receiverAttack->TakeDamages(GetPawnAttackDamages());
 			}
 		}
@@ -120,12 +146,10 @@ void AAzraelCharacter::Idle()
 	//GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
 	//the Pawn finish to appear
 	SetAppearing(false);
-
 }
 
 void AAzraelCharacter::Dead()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 	Destroy();
 }
 
@@ -135,7 +159,6 @@ void AAzraelCharacter::TakeDamages(int damage)
 	if (!receiverAttack)
 		return;
 	_life -= damage;
-	SetAppearing(false);
 	SetAttacked(false);
 	if (_life <= 0) {
 		if (IsDead()) {
@@ -275,12 +298,6 @@ Identity AAzraelCharacter::GetIdentity()
 	return _identity;
 }
 
-void AAzraelCharacter::SetPlayerAttacked(bool attack)
-{
-	((AAzraelCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->SetIsAttacked(attack);
-}
-
-
 /************************************************************************/
 /* TODO                                                                 */
 /************************************************************************/
@@ -293,6 +310,12 @@ float AAzraelCharacter::GetRangeAttack()
 {
 	return 2000.0f;
 }
+
+float AAzraelCharacter::GetForceAttack()
+{
+	return _forceAttack;
+}
+
 
 
 std::string AAzraelCharacter::GetType()
@@ -329,3 +352,4 @@ FString AAzraelCharacter::GetTypeAsFString()
 		return "Zombie/Flipbook/";
 	}
 }
+

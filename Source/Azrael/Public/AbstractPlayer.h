@@ -30,9 +30,31 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-	void TriggerTimeAttack();
+	void Running();
 
-	void StopAttack();
+	void StopRunning();
+
+	void PlayerAttack();
+
+	virtual void PlayerJump();
+
+	void DashRight();
+
+	void ExecDash();
+
+	void DashLeft();
+
+	void ResetDash();
+
+	void MoveRight(float value);
+
+	void ResetDoubleJumping();
+
+	void ResetAttack();
+
+	virtual	void TriggerTimeAttack();
+
+	virtual void StopAttack();
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
@@ -41,7 +63,33 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
 	int _level;
 
+
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	bool _canClimb;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	bool _isClimbing;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	bool _canRun;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	float _endurance;
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	ASpiritCharacter * _spiritCharacter;
+	
+private:
+
+	int _doubleJumpingTrigger;
+	
+	int _doubleDashTriggerRight;
+
+	int _doubleDashTriggerLeft;
+
+	bool _canDash;
+
+	
 
 };

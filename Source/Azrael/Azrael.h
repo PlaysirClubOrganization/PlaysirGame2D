@@ -14,6 +14,10 @@
 #define TIME_FOR_ATTACK .19f
 #define GetPlayer() (AAbstractPlayer *)UGameplayStatics::GetPlayerPawn(GetWorld(), 0) 
 #define ENEMY_PATH_FOLDER  "/Game/Azrael/Enemy/"
+#define RUN_SPEED 750.0f;
+#define WALK_SPEED 400.0f;
+#define BRAKING_DECELERATION_FALLING 12.0f 
+#define BRAKING_DECELERATION_WALKING 2048.0f
 
 
 

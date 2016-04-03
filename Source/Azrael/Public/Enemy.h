@@ -31,12 +31,6 @@ protected:
 		bool _playerDetected;
 
 	/*
-	* Is the Pawn's looking at right or left
-	*/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _lookAtRight;
-
-	/*
 	*	If the true the Pawn is stopped and doesn't move
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
@@ -75,7 +69,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Patrol();
 
-	virtual int GetDirection();
+
 
 	virtual float GetRangeAttack();
 
