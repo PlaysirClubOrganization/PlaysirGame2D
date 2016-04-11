@@ -28,6 +28,7 @@ static enum AnimationState : uint8 {
 	Attack_Animation,// UMETA(DisplayName = "Attack_Animation"),
 	Jump_Animation,//UMETA(DisplayName = "Jump_Animation"),
 	Dead_Animation, //UMETA(DisplayName = "Dead_Animation")
+	Crouch_Animation, //UMETA(DisplayName = "Dead_Animation")
 	MAX_ENUM_ANIMATION_STATE
 };
 
@@ -101,6 +102,8 @@ static FString GetAnimationNameAsFString(int anim)
 		return "jump.jump";
 	case 5:
 		return "die.die";
+	case 6:
+		return "crouch.crouch";
 	default:
 		return "idle.idle";
 	}

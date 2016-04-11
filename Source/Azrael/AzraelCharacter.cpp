@@ -43,6 +43,8 @@ void AAzraelCharacter::UpdateAnimation()
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Attack_Animation));
 	else if (IsDead())
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));
+	else if (IsCrouching())
+		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Crouch_Animation));
 	else if (!speed)
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
 	else if(IsPawnJumping())
@@ -253,6 +255,11 @@ bool AAzraelCharacter::IsPawnJumping() const
 	return _isJumping;
 }
 
+bool AAzraelCharacter::IsCrouching() const
+{
+	return _isCrouching;
+}
+
 void AAzraelCharacter::SetJumping(bool isJumping)
 {
 	_isJumping = isJumping;
@@ -276,6 +283,11 @@ void AAzraelCharacter::SetWalking(bool isWalking)
 void AAzraelCharacter::SetAppearing(bool isAppearing)
 {
 	_isAppearing = isAppearing;
+}
+
+void AAzraelCharacter::SetCrouching(bool isCrouching)
+{
+	_isCrouching = isCrouching;
 }
 
 void AAzraelCharacter::SetDead(bool isDead)

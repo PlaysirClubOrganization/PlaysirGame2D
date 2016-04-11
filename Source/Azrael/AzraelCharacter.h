@@ -143,6 +143,11 @@ public:
 	virtual bool IsPawnJumping() const;
 
 	/**
+	* @return if the Pawn is Jumping
+	*/
+	virtual bool IsCrouching() const;
+
+	/**
 	* @param : isJumping
 	* enable or disable the jump stateMachine
 	*/
@@ -171,6 +176,12 @@ public:
 	* enable or disable the appear stateMachine
 	*/
 	virtual void SetAppearing(bool isAppearing);
+
+	/**
+	* @param : isCrounching
+	* enable or disable the crouch stateMachine
+	*/
+	virtual void SetCrouching(bool isCrouching);
 	
 	/**
 	* @param : isDead
@@ -246,6 +257,10 @@ protected:
 	//Is the Pawn Attacking
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
 	bool _isAttacking;
+
+	//Is the character crouching
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
+	bool _isCrouching;
 
 	/*
 	* Is the Pawn's looking at right or left
