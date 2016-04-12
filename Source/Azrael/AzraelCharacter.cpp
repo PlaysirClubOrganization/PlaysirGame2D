@@ -288,6 +288,7 @@ void AAzraelCharacter::SetAppearing(bool isAppearing)
 void AAzraelCharacter::SetCrouching(bool isCrouching)
 {
 	_isCrouching = isCrouching;
+
 }
 
 void AAzraelCharacter::SetDead(bool isDead)
