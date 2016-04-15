@@ -143,9 +143,14 @@ public:
 	virtual bool IsPawnJumping() const;
 
 	/**
-	* @return if the Pawn is Jumping
+	* @return if the Pawn is Crouching
 	*/
 	virtual bool IsCrouching() const;
+
+	/**
+	* @return if the Pawn is Sliding
+	*/
+	virtual bool IsSliding() const;
 
 	/**
 	* @param : isJumping
@@ -182,6 +187,12 @@ public:
 	* enable or disable the crouch stateMachine
 	*/
 	virtual void SetCrouching(bool isCrouching);
+
+	/**
+	* @param : isSliding
+	* enable or disable the crouch stateMachine
+	*/
+	virtual void SetSliding(bool isSliding);
 	
 	/**
 	* @param : isDead
@@ -261,6 +272,10 @@ protected:
 	//Is the character crouching
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
 	bool _isCrouching;
+
+	//Is the character crouching
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
+	bool _isSliding;
 
 	/*
 	* Is the Pawn's looking at right or left

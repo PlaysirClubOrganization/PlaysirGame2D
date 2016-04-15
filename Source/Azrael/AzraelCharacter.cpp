@@ -49,6 +49,8 @@ void AAzraelCharacter::UpdateAnimation()
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
 	else if(IsPawnJumping())
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Jump_Animation));
+	else if (IsSliding())
+		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Crouch_Animation));
 	else
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Walk_Animation));
 }
@@ -260,6 +262,11 @@ bool AAzraelCharacter::IsCrouching() const
 	return _isCrouching;
 }
 
+bool AAzraelCharacter::IsSliding() const
+{
+	return _isSliding;
+}
+
 void AAzraelCharacter::SetJumping(bool isJumping)
 {
 	_isJumping = isJumping;
@@ -288,6 +295,12 @@ void AAzraelCharacter::SetAppearing(bool isAppearing)
 void AAzraelCharacter::SetCrouching(bool isCrouching)
 {
 	_isCrouching = isCrouching;
+
+}
+
+void AAzraelCharacter::SetSliding(bool isSliding)
+{
+	_isSliding = isSliding;
 
 }
 
