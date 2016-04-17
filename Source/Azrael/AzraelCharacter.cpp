@@ -309,6 +309,16 @@ void AAzraelCharacter::SetDead(bool isDead)
 	_isDead = isDead;
 }
 
+bool AAzraelCharacter::IsRunning()
+{
+	return _isRunning;
+}
+
+void AAzraelCharacter::SetRunning(bool isRunning)
+{
+	_isRunning = isRunning;
+}
+
 bool AAzraelCharacter::GetIsAttacked()
 {
 	return _isAttacked;

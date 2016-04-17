@@ -204,6 +204,10 @@ public:
 
 	virtual void  SetIsAttacked(bool isAttacked);
 
+	virtual bool  IsRunning();
+
+	virtual void SetRunning(bool isRunning);
+
 	virtual float GetPawnAttackDamages();
 
 	virtual float GetRangeAttack();
@@ -276,6 +280,11 @@ protected:
 	//Is the character crouching
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
 	bool _isSliding;
+
+	//Is the Pawn Running
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
+	bool _isRunning;
+
 
 	/*
 	* Is the Pawn's looking at right or left

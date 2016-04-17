@@ -12,6 +12,7 @@ void AAbstractPlayer::Init()
 	Super::Init();
 	_identity = Identity::Skeleton;
 	_life = 50;
+	_endurance = 5.0f;
 	
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
 	{
@@ -93,7 +94,11 @@ void AAbstractPlayer::Running()
 void AAbstractPlayer::StopRunning()
 {
 	_canRun = false;
-	GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
+	if (!(IsPawnJumping() || IsCrouching() || IsSliding()))
+	{
+		SetRunning(false);
+		GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
+	}
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 }
 
@@ -105,6 +110,7 @@ void AAbstractPlayer::PlayerAttack()
 		SetAttacking(true);
 		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
 			&AAbstractPlayer::ResetAttack, GetCurrentSpriteLength(), false);
+		SetRunning(false);
 	}
 }
 

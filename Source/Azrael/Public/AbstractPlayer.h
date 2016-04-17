@@ -63,8 +63,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
 	int _level;
 
-
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	bool _canClimb;
 	
@@ -80,8 +78,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	ASpiritCharacter * _spiritCharacter;
 	
-private:
-
 	int _doubleJumpingTrigger;
 	
 	int _doubleDashTriggerRight;
