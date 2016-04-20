@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetStringLibrary.h"
 #include "AzraelCharacter.h"
 #include "AbstractPlayer.generated.h"
 
@@ -19,17 +22,21 @@ public:
 
 	virtual void Init();
 	
+	/*Tempory add coin*/
 	UFUNCTION(BlueprintCallable, Category = Action)
 	virtual void AddCoin();
 
+	/*Save all parameters*/
 	UFUNCTION(BlueprintCallable, Category = Saver)
 	virtual void SaveData(UAzraelSaver * saver);
 
+	/*load all parameters*/
 	UFUNCTION(BlueprintCallable, Category = Saver)
 	virtual void LoadData(UAzraelSaver * saver);
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
+	/*Handle Run*/
 	void Running();
 
 	void StopRunning();
@@ -38,12 +45,16 @@ public:
 
 	virtual void PlayerJump();
 
+	/*Prepare the right Dash*/
 	void DashRight();
 
+	/*Execute the Dash*/
 	void ExecDash();
 
+	/*Prepare the left Dash*/
 	void DashLeft();
 
+	/*After execDash we reset*/
 	void ResetDash();
 
 	void MoveRight(float value);
@@ -55,6 +66,8 @@ public:
 	virtual	void TriggerTimeAttack();
 
 	virtual void StopAttack();
+
+	void WallJump();
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
@@ -74,6 +87,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _endurance;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	float _wallJumpPerf;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	ASpiritCharacter * _spiritCharacter;

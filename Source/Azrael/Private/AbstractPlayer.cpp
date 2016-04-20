@@ -13,6 +13,7 @@ void AAbstractPlayer::Init()
 	_identity = Identity::Skeleton;
 	_life = 50;
 	_endurance = 5.0f;
+	_wallJumpPerf = .7f;
 	
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
 	{
@@ -85,9 +86,10 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 void AAbstractPlayer::Running()
 {
 	_canRun = true;
-	GetCharacterMovement()->MaxWalkSpeed =  RUN_SPEED;
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-		&AAbstractPlayer::StopRunning, _endurance, false);
+	if(!IsSliding())
+		GetCharacterMovement()->MaxWalkSpeed =  RUN_SPEED;
+		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+					&AAbstractPlayer::StopRunning, _endurance, false);
 
 }
 
@@ -114,11 +116,14 @@ void AAbstractPlayer::PlayerAttack()
 	}
 }
 
-
-
 void AAbstractPlayer::PlayerJump()
 {
 	_doubleJumpingTrigger++;
+	/*******/
+	if (_doubleJumpingTrigger == 1)
+		WallJump();
+	/*******/
+
 	if (_canClimb)
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 
@@ -138,6 +143,7 @@ void AAbstractPlayer::PlayerJump()
 	}
 
 }
+
 void AAbstractPlayer::DashRight()
 {
 	if (GetCharacterMovement()->IsMovingOnGround())
@@ -177,7 +183,6 @@ void AAbstractPlayer::ResetDash()
 	GetCharacterMovement()->BrakingDecelerationWalking = BRAKING_DECELERATION_WALKING;
 }
 
-
 void AAbstractPlayer::MoveRight(float value)
 {
 	if (!IsAttacking()) {
@@ -195,7 +200,6 @@ void AAbstractPlayer::MoveRight(float value)
 	}
 }
 
-
 void AAbstractPlayer::ResetDoubleJumping()
 {
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
@@ -207,6 +211,7 @@ void AAbstractPlayer::ResetAttack()
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 	SetAttacking(false);
 }
+
 void AAbstractPlayer::TriggerTimeAttack()
 {
 	TArray<AActor*> arrayOfActor;
@@ -237,6 +242,43 @@ void AAbstractPlayer::StopAttack()
 	{
 		arrayOfActor[i]->CustomTimeDilation = 1.0f;
 	}
+}
+
+void AAbstractPlayer::WallJump()
+{
+	float z = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() - GetCapsuleComponent()->GetUnscaledCapsuleRadius();
+	FVector tmp   = FVector(0.0, 0.0, z);
+	FVector Start = GetActorLocation() + tmp;
+	FVector End	  = GetActorLocation() - tmp;
+	FHitResult hitRes;
+
+
+	bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
+					Start,
+					End,
+					GetCapsuleComponent()->GetUnscaledCapsuleRadius() + 5.0f,
+					ETraceTypeQuery::TraceTypeQuery1,
+					false,
+					TArray<AActor*>(),
+					EDrawDebugTrace::Type::Persistent,
+					hitRes,
+					true);
+
+	if (hit && (int)hitRes.ImpactNormal.Z != 1)
+	{
+		tmp = UKismetMathLibrary::GreaterGreater_VectorRotator(hitRes.ImpactNormal,
+											UKismetMathLibrary::SelectRotator( FRotator(0.0, 60.0, 0.0),
+										 	FRotator(0.0, -60.0, 0.0),
+											hitRes.ImpactNormal.X > 0.0));
+		tmp = FVector(tmp.X*1500.0,0.0,1000.0 * _wallJumpPerf) - GetVelocity();
+		LaunchCharacter(tmp, false, false);
+		float yaw = UKismetMathLibrary::SelectFloat(0.0f, 180.0f, hitRes.ImpactNormal.X > 0.0);
+		UKismetSystemLibrary::PrintString(GetWorld(), UKismetStringLibrary::Conv_VectorToString(hitRes.ImpactNormal));
+
+		_doubleJumpingTrigger = 0;
+		GetController()->SetControlRotation(FRotator(0.0, 0.0, yaw));
+	}
+
 }
 
 
