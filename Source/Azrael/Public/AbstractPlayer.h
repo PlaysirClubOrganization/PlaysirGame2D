@@ -7,6 +7,9 @@
 #include "AzraelCharacter.h"
 #include "AbstractPlayer.generated.h"
 
+
+
+
 /**
  * 
  */
@@ -69,6 +72,13 @@ public:
 
 	void WallJump();
 
+	void EnablingCrouch();
+
+	void DisablingCrouch();
+
+	UFUNCTION(BlueprintCallable, Category = Action)
+	void CrouchAction(bool crouching);
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
 	int _coin;
@@ -78,6 +88,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	bool _canClimb;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	bool _canCrouch;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	bool _isClimbing;

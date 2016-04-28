@@ -16,9 +16,11 @@
 #define ENEMY_PATH_FOLDER  "/Game/Azrael/Enemy/"
 #define RUN_SPEED 750.0f;
 #define WALK_SPEED 400.0f;
+#define CROUCH_SPEED 100.0f
 #define BRAKING_DECELERATION_FALLING 12.0f 
 #define BRAKING_DECELERATION_WALKING 2048.0f
-
+#define RADIUS 20
+#define HEIGHT 90
 
 
 static enum AnimationState : uint8 {

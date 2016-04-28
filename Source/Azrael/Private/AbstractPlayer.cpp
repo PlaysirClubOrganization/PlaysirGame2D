@@ -9,12 +9,14 @@
 
 void AAbstractPlayer::Init()
 {
+	//Init the attribute of the player
 	Super::Init();
 	_identity = Identity::Skeleton;
 	_life = 50;
 	_endurance = 5.0f;
 	_wallJumpPerf = .7f;
 	
+	//Load the animation paperFlipbook
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
 	{
 		FString path = ENEMY_PATH_FOLDER;
@@ -24,7 +26,7 @@ void AAbstractPlayer::Init()
 }
 
 
-
+//unused :  for test
 void AAbstractPlayer::AddCoin()
 {
 	_coin++;
@@ -32,14 +34,15 @@ void AAbstractPlayer::AddCoin()
 
 void AAbstractPlayer::SaveData(UAzraelSaver * saver)
 {
+	//save all the attribute in the saver
 	saver->life = _life;
 	saver->count = _coin;
 	saver->level = ++_level;
-
 }
 
 void AAbstractPlayer::LoadData(UAzraelSaver * saver)
 {
+	//load all the attribute from the saver
  	_life = saver->life;
 	_coin = saver->count;
 	_level = saver->level;
@@ -81,14 +84,27 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	InputComponent->BindAction("DashRight", IE_Pressed, this, &AAbstractPlayer::DashRight);
 	InputComponent->BindAction("DashLeft", IE_Released, this, &AAbstractPlayer::DashLeft);
+
+
+	/************************************************************************/
+	/*                                                                      */
+	/************************************************************************/
+	InputComponent->BindAction("Crouch", IE_Pressed, this, &AAbstractPlayer::EnablingCrouch);
+	InputComponent->BindAction("Crouch", IE_Released, this, &AAbstractPlayer::DisablingCrouch);
 }
 
 void AAbstractPlayer::Running()
 {
+	//Run button was pressed => enabling Run
 	_canRun = true;
-	if(!IsSliding())
-		GetCharacterMovement()->MaxWalkSpeed =  RUN_SPEED;
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+	//if the player is not sliding maxWalkspeed = runSpeed
+	if (!IsSliding()) 
+	{
+		GetCharacterMovement()->MaxWalkSpeed = RUN_SPEED;
+		SetRunning(true);
+	}
+	//The player cannot run more than its endurance
+	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
 					&AAbstractPlayer::StopRunning, _endurance, false);
 
 }
@@ -96,11 +112,11 @@ void AAbstractPlayer::Running()
 void AAbstractPlayer::StopRunning()
 {
 	_canRun = false;
+	
 	if (!(IsPawnJumping() || IsCrouching() || IsSliding()))
-	{
-		SetRunning(false);
 		GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
-	}
+	
+	SetRunning(false);
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 }
 
@@ -120,7 +136,7 @@ void AAbstractPlayer::PlayerJump()
 {
 	_doubleJumpingTrigger++;
 	/*******/
-	if (_doubleJumpingTrigger == 1)
+	if (_doubleJumpingTrigger == 1 && IsPawnJumping())
 		WallJump();
 	/*******/
 
@@ -260,7 +276,7 @@ void AAbstractPlayer::WallJump()
 					ETraceTypeQuery::TraceTypeQuery1,
 					false,
 					TArray<AActor*>(),
-					EDrawDebugTrace::Type::Persistent,
+					EDrawDebugTrace::Type::ForOneFrame,
 					hitRes,
 					true);
 
@@ -277,6 +293,57 @@ void AAbstractPlayer::WallJump()
 
 		_doubleJumpingTrigger = 0;
 		GetController()->SetControlRotation(FRotator(0.0, 0.0, yaw));
+	}
+
+}
+
+void AAbstractPlayer::EnablingCrouch()
+{
+	if(!IsPawnJumping())
+		_canCrouch = true;
+
+}
+
+void AAbstractPlayer::DisablingCrouch()
+{
+	_canCrouch = false;
+	if(_isCrouching)
+		CrouchAction(false);
+}
+
+void AAbstractPlayer::CrouchAction(bool crouching)
+{
+	FVector End = GetActorLocation() + FVector(0.0,0.0,HEIGHT/2.0);
+	FHitResult hitRes;
+
+
+	bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
+		GetActorLocation() + FVector(0.0, 0.0, 10.0),
+		End,
+		GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS ,
+		ETraceTypeQuery::TraceTypeQuery1,
+		false,
+		TArray<AActor*>(),
+		EDrawDebugTrace::Type::None,
+		hitRes,
+		true);
+
+	if (!crouching)
+	{
+		if (hit)
+			return;
+		GetCapsuleComponent()->SetCapsuleSize(RADIUS * 2, HEIGHT);
+		GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
+		SetCrouching(false);
+		GetSprite()->SetRelativeLocation(FVector(0.0, 0.0, -1.0), true, &hitRes, ETeleportType::TeleportPhysics);
+		SetWalking(true);
+	}
+	else
+	{
+		GetCapsuleComponent()->SetCapsuleSize(RADIUS, HEIGHT/2.0);
+		GetCharacterMovement()->MaxWalkSpeed = CROUCH_SPEED;
+		SetCrouching(true);
+		GetSprite()->SetRelativeLocation(FVector(0.0, 0.0, 45.0), true, &hitRes, ETeleportType::TeleportPhysics);
 	}
 
 }
