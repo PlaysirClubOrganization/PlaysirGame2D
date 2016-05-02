@@ -76,6 +76,10 @@ public:
 
 	void DisablingCrouch();
 
+	void EnablingPilon();
+
+	void DisablingPilon();
+
 	UFUNCTION(BlueprintCallable, Category = Action)
 	void CrouchAction(bool crouching);
 
@@ -91,6 +95,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	bool _canCrouch;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	bool _canPilon;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	bool _isClimbing;

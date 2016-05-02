@@ -19,8 +19,9 @@
 #define CROUCH_SPEED 100.0f
 #define BRAKING_DECELERATION_FALLING 12.0f 
 #define BRAKING_DECELERATION_WALKING 2048.0f
-#define RADIUS 20
-#define HEIGHT 90
+#define RADIUS 40.0f
+#define HEIGHT 90.0f
+#define DASH_DELAY 0.4f
 
 
 static enum AnimationState : uint8 {

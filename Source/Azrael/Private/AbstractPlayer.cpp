@@ -83,7 +83,7 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/*                                                                      */
 	/************************************************************************/
 	InputComponent->BindAction("DashRight", IE_Pressed, this, &AAbstractPlayer::DashRight);
-	InputComponent->BindAction("DashLeft", IE_Released, this, &AAbstractPlayer::DashLeft);
+	InputComponent->BindAction("DashLeft", IE_Pressed, this, &AAbstractPlayer::DashLeft);
 
 
 	/************************************************************************/
@@ -91,6 +91,12 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	InputComponent->BindAction("Crouch", IE_Pressed, this, &AAbstractPlayer::EnablingCrouch);
 	InputComponent->BindAction("Crouch", IE_Released, this, &AAbstractPlayer::DisablingCrouch);
+
+	/************************************************************************/
+	/*                                                                      */
+	/************************************************************************/
+	InputComponent->BindAction("TriggerPilon", IE_Pressed, this, &AAbstractPlayer::EnablingPilon);
+	InputComponent->BindAction("TriggerPilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
 }
 
 void AAbstractPlayer::Running()
@@ -134,6 +140,8 @@ void AAbstractPlayer::PlayerAttack()
 
 void AAbstractPlayer::PlayerJump()
 {
+	if (IsCrouching()) return;
+
 	_doubleJumpingTrigger++;
 	/*******/
 	if (_doubleJumpingTrigger == 1 && IsPawnJumping())
@@ -162,13 +170,20 @@ void AAbstractPlayer::PlayerJump()
 
 void AAbstractPlayer::DashRight()
 {
-	if (GetCharacterMovement()->IsMovingOnGround())
-		return;
-	_doubleDashTriggerRight++;
-	if (_doubleDashTriggerRight == 2)
-		ExecDash();
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-		&AAbstractPlayer::ResetDash, .3f, false);
+	float boost = 5000.0f;
+	GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
+	GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
+	GetSprite()->SetRelativeRotation(FRotator(0.0, 180.0f, 0.0f));
+	GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
+
+	//_doubleDashTriggerLeft = 0;
+	//if (!GetCharacterMovement()->IsMovingOnGround() || IsCrouching())
+	//	return;
+
+	//if (++_doubleDashTriggerRight == 2)
+	//	ExecDash();
+	//GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+	//	&AAbstractPlayer::ResetDash, DASH_DELAY, false);
 }
 
 void AAbstractPlayer::ExecDash()
@@ -176,18 +191,20 @@ void AAbstractPlayer::ExecDash()
 	float boost = 5000.0f;
 	GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
+	GetSprite()->SetRelativeRotation(FRotator(0.0, 0.0f, 0.0f));
 	GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
 }
 
 void AAbstractPlayer::DashLeft()
 {
-	if (GetCharacterMovement()->IsMovingOnGround())
-		return;
-	_doubleDashTriggerLeft++;
-	if (_doubleDashTriggerLeft == 2)
-		ExecDash();
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-		&AAbstractPlayer::ResetDash, .3f, false);
+	//_doubleDashTriggerRight = 0;
+	//if (!GetCharacterMovement()->IsMovingOnGround() || IsCrouching())
+	//	return;
+
+	//if (_doubleDashTriggerLeft == 2)
+	//	ExecDash();
+	//GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+	//	&AAbstractPlayer::ResetDash, DASH_DELAY, false);
 }
 
 void AAbstractPlayer::ResetDash()
@@ -299,9 +316,7 @@ void AAbstractPlayer::WallJump()
 
 void AAbstractPlayer::EnablingCrouch()
 {
-	if(!IsPawnJumping())
-		_canCrouch = true;
-
+	if(!IsPawnJumping())_canCrouch = true;
 }
 
 void AAbstractPlayer::DisablingCrouch()
@@ -311,39 +326,50 @@ void AAbstractPlayer::DisablingCrouch()
 		CrouchAction(false);
 }
 
+void AAbstractPlayer::EnablingPilon()
+{
+	if (IsPawnJumping())
+		_canPilon = true;
+}
+
+void AAbstractPlayer::DisablingPilon()
+{
+	_canPilon = false;
+}
+
 void AAbstractPlayer::CrouchAction(bool crouching)
 {
-	FVector End = GetActorLocation() + FVector(0.0,0.0,HEIGHT/2.0);
 	FHitResult hitRes;
 
 
-	bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
-		GetActorLocation() + FVector(0.0, 0.0, 10.0),
-		End,
-		GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS ,
-		ETraceTypeQuery::TraceTypeQuery1,
-		false,
-		TArray<AActor*>(),
-		EDrawDebugTrace::Type::None,
-		hitRes,
-		true);
-
 	if (!crouching)
 	{
+		FVector End = GetActorLocation() + FVector(0.0, 0.0, HEIGHT / 4.5);
+		bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
+										GetActorLocation() + FVector(0.0, 0.0, 100.0),
+										End,
+										GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS/5.0,
+										ETraceTypeQuery::TraceTypeQuery1,
+										false,
+										TArray<AActor*>(),
+										EDrawDebugTrace::Type::None,
+										hitRes,
+										true);
 		if (hit)
 			return;
-		GetCapsuleComponent()->SetCapsuleSize(RADIUS * 2, HEIGHT);
+		
+		GetSprite()->SetRelativeLocation(FVector::ZeroVector, true, &hitRes, ETeleportType::TeleportPhysics);
+		GetCapsuleComponent()->SetCapsuleSize(RADIUS, HEIGHT);
 		GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
 		SetCrouching(false);
-		GetSprite()->SetRelativeLocation(FVector(0.0, 0.0, -1.0), true, &hitRes, ETeleportType::TeleportPhysics);
 		SetWalking(true);
 	}
 	else
 	{
+		GetSprite()->SetRelativeLocation(FVector(0.0, 0.0, 45.0), true, &hitRes, ETeleportType::TeleportPhysics);
 		GetCapsuleComponent()->SetCapsuleSize(RADIUS, HEIGHT/2.0);
 		GetCharacterMovement()->MaxWalkSpeed = CROUCH_SPEED;
 		SetCrouching(true);
-		GetSprite()->SetRelativeLocation(FVector(0.0, 0.0, 45.0), true, &hitRes, ETeleportType::TeleportPhysics);
 	}
 
 }
