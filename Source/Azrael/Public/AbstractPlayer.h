@@ -49,15 +49,8 @@ public:
 	virtual void PlayerJump();
 
 	/*Prepare the right Dash*/
-	void DashRight();
+	void Dash();
 
-	/*Execute the Dash*/
-	void ExecDash();
-
-	/*Prepare the left Dash*/
-	void DashLeft();
-
-	/*After execDash we reset*/
 	void ResetDash();
 
 	void MoveRight(float value);
@@ -115,11 +108,9 @@ protected:
 	ASpiritCharacter * _spiritCharacter;
 	
 	int _doubleJumpingTrigger;
+
+	int _dashTrigger;
 	
-	int _doubleDashTriggerRight;
-
-	int _doubleDashTriggerLeft;
-
 	bool _canDash;
 
 	

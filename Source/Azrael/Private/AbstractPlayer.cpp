@@ -82,8 +82,7 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	/*                                                                      */
 	/************************************************************************/
-	InputComponent->BindAction("DashRight", IE_Pressed, this, &AAbstractPlayer::DashRight);
-	InputComponent->BindAction("DashLeft", IE_Pressed, this, &AAbstractPlayer::DashLeft);
+	InputComponent->BindAction("Dash", IE_Pressed, this, &AAbstractPlayer::Dash);
 
 
 	/************************************************************************/
@@ -115,10 +114,10 @@ void AAbstractPlayer::Running()
 
 }
 
+
 void AAbstractPlayer::StopRunning()
 {
 	_canRun = false;
-	
 	if (!(IsPawnJumping() || IsCrouching() || IsSliding()))
 		GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
 	
@@ -128,7 +127,8 @@ void AAbstractPlayer::StopRunning()
 
 void AAbstractPlayer::PlayerAttack()
 {
-	GetSprite()->SetPlayRate(1.0);
+	GetSprite()->SetPlayRate(1.0);	//speed of the animation sprite
+	//if the player is not dead the player attacks and stop running
 	if (!IsDead())
 	{
 		SetAttacking(true);
@@ -140,6 +140,7 @@ void AAbstractPlayer::PlayerAttack()
 
 void AAbstractPlayer::PlayerJump()
 {
+	//cannot jump while crouching
 	if (IsCrouching()) return;
 
 	_doubleJumpingTrigger++;
@@ -168,52 +169,22 @@ void AAbstractPlayer::PlayerJump()
 
 }
 
-void AAbstractPlayer::DashRight()
+void AAbstractPlayer::Dash()
 {
+	if (++_dashTrigger >= 2)
+		return;
+
 	float boost = 5000.0f;
 	GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
-	GetSprite()->SetRelativeRotation(FRotator(0.0, 180.0f, 0.0f));
 	GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
-
-	//_doubleDashTriggerLeft = 0;
-	//if (!GetCharacterMovement()->IsMovingOnGround() || IsCrouching())
-	//	return;
-
-	//if (++_doubleDashTriggerRight == 2)
-	//	ExecDash();
-	//GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-	//	&AAbstractPlayer::ResetDash, DASH_DELAY, false);
-}
-
-void AAbstractPlayer::ExecDash()
-{
-	float boost = 5000.0f;
-	GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
-	GetSprite()->SetRelativeRotation(FRotator(0.0, 0.0f, 0.0f));
-	GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
-}
-
-void AAbstractPlayer::DashLeft()
-{
-	//_doubleDashTriggerRight = 0;
-	//if (!GetCharacterMovement()->IsMovingOnGround() || IsCrouching())
-	//	return;
-
-	//if (_doubleDashTriggerLeft == 2)
-	//	ExecDash();
-	//GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-	//	&AAbstractPlayer::ResetDash, DASH_DELAY, false);
+	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+		&AAbstractPlayer::ResetDash, .5f, false);
 }
 
 void AAbstractPlayer::ResetDash()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-	_doubleDashTriggerRight = 0;
-	_doubleDashTriggerLeft = 0;
-	GetCharacterMovement()->BrakingDecelerationFalling = BRAKING_DECELERATION_FALLING;
-	GetCharacterMovement()->BrakingDecelerationWalking = BRAKING_DECELERATION_WALKING;
+	_dashTrigger = 0;
 }
 
 void AAbstractPlayer::MoveRight(float value)
@@ -254,7 +225,6 @@ void AAbstractPlayer::TriggerTimeAttack()
 	{
 		arrayOfActor[i]->CustomTimeDilation = .1f;
 	}
-//	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .05f);
 		_spiritCharacter->CustomTimeDilation = 1.0f;
 
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
@@ -265,16 +235,13 @@ void AAbstractPlayer::TriggerTimeAttack()
 void AAbstractPlayer::StopAttack()
 {
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 	_spiritCharacter->SetAttacking(false);
 
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
 	for (int i = 0; i < arrayOfActor.Num(); i++)
-	{
 		arrayOfActor[i]->CustomTimeDilation = 1.0f;
-	}
 }
 
 void AAbstractPlayer::WallJump()
