@@ -55,8 +55,8 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	/* Spirit Attack : LT => trigger the dilatation of time                 */
 	/************************************************************************/
-	InputComponent->BindAction("SpiritAttack", IE_Pressed, this, &AAbstractPlayer::TriggerTimeAttack);
-	InputComponent->BindAction("SpiritAttack", IE_Released, this, &AAbstractPlayer::StopAttack);
+	InputComponent->BindAction("SpiritAttack", IE_Pressed,  this,  &AAbstractPlayer::TriggerTimeAttack);
+	InputComponent->BindAction("SpiritAttack", IE_Released, this,  &AAbstractPlayer::StopAttack);
 	
 	/************************************************************************/
 	/*                                                                      */
@@ -171,19 +171,26 @@ void AAbstractPlayer::PlayerJump()
 
 void AAbstractPlayer::Dash()
 {
-	if (++_dashTrigger >= 2)
-		return;
+	if (++_dashTrigger >= 2 || _spiritCharacter->IsAttacking())
+	{
+		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+			&AAbstractPlayer::ResetDash, .5f, false);
+		return ;
+	}
 
 	float boost = 5000.0f;
 	GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
 	GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
+
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
 		&AAbstractPlayer::ResetDash, .5f, false);
+
 }
 
 void AAbstractPlayer::ResetDash()
 {
+	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 	_dashTrigger = 0;
 }
 
@@ -222,26 +229,23 @@ void AAbstractPlayer::TriggerTimeAttack()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
 	for ( int i = 0; i < arrayOfActor.Num();i++)
-	{
 		arrayOfActor[i]->CustomTimeDilation = .1f;
-	}
-		_spiritCharacter->CustomTimeDilation = 1.0f;
+		
+	_spiritCharacter->CustomTimeDilation = 1.0f;
 
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-						&AAbstractPlayer::StopAttack, 2.0f, false);
 	_spiritCharacter->SetAttacking(true);
 }
 
 void AAbstractPlayer::StopAttack()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-	_spiritCharacter->SetAttacking(false);
 
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
 	for (int i = 0; i < arrayOfActor.Num(); i++)
 		arrayOfActor[i]->CustomTimeDilation = 1.0f;
+
+	_spiritCharacter->SetAttacking(false);
 }
 
 void AAbstractPlayer::WallJump()
@@ -340,5 +344,3 @@ void AAbstractPlayer::CrouchAction(bool crouching)
 	}
 
 }
-
-
