@@ -23,6 +23,10 @@ void AAbstractPlayer::Init()
 		path += GetTypeAsFString() + GetAnimationNameAsFString(i);
 		GetAnimationPaper()->Add(LoadFlipbook(*path));
 	}
+
+	_targetArrow = RootComponent->GetChildComponent(5);
+	_arrow = (UPaperFlipbookComponent *)(_targetArrow->GetChildComponent(0));
+	
 }
 
 
@@ -31,6 +35,7 @@ void AAbstractPlayer::AddCoin()
 {
 	_coin++;
 }
+
 
 void AAbstractPlayer::SaveData(UAzraelSaver * saver)
 {
@@ -56,7 +61,7 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/* Spirit Attack : LT => trigger the dilatation of time                 */
 	/************************************************************************/
 	InputComponent->BindAction("SpiritAttack", IE_Pressed,  this,  &AAbstractPlayer::TriggerTimeAttack);
-	InputComponent->BindAction("SpiritAttack", IE_Released, this,  &AAbstractPlayer::StopAttack);
+	InputComponent->BindAction("SpiritAttack", IE_Released, this,  &AAbstractPlayer::StopSpiritAttack);
 	
 	/************************************************************************/
 	/*                                                                      */
@@ -173,19 +178,20 @@ void AAbstractPlayer::Dash()
 {
 	if (++_dashTrigger >= 2 || _spiritCharacter->IsAttacking())
 	{
+		_dashTrigger = 0;
 		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
 			&AAbstractPlayer::ResetDash, .5f, false);
-		return ;
 	}
+	else
+	{
+		float boost = 5000.0f;
+		GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
+		GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
+		GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
 
-	float boost = 5000.0f;
-	GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
-	GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
-
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-		&AAbstractPlayer::ResetDash, .5f, false);
-
+		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+			&AAbstractPlayer::ResetDash, .5f, false);
+	}
 }
 
 void AAbstractPlayer::ResetDash()
@@ -225,19 +231,28 @@ void AAbstractPlayer::ResetAttack()
 
 void AAbstractPlayer::TriggerTimeAttack()
 {
+	//show the arrow
+	_arrow->SetSpriteColor(FLinearColor(1.0, 1.0, 1.0, 1.0));
+
+	//Retrieving all the actor in the game
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
+	//Dilating the time for all actors
 	for ( int i = 0; i < arrayOfActor.Num();i++)
 		arrayOfActor[i]->CustomTimeDilation = .1f;
-		
+	//except the time dilation of the spirit
 	_spiritCharacter->CustomTimeDilation = 1.0f;
 
 	_spiritCharacter->SetAttacking(true);
+	_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
+
 }
 
-void AAbstractPlayer::StopAttack()
+void AAbstractPlayer::StopSpiritAttack()
 {
+	//make the arrow transparent
+	_arrow->SetSpriteColor(FLinearColor(0.0, 0.0, 0.0, 0.0));
 
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
@@ -246,6 +261,8 @@ void AAbstractPlayer::StopAttack()
 		arrayOfActor[i]->CustomTimeDilation = 1.0f;
 
 	_spiritCharacter->SetAttacking(false);
+	_targetArrow->GetChildComponent(0)->bHiddenInGame = true;
+
 }
 
 void AAbstractPlayer::WallJump()
@@ -255,7 +272,6 @@ void AAbstractPlayer::WallJump()
 	FVector Start = GetActorLocation() + tmp;
 	FVector End	  = GetActorLocation() - tmp;
 	FHitResult hitRes;
-
 
 	bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
 					Start,
@@ -282,7 +298,6 @@ void AAbstractPlayer::WallJump()
 		_doubleJumpingTrigger = 0;
 		GetController()->SetControlRotation(FRotator(0.0, 0.0, yaw));
 	}
-
 }
 
 void AAbstractPlayer::EnablingCrouch()
@@ -311,8 +326,7 @@ void AAbstractPlayer::DisablingPilon()
 void AAbstractPlayer::CrouchAction(bool crouching)
 {
 	FHitResult hitRes;
-
-
+	
 	if (!crouching)
 	{
 		FVector End = GetActorLocation() + FVector(0.0, 0.0, HEIGHT / 4.5);
@@ -343,4 +357,11 @@ void AAbstractPlayer::CrouchAction(bool crouching)
 		SetCrouching(true);
 	}
 
+}
+
+void AAbstractPlayer::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if(_spiritCharacter->IsAttacking())
+		_targetArrow->AddLocalRotation(FQuat(FRotator(1, 0, 0)));
 }

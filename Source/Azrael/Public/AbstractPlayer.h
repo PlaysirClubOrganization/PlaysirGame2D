@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+//#include "UObjectGlobals.h"
+
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetStringLibrary.h"
@@ -61,7 +63,7 @@ public:
 
 	virtual	void TriggerTimeAttack();
 
-	virtual void StopAttack();
+	virtual void StopSpiritAttack();
 
 	void WallJump();
 
@@ -75,6 +77,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Action)
 	void CrouchAction(bool crouching);
+
+	virtual void Tick(float DeltaSeconds);
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
@@ -106,6 +111,10 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	ASpiritCharacter * _spiritCharacter;
+
+	USceneComponent *  _targetArrow;
+
+	UPaperFlipbookComponent * _arrow;
 	
 	int _doubleJumpingTrigger;
 
