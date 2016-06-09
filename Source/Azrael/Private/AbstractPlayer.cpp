@@ -145,20 +145,20 @@ void AAbstractPlayer::PlayerAttack()
 
 void AAbstractPlayer::PlayerJump()
 {
-	//cannot jump while crouching
-	if (IsCrouching()) return;
+	//cannot jump while crouching or dying or appearing or sliding
+	if (IsCrouching() || IsDead() || IsAppearing() || IsSliding())
+		return;
 
-	_doubleJumpingTrigger++;
-	/*******/
-	if (_doubleJumpingTrigger == 1 && IsPawnJumping())
+	//Check WallJump if the player is jumping and not in doubleJumping
+	if (++_doubleJumpingTrigger == 1 && IsPawnJumping())
 		WallJump();
-	/*******/
 
+	// Climbing ??? 
 	if (_canClimb)
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 
 	if (IsPawnJumping())
-	{
+	{	//Double Jumping if the doubleJumpTrigger equals to 1
 		if (_doubleJumpingTrigger == 1)
 		{
 			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
@@ -167,7 +167,9 @@ void AAbstractPlayer::PlayerJump()
 	}
 	else
 	{
+		//if the is the player is on the ground : he jumps normally
 		Jump();
+		//set the timer to reset the double jump trigger
 		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
 			&AAbstractPlayer::ResetDoubleJumping, .07f, false);
 	}

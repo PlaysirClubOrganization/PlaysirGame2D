@@ -251,46 +251,46 @@ protected:
 
 	//Is the life of the pawn is less  than 0
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
-	bool _isDead;
+	uint32 _isDead:1;
 
 	//Is the Pawn is appearing
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Caracteristics")
-	bool _isAppearing;
+	uint32 _isAppearing:1;
 
 	//Is the enemy triggers an attack
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isAttacked;
+	uint32 _isAttacked:1;
 
 	// Is the Pawn walking
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isWalking;
+	uint32 _isWalking:1;
 
 	//Is the Pawn Jumping
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isJumping;
+	uint32 _isJumping:1;
 
 	//Is the Pawn Attacking
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isAttacking;
+	uint32 _isAttacking:1;
 
 	//Is the character crouching
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isCrouching;
+	uint32 _isCrouching:1;
 
 	//Is the character crouching
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isSliding;
+	uint32 _isSliding:1;
 
 	//Is the Pawn Running
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
-	bool _isRunning;
+	uint32 _isRunning:1;
 
 
 	/*
 	* Is the Pawn's looking at right or left
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Direction")
-	bool _lookAtRight;
+	uint32 _lookAtRight:1;
 
 	/*
 	* The Force impact that will affect the enemy

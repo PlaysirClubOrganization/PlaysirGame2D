@@ -254,6 +254,7 @@ bool AAzraelCharacter::IsAttacking() const
 
 bool AAzraelCharacter::IsPawnJumping() const
 {
+	//return GetMovementComponent()->IsMovingOnGround();
 	return _isJumping;
 }
 

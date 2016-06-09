@@ -89,19 +89,19 @@ protected:
 	int _level;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	bool _canClimb;
+	uint32 _canClimb:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	bool _canCrouch;
+	uint32 _canCrouch:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	bool _canPilon;
+	uint32 _canPilon:1;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	bool _isClimbing;
+	uint32 _isClimbing:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	bool _canRun;
+	uint32 _canRun:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _endurance;
@@ -120,8 +120,6 @@ protected:
 
 	int _dashTrigger;
 	
-	bool _canDash;
-
 	
 
 	
