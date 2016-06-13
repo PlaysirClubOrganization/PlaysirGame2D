@@ -190,7 +190,8 @@ void AAbstractPlayer::Dash()
 		GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
 		GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
 		GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
-
+		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		_isDashing = true;
 		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
 			&AAbstractPlayer::ResetDash, .5f, false);
 	}
@@ -200,6 +201,8 @@ void AAbstractPlayer::ResetDash()
 {
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 	_dashTrigger = 0;
+	_isDashing = false;
+
 }
 
 void AAbstractPlayer::MoveRight(float value)

@@ -104,6 +104,9 @@ protected:
 	uint32 _canRun:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	uint32 _isDashing : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _endurance;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
