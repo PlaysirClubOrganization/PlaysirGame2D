@@ -367,4 +367,3 @@ void AAbstractPlayer::Tick(float DeltaSeconds)
 	if(_spiritCharacter->IsAttacking())
 		_targetArrow->AddLocalRotation(FQuat(FRotator(1, 0, 0)));
 }
-

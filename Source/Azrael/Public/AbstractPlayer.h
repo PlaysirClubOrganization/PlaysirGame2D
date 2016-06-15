@@ -80,11 +80,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds);
 
-	void OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
-	int _coin;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
 	int _level;
