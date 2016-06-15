@@ -27,6 +27,7 @@ void AAbstractPlayer::Init()
 	_targetArrow = RootComponent->GetChildComponent(5);
 	_arrow = (UPaperFlipbookComponent *)(_targetArrow->GetChildComponent(0));
 	
+
 }
 
 
@@ -178,7 +179,7 @@ void AAbstractPlayer::PlayerJump()
 
 void AAbstractPlayer::Dash()
 {
-	if (++_dashTrigger >= 2 || _spiritCharacter->IsAttacking())
+	if (++_dashTrigger > 2 || _spiritCharacter->IsAttacking())
 	{
 		_dashTrigger = 0;
 		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
@@ -191,9 +192,6 @@ void AAbstractPlayer::Dash()
 		GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
 		GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
 		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
-		_isDashing = true;
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-			&AAbstractPlayer::ResetDash, .5f, false);
 	}
 }
 
@@ -201,7 +199,6 @@ void AAbstractPlayer::ResetDash()
 {
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 	_dashTrigger = 0;
-	_isDashing = false;
 
 }
 
@@ -370,3 +367,4 @@ void AAbstractPlayer::Tick(float DeltaSeconds)
 	if(_spiritCharacter->IsAttacking())
 		_targetArrow->AddLocalRotation(FQuat(FRotator(1, 0, 0)));
 }
+

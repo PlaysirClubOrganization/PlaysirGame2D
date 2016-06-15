@@ -80,6 +80,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds);
 
+	void OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
@@ -102,9 +103,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	uint32 _canRun:1;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	uint32 _isDashing : 1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _endurance;
