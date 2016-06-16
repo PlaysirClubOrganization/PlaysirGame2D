@@ -18,7 +18,7 @@ void ASpiritCharacter::Init()
 
 
 
-void ASpiritCharacter::Attack()
+void ASpiritCharacter::Attacking()
 {
 
 }

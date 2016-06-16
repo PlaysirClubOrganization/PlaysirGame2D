@@ -17,16 +17,16 @@ public:
 	virtual void Init();
 
 
-	UFUNCTION(BlueprintCallable, Category = Attack)
-	virtual void Attack();
+	UFUNCTION(BlueprintCallable, Category = Attacking)
+	virtual void Attacking();
 	
 	float GetTimeDelayForAttack();
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
 	float _radius;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
 	float _delayForAttack;
 
 };

@@ -30,19 +30,10 @@ void AAbstractPlayer::Init()
 
 }
 
-
-//unused :  for test
-void AAbstractPlayer::AddCoin()
-{
-	_coin++;
-}
-
-
 void AAbstractPlayer::SaveData(UAzraelSaver * saver)
 {
 	//save all the attribute in the saver
 	saver->life = _life;
-	saver->count = _coin;
 	saver->level = ++_level;
 }
 
@@ -50,7 +41,6 @@ void AAbstractPlayer::LoadData(UAzraelSaver * saver)
 {
 	//load all the attribute from the saver
  	_life = saver->life;
-	_coin = saver->count;
 	_level = saver->level;
 }
 /************************************************************************/
@@ -104,32 +94,7 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	InputComponent->BindAction("TriggerPilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
 }
 
-void AAbstractPlayer::Running()
-{
-	//Run button was pressed => enabling Run
-	_canRun = true;
-	//if the player is not sliding maxWalkspeed = runSpeed
-	if (!IsSliding()) 
-	{
-		GetCharacterMovement()->MaxWalkSpeed = RUN_SPEED;
-		SetRunning(true);
-	}
-	//The player cannot run more than its endurance
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-					&AAbstractPlayer::StopRunning, _endurance, false);
 
-}
-
-
-void AAbstractPlayer::StopRunning()
-{
-	_canRun = false;
-	if (!(IsPawnJumping() || IsCrouching() || IsSliding()))
-		GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
-	
-	SetRunning(false);
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-}
 
 void AAbstractPlayer::PlayerAttack()
 {
@@ -138,7 +103,7 @@ void AAbstractPlayer::PlayerAttack()
 	if (!IsDead())
 	{
 		SetAttacking(true);
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::ResetAttack, GetCurrentSpriteLength(), false);
 		SetRunning(false);
 	}
@@ -171,7 +136,7 @@ void AAbstractPlayer::PlayerJump()
 		//if the is the player is on the ground : he jumps normally
 		Jump();
 		//set the timer to reset the double jump trigger
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::ResetDoubleJumping, .07f, false);
 	}
 
@@ -182,7 +147,7 @@ void AAbstractPlayer::Dash()
 	if (++_dashTrigger > 2 || _spiritCharacter->IsAttacking())
 	{
 		_dashTrigger = 0;
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::ResetDash, .5f, false);
 	}
 	else
@@ -197,7 +162,7 @@ void AAbstractPlayer::Dash()
 
 void AAbstractPlayer::ResetDash()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	_dashTrigger = 0;
 
 }
@@ -221,13 +186,13 @@ void AAbstractPlayer::MoveRight(float value)
 
 void AAbstractPlayer::ResetDoubleJumping()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	_doubleJumpingTrigger= 0;
 }
 
 void AAbstractPlayer::ResetAttack()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	SetAttacking(false);
 }
 
