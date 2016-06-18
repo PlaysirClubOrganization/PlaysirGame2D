@@ -199,7 +199,7 @@ void AAbstractPlayer::ResetAttack()
 void AAbstractPlayer::TriggerTimeAttack()
 {
 	//show the arrow
-	_arrow->SetSpriteColor(FLinearColor(1.0, 1.0, 1.0, 1.0));
+	//_arrow->SetSpriteColor(FLinearColor(1.0, 1.0, 1.0, 1.0));
 
 	//Retrieving all the actor in the game
 	TArray<AActor*> arrayOfActor;
@@ -219,7 +219,7 @@ void AAbstractPlayer::TriggerTimeAttack()
 void AAbstractPlayer::StopSpiritAttack()
 {
 	//make the arrow transparent
-	_arrow->SetSpriteColor(FLinearColor(0.0, 0.0, 0.0, 0.0));
+	//_arrow->SetSpriteColor(FLinearColor(0.0, 0.0, 0.0, 0.0));
 
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
