@@ -26,10 +26,6 @@ public:
 	friend class ASpiritCharacter;
 
 	virtual void Init();
-	
-	/*Tempory add coin*/
-	UFUNCTION(BlueprintCallable, Category = Action)
-	virtual void AddCoin();
 
 	/*Save all parameters*/
 	UFUNCTION(BlueprintCallable, Category = Saver)
@@ -42,9 +38,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	/*Handle Run*/
-	void Running();
+	//void Running();
 
-	void StopRunning();
+	//void StopRunning();
 
 	void PlayerAttack();
 
@@ -82,8 +78,6 @@ public:
 
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
-	int _coin;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
 	int _level;
@@ -92,22 +86,10 @@ protected:
 	uint32 _canClimb:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	uint32 _canCrouch:1;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	uint32 _canPilon:1;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	uint32 _isClimbing:1;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	uint32 _canRun:1;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	uint32 _isDashing : 1;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	float _endurance;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _wallJumpPerf;

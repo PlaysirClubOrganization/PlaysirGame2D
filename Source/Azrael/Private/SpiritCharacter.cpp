@@ -16,13 +16,6 @@ void ASpiritCharacter::Init()
 	}
 }
 
-
-
-void ASpiritCharacter::Attack()
-{
-
-}
-
 float ASpiritCharacter::GetTimeDelayForAttack()
 {
 	return (_delayForAttack > 0.f) ? _delayForAttack : .12f; 

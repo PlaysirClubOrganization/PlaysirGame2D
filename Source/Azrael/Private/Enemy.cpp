@@ -39,7 +39,7 @@ void AEnemy::Init()
 	}
 	_pawnSensing = (UPawnSensingComponent *)
 		GetComponentByClass(UPawnSensingComponent::StaticClass());
-	receiverAttack = GetPlayer();
+	_receiverAttack = GetPlayer();
 }
 
 /*Unused for now*/
@@ -47,19 +47,19 @@ void AEnemy::UpdateCharacter()
 {
 	Super::UpdateCharacter();
 	
-	if (receiverAttack)
+	if (_receiverAttack)
 
-		if (GetDistanceTo(receiverAttack) < GetRangeAttack() && !IsAttacking() && !receiverAttack->IsAttacked()) {
-			auto timer = GetWorldTimerManager().GetTimerRate(CountdownTimerHandle);
+		if (GetDistanceTo(_receiverAttack) < GetRangeAttack() && !IsAttacking() && !_receiverAttack->IsAttacked()) {
+			auto timer = GetWorldTimerManager().GetTimerRate(_countdownTimerHandle);
 			if (timer != GetFlipbook(Attack_Animation)->GetTotalDuration())
 			{
 				SetAttacking(true);
 				GetCharacterMovement()->StopMovementImmediately();
-				GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Attack, GetFlipbook(Attack_Animation)->GetTotalDuration()/2.0f, false);
+				GetWorldTimerManager().SetTimer(_countdownTimerHandle, this, &AAzraelCharacter::Attacking, GetFlipbook(Attack_Animation)->GetTotalDuration()/2.0f, false);
 			}
 		}
 		else {
-			receiverAttack->SetAttacked(false);
+			_receiverAttack->SetAttacked(false);
 		}
 		if (IsPawnJumping())
 			GetCharacterMovement()->SetMovementMode(MOVE_Falling);

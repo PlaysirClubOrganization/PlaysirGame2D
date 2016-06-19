@@ -27,21 +27,13 @@ void AAbstractPlayer::Init()
 	_targetArrow = RootComponent->GetChildComponent(5);
 	_arrow = (UPaperFlipbookComponent *)(_targetArrow->GetChildComponent(0));
 	
+
 }
-
-
-//unused :  for test
-void AAbstractPlayer::AddCoin()
-{
-	_coin++;
-}
-
 
 void AAbstractPlayer::SaveData(UAzraelSaver * saver)
 {
 	//save all the attribute in the saver
 	saver->life = _life;
-	saver->count = _coin;
 	saver->level = ++_level;
 }
 
@@ -49,7 +41,6 @@ void AAbstractPlayer::LoadData(UAzraelSaver * saver)
 {
 	//load all the attribute from the saver
  	_life = saver->life;
-	_coin = saver->count;
 	_level = saver->level;
 }
 /************************************************************************/
@@ -103,32 +94,7 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	InputComponent->BindAction("TriggerPilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
 }
 
-void AAbstractPlayer::Running()
-{
-	//Run button was pressed => enabling Run
-	_canRun = true;
-	//if the player is not sliding maxWalkspeed = runSpeed
-	if (!IsSliding()) 
-	{
-		GetCharacterMovement()->MaxWalkSpeed = RUN_SPEED;
-		SetRunning(true);
-	}
-	//The player cannot run more than its endurance
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-					&AAbstractPlayer::StopRunning, _endurance, false);
 
-}
-
-
-void AAbstractPlayer::StopRunning()
-{
-	_canRun = false;
-	if (!(IsPawnJumping() || IsCrouching() || IsSliding()))
-		GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
-	
-	SetRunning(false);
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-}
 
 void AAbstractPlayer::PlayerAttack()
 {
@@ -137,7 +103,7 @@ void AAbstractPlayer::PlayerAttack()
 	if (!IsDead())
 	{
 		SetAttacking(true);
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::ResetAttack, GetCurrentSpriteLength(), false);
 		SetRunning(false);
 	}
@@ -170,7 +136,7 @@ void AAbstractPlayer::PlayerJump()
 		//if the is the player is on the ground : he jumps normally
 		Jump();
 		//set the timer to reset the double jump trigger
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::ResetDoubleJumping, .07f, false);
 	}
 
@@ -178,10 +144,10 @@ void AAbstractPlayer::PlayerJump()
 
 void AAbstractPlayer::Dash()
 {
-	if (++_dashTrigger >= 2 || _spiritCharacter->IsAttacking())
+	if (++_dashTrigger > 2 || _spiritCharacter->IsAttacking())
 	{
 		_dashTrigger = 0;
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
+		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::ResetDash, .5f, false);
 	}
 	else
@@ -191,17 +157,13 @@ void AAbstractPlayer::Dash()
 		GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
 		GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
 		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
-		_isDashing = true;
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this,
-			&AAbstractPlayer::ResetDash, .5f, false);
 	}
 }
 
 void AAbstractPlayer::ResetDash()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	_dashTrigger = 0;
-	_isDashing = false;
 
 }
 
@@ -224,20 +186,20 @@ void AAbstractPlayer::MoveRight(float value)
 
 void AAbstractPlayer::ResetDoubleJumping()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	_doubleJumpingTrigger= 0;
 }
 
 void AAbstractPlayer::ResetAttack()
 {
-	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	SetAttacking(false);
 }
 
 void AAbstractPlayer::TriggerTimeAttack()
 {
 	//show the arrow
-	_arrow->SetSpriteColor(FLinearColor(1.0, 1.0, 1.0, 1.0));
+	//_arrow->SetSpriteColor(FLinearColor(1.0, 1.0, 1.0, 1.0));
 
 	//Retrieving all the actor in the game
 	TArray<AActor*> arrayOfActor;
@@ -257,7 +219,7 @@ void AAbstractPlayer::TriggerTimeAttack()
 void AAbstractPlayer::StopSpiritAttack()
 {
 	//make the arrow transparent
-	_arrow->SetSpriteColor(FLinearColor(0.0, 0.0, 0.0, 0.0));
+	//_arrow->SetSpriteColor(FLinearColor(0.0, 0.0, 0.0, 0.0));
 
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);

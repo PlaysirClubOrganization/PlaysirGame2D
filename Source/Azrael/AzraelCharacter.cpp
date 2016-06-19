@@ -94,19 +94,19 @@ void AAzraelCharacter::TurnPawnRotation()
 void AAzraelCharacter::Init()
 {
 	//Init the m_animationArray which will contains all the Pawn'sFlipbooks
-	m_animationArray = new TArray<UPaperFlipbook *>();
+	_animationArray = new TArray<UPaperFlipbook *>();
 }
 
-void AAzraelCharacter::Attack()
+void AAzraelCharacter::Attacking()
 {
 	GetSprite()->SetPlayRate(1.0f);
-	if (receiverAttack)
+	if (_receiverAttack)
 	{
 		//Computing the direction of the player from the AI -1 if is at its left
 		// 1 else
-		int direction = (receiverAttack->GetActorLocation().X < GetActorLocation().X) ? -1 : 1;
+		int direction = (_receiverAttack->GetActorLocation().X < GetActorLocation().X) ? -1 : 1;
 		//Compute the vector director between the Ai and the Player
-		FVector directionBetweenPawn = receiverAttack->GetActorLocation() - GetActorLocation();
+		FVector directionBetweenPawn = _receiverAttack->GetActorLocation() - GetActorLocation();
 		//Normalize the vector
 		directionBetweenPawn.Normalize();
 		//computing the cosine between the vector direction and the ForwardVector(1,0,0)
@@ -115,20 +115,20 @@ void AAzraelCharacter::Attack()
 		float sin = sqrt(1 - cos*cos);
 
 		//if the Player is currently attacked we cannot attack twice in the same time
-		if (!receiverAttack->GetIsAttacked())
+		if (!_receiverAttack->GetIsAttacked())
 		{
 			//if the player is in the Range Attack and if the AI is in attack mode and the life of
 			//the Player is greater than 0
-			if (GetDistanceTo(receiverAttack) < GetRangeAttack() /*&& IsAttacking() */ && receiverAttack->GetLife() >= 0)
+			if (GetDistanceTo(_receiverAttack) < GetRangeAttack() /*&& IsAttacking() */ && _receiverAttack->GetLife() >= 0)
 			{
 				//The target is Attacked
-				receiverAttack->SetAttacked(true);
+				_receiverAttack->SetAttacked(true);
 				//TODO : Manager physic attack
-				receiverAttack->GetCharacterMovement()->Velocity = FVector(direction*GetForceAttack()*cos, 0.f, GetForceAttack()*sin);
+				_receiverAttack->GetCharacterMovement()->Velocity = FVector(direction*GetForceAttack()*cos, 0.f, GetForceAttack()*sin);
 				//Resetting the Timer
-				GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+				GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 				//The target receive the damage
-				receiverAttack->TakeDamages(GetPawnAttackDamages());
+				_receiverAttack->TakeDamages(GetPawnAttackDamages());
 			}
 		}
 	}
@@ -139,12 +139,12 @@ void AAzraelCharacter::Appear()
 {	//The AI is appearing (necessary for playing the appear animation)
 	SetAppearing(true);
 	//New the Pawn Idles so we call the Idle function after that the appear animation ends
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Idle, GetCurrentSpriteLength(), false);
+	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this, &AAzraelCharacter::Idle, GetCurrentSpriteLength(), false);
 }
 
 void AAzraelCharacter::Idle()
 {
-	//Intialize the velocity, when the Panw is Idle the velocity is null
+	//Initialize the velocity, when the Pawn is Idle the velocity is null
 	GetCharacterMovement()->StopMovementImmediately();
 	//Set the right sprite
 	//GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Idle_Animation));
@@ -160,7 +160,7 @@ void AAzraelCharacter::Dead()
 
 void AAzraelCharacter::TakeDamages(int damage)
 {
-	if (!receiverAttack)
+	if (!_receiverAttack)
 		return;
 	_life -= damage;
 	SetAttacked(false);
@@ -171,7 +171,7 @@ void AAzraelCharacter::TakeDamages(int damage)
 		}
 		SetDead(true);
 		GetSprite()->SetFlipbook(GetFlipbook(AnimationState::Dead_Animation));
-		GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAzraelCharacter::Dead, GetCurrentSpriteLength()-.1f, false);
+		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this, &AAzraelCharacter::Dead, GetCurrentSpriteLength()-.1f, false);
 	}
 }
 
@@ -199,7 +199,7 @@ float AAzraelCharacter::GetCurrentSpriteLength()
 
 TArray< UPaperFlipbook *> * AAzraelCharacter::GetAnimationPaper()
 {
-	return m_animationArray;
+	return _animationArray;
 }
 
 UPaperFlipbook * AAzraelCharacter::GetFlipbook(AnimationState idAnim)
@@ -335,6 +335,32 @@ Identity AAzraelCharacter::GetIdentity()
 	return _identity;
 }
 
+void AAzraelCharacter::Running()
+{
+	//Run button was pressed => enabling Run
+	_canRun = true;
+	//if the player is not sliding maxWalkspeed = runSpeed
+	if (!IsSliding())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = RUN_SPEED;
+		SetRunning(true);
+	}
+	//The player cannot run more than its endurance
+	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
+		&AAzraelCharacter::StopRunning, _endurance, false);
+
+}
+
+
+void AAzraelCharacter::StopRunning()
+{
+	_canRun = false;
+	if (!(IsPawnJumping() || IsCrouching() || IsSliding()))
+		GetCharacterMovement()->MaxWalkSpeed = WALK_SPEED;
+
+	SetRunning(false);
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
+}
 /************************************************************************/
 /* TODO                                                                 */
 /************************************************************************/
@@ -342,6 +368,7 @@ float AAzraelCharacter::GetPawnAttackDamages()
 {
 	return 1.0f;
 }
+
 
 float AAzraelCharacter::GetRangeAttack()
 {

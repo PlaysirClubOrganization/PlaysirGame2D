@@ -34,31 +34,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = StateMachine)
 	virtual void Init();
 
-	/** When the Pawn Attack we set the Attack_Animation PaperFlipbook
-	*
-	*/
-	UFUNCTION(BlueprintCallable, Category = Attack)
-	virtual void Attack();
-
-	/** When the Pawn Idle we set the Idle_Animation PaperFlipbook
-	*
-	*/
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void Idle();
-
-	/** When the Pawn Appear we set the Appear_Animation PaperFlipbook
-	*	and set the _isAppearParameter to true
-	*/
-	UFUNCTION(BlueprintCallable, Category = StateMachine)
-	virtual void Appear();
-
-	/**
-	* When the life of the Pawn is less (or equal) than 0
-	* we put the Dead_animationa and destroy the Pawn
-	*/	
-	virtual void Dead();
-
-
 	UFUNCTION(BlueprintCallable, Category = Damage)
 	void TakeDamages(int damage);
 
@@ -111,6 +86,31 @@ public:
 
 
 	virtual void SetLife(int life);
+
+
+	/** When the Pawn Attack we set the Attack_Animation PaperFlipbook
+	*
+	*/
+	UFUNCTION(BlueprintCallable, Category = Attacking)
+		virtual void Attacking();
+
+	/** When the Pawn Idle we set the Idle_Animation PaperFlipbook
+	*
+	*/
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+		virtual void Idle();
+
+	/** When the Pawn Appear we set the Appear_Animation PaperFlipbook
+	*	and set the _isAppearParameter to true
+	*/
+	UFUNCTION(BlueprintCallable, Category = StateMachine)
+		virtual void Appear();
+
+	/**
+	* When the life of the Pawn is less (or equal) than 0
+	* we put the Dead_animationa and destroy the Pawn
+	*/
+	virtual void Dead();
 
 	/**
 	* @return if the Pawn is Dying
@@ -208,6 +208,10 @@ public:
 
 	virtual void SetRunning(bool isRunning);
 
+	virtual void Running();
+
+	virtual void StopRunning();
+
 	virtual float GetPawnAttackDamages();
 
 	virtual float GetRangeAttack();
@@ -231,15 +235,15 @@ public:
 
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
-	AAzraelCharacter * receiverAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
+	AAzraelCharacter * _receiverAttack;
 
 	// An array Of the PaperFlipbook of the pawn
-	TArray<class UPaperFlipbook*>  * m_animationArray;
+	TArray<class UPaperFlipbook*>  * _animationArray;
 
 	//The timer which be used to delegate method in order to play some
 	// flipbook (for example playing the death anim before destroying it)
-	FTimerHandle CountdownTimerHandle;
+	FTimerHandle _countdownTimerHandle;
 
 	//This Identity of the Pawn
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Identity)
@@ -285,12 +289,20 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "StateMachine")
 	uint32 _isRunning:1;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	uint32 _canCrouch : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	uint32 _canRun : 1;
 
 	/*
 	* Is the Pawn's looking at right or left
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Direction")
 	uint32 _lookAtRight:1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	float _endurance;
 
 	/*
 	* The Force impact that will affect the enemy
