@@ -144,7 +144,7 @@ void AAbstractPlayer::PlayerJump()
 
 void AAbstractPlayer::Dash()
 {
-	if (++_dashTrigger > 2 || _spiritCharacter->IsAttacking())
+	if (++_dashTrigger > 2 || _spiritCharacter->IsAttacking() || IsCrouching())
 	{
 		_dashTrigger = 0;
 		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
