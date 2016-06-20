@@ -120,11 +120,11 @@ void AAbstractPlayer::PlayerJump()
 		WallJump();
 
 	// Climbing ??? 
-	if (_canClimb)
-		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-
+	//if (_canClimb)
+	//	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	if (IsPawnJumping())
-	{	//Double Jumping if the doubleJumpTrigger equals to 1
+	{
+		//Double Jumping if the doubleJumpTrigger equals to 1
 		if (_doubleJumpingTrigger == 1)
 		{
 			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
@@ -144,14 +144,12 @@ void AAbstractPlayer::PlayerJump()
 
 void AAbstractPlayer::Dash()
 {
-	if (++_dashTrigger > 2 || _spiritCharacter->IsAttacking())
-	{
-		_dashTrigger = 0;
+	if (CanDash())
 		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
-			&AAbstractPlayer::ResetDash, .5f, false);
-	}
+			&AAbstractPlayer::ResetDash, .1f, false);
 	else
 	{
+		_touchGroundAfterDash = false;
 		float boost = 5000.0f;
 		GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
 		GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
@@ -160,11 +158,18 @@ void AAbstractPlayer::Dash()
 	}
 }
 
+bool AAbstractPlayer::CanDash()
+{
+	return (
+		++_dashTrigger > 2 || _spiritCharacter->IsAttacking() || IsCrouching()
+		|| !_touchGroundAfterDash		
+		);
+}
+
 void AAbstractPlayer::ResetDash()
 {
 	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	_dashTrigger = 0;
-
 }
 
 void AAbstractPlayer::MoveRight(float value)

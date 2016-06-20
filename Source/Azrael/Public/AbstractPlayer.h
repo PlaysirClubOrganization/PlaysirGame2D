@@ -49,6 +49,8 @@ public:
 	/*Prepare the right Dash*/
 	void Dash();
 
+	bool CanDash();
+
 	void ResetDash();
 
 	void MoveRight(float value);
@@ -92,6 +94,9 @@ protected:
 	uint32 _isClimbing:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	uint32 _touchGroundAfterDash : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _wallJumpPerf;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
@@ -104,9 +109,7 @@ protected:
 	int _doubleJumpingTrigger;
 
 	int _dashTrigger;
-	
-	
 
 	
-
+	
 };
