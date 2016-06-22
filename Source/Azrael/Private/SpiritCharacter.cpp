@@ -6,6 +6,7 @@
 void ASpiritCharacter::Init()
 {
 	Super::Init();
+	_rangeAttack = 200.0f;
 	_identity = Identity::Golem;
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)

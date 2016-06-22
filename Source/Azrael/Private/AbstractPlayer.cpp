@@ -15,6 +15,7 @@ void AAbstractPlayer::Init()
 	_life = 50;
 	_endurance = 5.0f;
 	_wallJumpPerf = .7f;
+	_emitterTemplate = LoadParticle("/Game/Azrael/Blueprint/SpiritParticule/SpiritRange.SpiritRange");
 	
 	//Load the animation paperFlipbook
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
@@ -107,6 +108,8 @@ void AAbstractPlayer::PlayerAttack()
 			&AAbstractPlayer::ResetAttack, GetCurrentSpriteLength(), false);
 		SetRunning(false);
 	}
+
+	
 }
 
 void AAbstractPlayer::PlayerJump()
@@ -218,8 +221,9 @@ void AAbstractPlayer::TriggerTimeAttack()
 
 	_spiritCharacter->SetAttacking(true);
 	_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
+	(UGameplayStatics::SpawnEmitterAttached(_emitterTemplate, _spiritCharacter->GetSprite()))->SetFloatParameter("SpiritRange",20);
 
-}
+} 
 
 void AAbstractPlayer::StopSpiritAttack()
 {

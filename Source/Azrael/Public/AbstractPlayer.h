@@ -110,6 +110,6 @@ protected:
 
 	int _dashTrigger;
 
-	
+	UParticleSystem * _emitterTemplate;
 	
 };

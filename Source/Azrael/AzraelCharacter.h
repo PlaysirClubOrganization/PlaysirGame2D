@@ -309,6 +309,12 @@ protected:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	float _forceAttack;
+
+	/*
+	* The range in the enemy can be attacked
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float _rangeAttack;
 };
 
 

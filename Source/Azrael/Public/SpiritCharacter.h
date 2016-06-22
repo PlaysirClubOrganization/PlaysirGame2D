@@ -21,9 +21,6 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
-	float _radius;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
 	float _delayForAttack;
 
 };

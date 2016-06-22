@@ -372,7 +372,7 @@ float AAzraelCharacter::GetPawnAttackDamages()
 
 float AAzraelCharacter::GetRangeAttack()
 {
-	return 2000.0f;
+	return _rangeAttack;
 }
 
 float AAzraelCharacter::GetForceAttack()

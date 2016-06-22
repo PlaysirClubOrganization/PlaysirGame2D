@@ -86,8 +86,13 @@ static FORCEINLINE UPaperFlipbook* LoadFlipbook(const FName& Path)
 	return LoadObjFromPath<UPaperFlipbook>(Path);
 }
 
+static FORCEINLINE UParticleSystem* LoadParticle(const FName& Path)
+{
+	if (Path == NAME_None) return NULL;
+	//~
 
-
+	return LoadObjFromPath<UParticleSystem>(Path);
+}
 /*Used for the LoadObjFromPath*/
 static FString GetAnimationNameAsFString(int anim)
 {
