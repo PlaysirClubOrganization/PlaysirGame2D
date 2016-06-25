@@ -84,6 +84,7 @@ public:
 
 	void Anchor();
 
+	
  	UFUNCTION(BlueprintCallable, Category = Action)
 	void CrouchAction(bool crouching);
 
@@ -92,6 +93,9 @@ public:
 
 protected:
 	
+	void MakeCircleTrigo();
+
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
 	int _level;
 

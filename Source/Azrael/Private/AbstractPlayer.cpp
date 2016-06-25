@@ -259,7 +259,8 @@ void AAbstractPlayer::StopSpiritAttack()
 void AAbstractPlayer::SpiritRangeParticle()
 {
 	_emitterTemplate = (UGameplayStatics::SpawnEmitterAttached(
-							LoadParticle("/Game/Azrael/Blueprint/SpiritParticule/SpiritRange.SpiritRange"),
+		
+							LoadParticle("/Game/Azrael/Gameplay/Content/Particle/SpiritRange.SpiritRange"),
 							_spiritCharacter->GetSprite()));
 	_emitterTemplate->SetFloatParameter("SpiritRange", _spiritCharacter->GetRangeAttack()*0.8);
 
@@ -344,12 +345,13 @@ void AAbstractPlayer::Anchor()
 
 	FLatentActionInfo LatentInfo;
 	LatentInfo.CallbackTarget = this;
-	_angleSpirit = FMath::Atan((_angleSpiritSinus / _angleSpiritSinus));
+
+	MakeCircleTrigo();
 
 	if (_spiritCharacter->IsAttacking())
 	{
-		float x = _spiritCharacter->GetRangeAttack() / 2.0f * sin(_angleSpirit);
-		float z = _spiritCharacter->GetRangeAttack() / 2.0f * cos(_angleSpirit);
+		float x = _spiritCharacter->GetRangeAttack() * cos(_angleSpirit);
+		float z = _spiritCharacter->GetRangeAttack() * sin(_angleSpirit);
 
 		FHitResult hitRes;
 		FVector end = GetActorLocation() + FVector(x,0,z);
@@ -380,6 +382,40 @@ void AAbstractPlayer::Anchor()
 	}
 	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 		&AAbstractPlayer::ResetAnchorTarget, time, false);
+}
+
+void AAbstractPlayer::MakeCircleTrigo()
+{
+	_angleSpirit = UKismetMathLibrary::DegAtan((_angleSpiritSinus / _angleSpiritCosinus));
+
+	if (_angleSpiritCosinus <= 0)
+	{
+		if (_angleSpiritCosinus == 0.0f && _angleSpiritSinus == -1.0f)
+		{
+			_angleSpirit = 270;
+			return;
+		}
+		if (_angleSpiritSinus >= 0)
+		{
+			if (_angleSpiritSinus == 0.f)
+			{
+				_angleSpirit = 180.0f;
+				return;
+			}
+			else if (_angleSpirit != 90.f)
+			{
+				_angleSpirit = 180.0f + _angleSpirit;
+				return;
+			}
+		}
+		else
+			_angleSpirit += 180.0f;
+	}
+	else
+	{
+		if (_angleSpiritSinus <= 0.0f)
+			_angleSpirit = 360.0f + _angleSpirit;
+	}
 }
 
 void AAbstractPlayer::ResetAnchorTarget()
