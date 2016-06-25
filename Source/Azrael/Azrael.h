@@ -93,6 +93,15 @@ static FORCEINLINE UParticleSystem* LoadParticle(const FName& Path)
 
 	return LoadObjFromPath<UParticleSystem>(Path);
 }
+
+static FORCEINLINE UBlueprint* LoadBlueprint(const FName& Path)
+{
+	if (Path == NAME_None) return NULL;
+	//~
+
+	return LoadObjFromPath<UBlueprint>(Path);
+}
+
 /*Used for the LoadObjFromPath*/
 static FString GetAnimationNameAsFString(int anim)
 {

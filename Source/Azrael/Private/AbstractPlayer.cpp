@@ -7,6 +7,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "AbstractPlayer.h"
 
+#define SCREEN(x) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,FString::Printf(TEXT("~> %f"), x))
+#define SCREENCOL(x,col) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::##col,FString::Printf(TEXT(" ~> %f"), x))
+
 void AAbstractPlayer::Init()
 {
 	//Init the attribute of the player
@@ -340,7 +343,8 @@ void AAbstractPlayer::SpiritY(float value)
 
 void AAbstractPlayer::Anchor()
 {
-	
+	if (_anchorMovement)
+		return;
 	float time = 0.2f;
 
 	FLatentActionInfo LatentInfo;
@@ -350,13 +354,13 @@ void AAbstractPlayer::Anchor()
 
 	if (_spiritCharacter->IsAttacking())
 	{
-		float x = _spiritCharacter->GetRangeAttack() * cos(_angleSpirit);
-		float z = _spiritCharacter->GetRangeAttack() * sin(_angleSpirit);
+		float x = _spiritCharacter->GetRangeAttack() * cos(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
+		float z = _spiritCharacter->GetRangeAttack() * sin(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
 
-		FHitResult hitRes;
-		FVector end = GetActorLocation() + FVector(x,0,z);
+		TArray<FHitResult> OutHits;
+		FVector end = GetActorLocation() + FVector(x, 0, z);
 
-		bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
+		bool hit = UKismetSystemLibrary::SphereTraceMulti_NEW(GetWorld(),
 			GetActorLocation(),
 			end,
 			GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS / 5.0,
@@ -364,21 +368,30 @@ void AAbstractPlayer::Anchor()
 			false,
 			TArray<AActor*>(),
 			EDrawDebugTrace::Type::ForDuration,
-			hitRes,
+			OutHits,
 			true);
 
-		
+		for (int i = 0; i < OutHits.Num(); ++i)
+		{
+			_anchorSelected = Cast<AAnchor>(OutHits[i].GetActor());
+			if (_anchorSelected)
+				break;
+		}
 
-		if(_anchorSelected)
-			if(GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
-				UKismetSystemLibrary::MoveComponentTo(RootComponent,
-						_anchorSelected->GetActorLocation(),
-						GetActorRotation(),
-						true,
-						true,
-						time,
-						EMoveComponentAction::Move,
-						LatentInfo);
+		if (_anchorSelected)
+		{
+			//if (GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
+				_anchorMovement = true;
+			UKismetSystemLibrary::MoveComponentTo(RootComponent,
+				_anchorSelected->GetActorLocation(),
+				GetActorRotation(),
+				true,
+				true,
+				time,
+				EMoveComponentAction::Move,
+				LatentInfo);
+
+		}
 	}
 	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 		&AAbstractPlayer::ResetAnchorTarget, time, false);
@@ -421,6 +434,7 @@ void AAbstractPlayer::MakeCircleTrigo()
 void AAbstractPlayer::ResetAnchorTarget()
 {
 	_anchorSelected = nullptr;
+	_anchorMovement = false;
 }
 
 void AAbstractPlayer::CrouchAction(bool crouching)
