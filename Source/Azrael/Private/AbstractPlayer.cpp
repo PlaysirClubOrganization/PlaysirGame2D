@@ -15,7 +15,6 @@ void AAbstractPlayer::Init()
 	_life = 50;
 	_endurance = 5.0f;
 	_wallJumpPerf = .7f;
-	_emitterTemplate = LoadParticle("/Game/Azrael/Blueprint/SpiritParticule/SpiritRange.SpiritRange");
 	
 	//Load the animation paperFlipbook
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
@@ -49,16 +48,27 @@ void AAbstractPlayer::LoadData(UAzraelSaver * saver)
 /************************************************************************/
 void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
+	//AXIS BINDING
+
+	/************************************************************************/
+	/*                                                                      */
+	/************************************************************************/
+	InputComponent->BindAxis("MoveRight", this, &AAbstractPlayer::MoveRight);
+
+	InputComponent->BindAxis("SpiritX", this, &AAbstractPlayer::SpiritX);
+	InputComponent->BindAxis("SpiritY", this, &AAbstractPlayer::SpiritY);
+
+
+	//ACTION BINDING
+
+
 	/************************************************************************/
 	/* Spirit Attack : LT => trigger the dilatation of time                 */
 	/************************************************************************/
 	InputComponent->BindAction("SpiritAttack", IE_Pressed,  this,  &AAbstractPlayer::TriggerTimeAttack);
 	InputComponent->BindAction("SpiritAttack", IE_Released, this,  &AAbstractPlayer::StopSpiritAttack);
 	
-	/************************************************************************/
-	/*                                                                      */
-	/************************************************************************/
-	InputComponent->BindAxis("MoveRight", this, &AAbstractPlayer::MoveRight);
+
 
 	/************************************************************************/
 	/*                                                                      */
@@ -93,6 +103,10 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	InputComponent->BindAction("TriggerPilon", IE_Pressed, this, &AAbstractPlayer::EnablingPilon);
 	InputComponent->BindAction("TriggerPilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
+
+
+	InputComponent->BindAction("Anchor", IE_Pressed, this, &AAbstractPlayer::Anchor);
+
 }
 
 
@@ -147,12 +161,10 @@ void AAbstractPlayer::PlayerJump()
 
 void AAbstractPlayer::Dash()
 {
-	if (CanDash())
-		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
-			&AAbstractPlayer::ResetDash, .1f, false);
+	if (!CanDash())
+		return;
 	else
 	{
-		_touchGroundAfterDash = false;
 		float boost = 5000.0f;
 		GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
 		GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
@@ -163,15 +175,11 @@ void AAbstractPlayer::Dash()
 
 bool AAbstractPlayer::CanDash()
 {
-	return (
-		++_dashTrigger > 2 || _spiritCharacter->IsAttacking() || IsCrouching()
-		|| !_touchGroundAfterDash		
-		);
+	return (++_dashTrigger < 2  &&  !_spiritCharacter->IsAttacking() && !IsCrouching());
 }
 
 void AAbstractPlayer::ResetDash()
 {
-	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	_dashTrigger = 0;
 }
 
@@ -206,6 +214,10 @@ void AAbstractPlayer::ResetAttack()
 
 void AAbstractPlayer::TriggerTimeAttack()
 {
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
+	
+	SpiritRangeParticle();
+
 	//show the arrow
 	//_arrow->SetSpriteColor(FLinearColor(1.0, 1.0, 1.0, 1.0));
 
@@ -221,12 +233,13 @@ void AAbstractPlayer::TriggerTimeAttack()
 
 	_spiritCharacter->SetAttacking(true);
 	_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
-	(UGameplayStatics::SpawnEmitterAttached(_emitterTemplate, _spiritCharacter->GetSprite()))->SetFloatParameter("SpiritRange",20);
 
 } 
 
 void AAbstractPlayer::StopSpiritAttack()
 {
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
+
 	//make the arrow transparent
 	//_arrow->SetSpriteColor(FLinearColor(0.0, 0.0, 0.0, 0.0));
 
@@ -238,6 +251,20 @@ void AAbstractPlayer::StopSpiritAttack()
 
 	_spiritCharacter->SetAttacking(false);
 	_targetArrow->GetChildComponent(0)->bHiddenInGame = true;
+	
+	if(_emitterTemplate)
+		_emitterTemplate->DestroyComponent();
+}
+
+void AAbstractPlayer::SpiritRangeParticle()
+{
+	_emitterTemplate = (UGameplayStatics::SpawnEmitterAttached(
+							LoadParticle("/Game/Azrael/Blueprint/SpiritParticule/SpiritRange.SpiritRange"),
+							_spiritCharacter->GetSprite()));
+	_emitterTemplate->SetFloatParameter("SpiritRange", _spiritCharacter->GetRangeAttack()*0.8);
+
+	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
+			&AAbstractPlayer::StopSpiritAttack, _spiritCharacter->GetTimeDelayForAttack(), false);
 
 }
 
@@ -297,6 +324,67 @@ void AAbstractPlayer::EnablingPilon()
 void AAbstractPlayer::DisablingPilon()
 {
 	_canPilon = false;
+}
+
+
+void AAbstractPlayer::SpiritX(float value)
+{
+	_angleSpiritCosinus = value;
+}
+
+void AAbstractPlayer::SpiritY(float value)
+{
+	_angleSpiritSinus = value;
+}
+
+void AAbstractPlayer::Anchor()
+{
+	
+	float time = 0.2f;
+
+	FLatentActionInfo LatentInfo;
+	LatentInfo.CallbackTarget = this;
+	_angleSpirit = FMath::Atan((_angleSpiritSinus / _angleSpiritSinus));
+
+	if (_spiritCharacter->IsAttacking())
+	{
+		float x = _spiritCharacter->GetRangeAttack() / 2.0f * sin(_angleSpirit);
+		float z = _spiritCharacter->GetRangeAttack() / 2.0f * cos(_angleSpirit);
+
+		FHitResult hitRes;
+		FVector end = GetActorLocation() + FVector(x,0,z);
+
+		bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
+			GetActorLocation(),
+			end,
+			GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS / 5.0,
+			ETraceTypeQuery::TraceTypeQuery1,
+			false,
+			TArray<AActor*>(),
+			EDrawDebugTrace::Type::ForDuration,
+			hitRes,
+			true);
+
+		
+
+		if(_anchorSelected)
+			if(GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
+				UKismetSystemLibrary::MoveComponentTo(RootComponent,
+						_anchorSelected->GetActorLocation(),
+						GetActorRotation(),
+						true,
+						true,
+						time,
+						EMoveComponentAction::Move,
+						LatentInfo);
+	}
+	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
+		&AAbstractPlayer::ResetAnchorTarget, time, false);
+}
+
+void AAbstractPlayer::ResetAnchorTarget()
+{
+	_anchorSelected = nullptr;
 }
 
 void AAbstractPlayer::CrouchAction(bool crouching)

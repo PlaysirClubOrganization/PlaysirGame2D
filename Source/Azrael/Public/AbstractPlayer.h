@@ -51,6 +51,7 @@ public:
 
 	bool CanDash();
 
+	UFUNCTION(BlueprintCallable, Category = Action)
 	void ResetDash();
 
 	void MoveRight(float value);
@@ -63,6 +64,8 @@ public:
 
 	virtual void StopSpiritAttack();
 
+	void SpiritRangeParticle();
+
 	void WallJump();
 
 	void EnablingCrouch();
@@ -73,7 +76,15 @@ public:
 
 	void DisablingPilon();
 
-	UFUNCTION(BlueprintCallable, Category = Action)
+	void SpiritX(float value);
+
+	void SpiritY(float value);
+
+	void ResetAnchorTarget();
+
+	void Anchor();
+
+ 	UFUNCTION(BlueprintCallable, Category = Action)
 	void CrouchAction(bool crouching);
 
 	virtual void Tick(float DeltaSeconds);
@@ -94,9 +105,6 @@ protected:
 	uint32 _isClimbing:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	uint32 _touchGroundAfterDash : 1;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _wallJumpPerf;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
@@ -109,7 +117,15 @@ protected:
 	int _doubleJumpingTrigger;
 
 	int _dashTrigger;
-
-	UParticleSystem * _emitterTemplate;
 	
+	float _angleSpiritCosinus;
+	float _angleSpiritSinus;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
+	float _angleSpirit;
+
+	UParticleSystemComponent * _emitterTemplate;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
+	AActor * _anchorSelected;
 };

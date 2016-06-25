@@ -337,11 +337,11 @@ Identity AAzraelCharacter::GetIdentity()
 
 void AAzraelCharacter::Running()
 {
-	//Run button was pressed => enabling Run
-	_canRun = true;
 	//if the player is not sliding maxWalkspeed = runSpeed
 	if (!IsSliding())
 	{
+		//Run button was pressed => enabling Run
+		_canRun = true;
 		GetCharacterMovement()->MaxWalkSpeed = RUN_SPEED;
 		SetRunning(true);
 	}

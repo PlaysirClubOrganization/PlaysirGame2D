@@ -18,9 +18,14 @@ public:
 
 	float GetTimeDelayForAttack();
 
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
 	float _delayForAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
+	uint32 _canAttack:1;
+
 
 };
