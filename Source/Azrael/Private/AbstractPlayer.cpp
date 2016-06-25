@@ -221,36 +221,22 @@ void AAbstractPlayer::TriggerTimeAttack()
 	
 	SpiritRangeParticle();
 
-	//show the arrow
-	//_arrow->SetSpriteColor(FLinearColor(1.0, 1.0, 1.0, 1.0));
 
 	//Retrieving all the actor in the game
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
-	//Dilating the time for all actors
-	for ( int i = 0; i < arrayOfActor.Num();i++)
-		arrayOfActor[i]->CustomTimeDilation = .1f;
-	//except the time dilation of the spirit
-	_spiritCharacter->CustomTimeDilation = 1.0f;
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .1);
+	_spiritCharacter->CustomTimeDilation = 10.0f;
 
 	_spiritCharacter->SetAttacking(true);
-	_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
+	//_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
 
 } 
 
 void AAbstractPlayer::StopSpiritAttack()
 {
-	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
-
-	//make the arrow transparent
-	//_arrow->SetSpriteColor(FLinearColor(0.0, 0.0, 0.0, 0.0));
-
-	TArray<AActor*> arrayOfActor;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
-
-	for (int i = 0; i < arrayOfActor.Num(); i++)
-		arrayOfActor[i]->CustomTimeDilation = 1.0f;
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0);
 
 	_spiritCharacter->SetAttacking(false);
 	_targetArrow->GetChildComponent(0)->bHiddenInGame = true;
@@ -345,10 +331,7 @@ void AAbstractPlayer::Anchor()
 {
 	if (_anchorMovement)
 		return;
-	float time = 0.2f;
-
-	FLatentActionInfo LatentInfo;
-	LatentInfo.CallbackTarget = this;
+	float time = 0.5f;
 
 	MakeCircleTrigo();
 
@@ -361,15 +344,15 @@ void AAbstractPlayer::Anchor()
 		FVector end = GetActorLocation() + FVector(x, 0, z);
 
 		bool hit = UKismetSystemLibrary::SphereTraceMulti_NEW(GetWorld(),
-			GetActorLocation(),
-			end,
-			GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS / 5.0,
-			ETraceTypeQuery::TraceTypeQuery1,
-			false,
-			TArray<AActor*>(),
-			EDrawDebugTrace::Type::ForDuration,
-			OutHits,
-			true);
+											GetActorLocation(),
+											end,
+											GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS / 5.0,
+											ETraceTypeQuery::TraceTypeQuery1,
+											false,
+											TArray<AActor*>(),
+											EDrawDebugTrace::Type::ForDuration,
+											OutHits,
+											true);
 
 		for (int i = 0; i < OutHits.Num(); ++i)
 		{
@@ -380,17 +363,24 @@ void AAbstractPlayer::Anchor()
 
 		if (_anchorSelected)
 		{
-			//if (GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
+			if (GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
+			{
 				_anchorMovement = true;
-			UKismetSystemLibrary::MoveComponentTo(RootComponent,
-				_anchorSelected->GetActorLocation(),
-				GetActorRotation(),
-				true,
-				true,
-				time,
-				EMoveComponentAction::Move,
-				LatentInfo);
+				FLatentActionInfo LatentInfo;
+				LatentInfo.CallbackTarget = this;
+				UKismetSystemLibrary::MoveComponentTo(RootComponent,
+					_anchorSelected->GetActorLocation(),
+					GetActorRotation(),
+					true,
+					true,
+					time,
+					EMoveComponentAction::Move,
+					LatentInfo);
 
+				UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0);
+				if (_emitterTemplate)
+					_emitterTemplate->DestroyComponent();
+			}
 		}
 	}
 	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
