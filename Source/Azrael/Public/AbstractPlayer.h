@@ -5,6 +5,7 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Item/Anchor.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "AzraelCharacter.h"
 #include "AbstractPlayer.generated.h"
@@ -51,6 +52,7 @@ public:
 
 	bool CanDash();
 
+	UFUNCTION(BlueprintCallable, Category = Action)
 	void ResetDash();
 
 	void MoveRight(float value);
@@ -63,6 +65,8 @@ public:
 
 	virtual void StopSpiritAttack();
 
+	void SpiritRangeParticle();
+
 	void WallJump();
 
 	void EnablingCrouch();
@@ -73,7 +77,18 @@ public:
 
 	void DisablingPilon();
 
-	UFUNCTION(BlueprintCallable, Category = Action)
+	void ResetPilon();
+
+	void SpiritX(float value);
+
+	void SpiritY(float value);
+
+	void ResetAnchorTarget();
+
+	void Anchor();
+
+	
+ 	UFUNCTION(BlueprintCallable, Category = Action)
 	void CrouchAction(bool crouching);
 
 	virtual void Tick(float DeltaSeconds);
@@ -81,6 +96,9 @@ public:
 
 protected:
 	
+	void MakeCircleTrigo();
+
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
 	int _level;
 
@@ -88,19 +106,26 @@ protected:
 	uint32 _canClimb:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	uint32 _canPilon:1;
+	uint32 _isPiloning :1;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	uint32 _isClimbing:1;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	uint32 _touchGroundAfterDash : 1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _wallJumpPerf;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	ASpiritCharacter * _spiritCharacter;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
+	float _angleSpirit;
+
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
+	AAnchor * _anchorSelected;
+
+	UParticleSystemComponent * _emitterTemplate;
 
 	USceneComponent *  _targetArrow;
 
@@ -110,6 +135,13 @@ protected:
 
 	int _dashTrigger;
 
+	int _triggerPilon;
+
+	uint32 _anchorMovement : 1;
+
 	
-	
+	float _angleSpiritCosinus;
+	float _angleSpiritSinus;
+
+
 };

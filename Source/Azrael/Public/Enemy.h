@@ -25,29 +25,27 @@ protected:
 		int _nbKilled ;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "  AI")
-		bool _isPatrolling;
+	uint32 _isPatrolling:1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _playerDetected;
+	uint32 _playerDetected:1;
 
 	/*
 	*	If the true the Pawn is stopped and doesn't move
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _isImmobile;
+	uint32 _isImmobile:1;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		bool _isTrapDetected;
+	uint32 _isTrapDetected:1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
-		UPawnSensingComponent * _pawnSensing;
+	UPawnSensingComponent * _pawnSensing;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-		float _rangeAttack;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = "AI")
-		float _pawnAttackDamages;
+	float _pawnAttackDamages;
+
 public:
 	
 	/******************************************************************************/

@@ -7,6 +7,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "AbstractPlayer.h"
 
+#define SCREEN(x) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,FString::Printf(TEXT("~> %f"), x))
+#define SCREENCOL(x,col) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::##col,FString::Printf(TEXT(" ~> %f"), x))
+
 void AAbstractPlayer::Init()
 {
 	//Init the attribute of the player
@@ -48,16 +51,27 @@ void AAbstractPlayer::LoadData(UAzraelSaver * saver)
 /************************************************************************/
 void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
+	//AXIS BINDING
+
+	/************************************************************************/
+	/*                                                                      */
+	/************************************************************************/
+	InputComponent->BindAxis("MoveRight", this, &AAbstractPlayer::MoveRight);
+
+	InputComponent->BindAxis("SpiritX", this, &AAbstractPlayer::SpiritX);
+	InputComponent->BindAxis("SpiritY", this, &AAbstractPlayer::SpiritY);
+
+
+	//ACTION BINDING
+
+
 	/************************************************************************/
 	/* Spirit Attack : LT => trigger the dilatation of time                 */
 	/************************************************************************/
 	InputComponent->BindAction("SpiritAttack", IE_Pressed,  this,  &AAbstractPlayer::TriggerTimeAttack);
 	InputComponent->BindAction("SpiritAttack", IE_Released, this,  &AAbstractPlayer::StopSpiritAttack);
 	
-	/************************************************************************/
-	/*                                                                      */
-	/************************************************************************/
-	InputComponent->BindAxis("MoveRight", this, &AAbstractPlayer::MoveRight);
+
 
 	/************************************************************************/
 	/*                                                                      */
@@ -90,11 +104,12 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	/*                                                                      */
 	/************************************************************************/
-	InputComponent->BindAction("TriggerPilon", IE_Pressed, this, &AAbstractPlayer::EnablingPilon);
-	InputComponent->BindAction("TriggerPilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
+	InputComponent->BindAction("Pilon", IE_Pressed, this, &AAbstractPlayer::EnablingPilon);
+	InputComponent->BindAction("Pilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
+
+	InputComponent->BindAction("Anchor", IE_Pressed, this, &AAbstractPlayer::Anchor);
+
 }
-
-
 
 void AAbstractPlayer::PlayerAttack()
 {
@@ -144,12 +159,10 @@ void AAbstractPlayer::PlayerJump()
 
 void AAbstractPlayer::Dash()
 {
-	if (CanDash())
-		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
-			&AAbstractPlayer::ResetDash, .1f, false);
+	if (!CanDash())
+		return;
 	else
 	{
-		_touchGroundAfterDash = false;
 		float boost = 5000.0f;
 		GetCharacterMovement()->BrakingDecelerationFalling = boost * 4.f;
 		GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
@@ -160,15 +173,11 @@ void AAbstractPlayer::Dash()
 
 bool AAbstractPlayer::CanDash()
 {
-	return (
-		++_dashTrigger > 2 || _spiritCharacter->IsAttacking() || IsCrouching()
-		|| !_touchGroundAfterDash		
-		);
+	return (++_dashTrigger < 2  &&  !_spiritCharacter->IsAttacking() && !IsCrouching());
 }
 
 void AAbstractPlayer::ResetDash()
 {
-	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
 	_dashTrigger = 0;
 }
 
@@ -203,38 +212,61 @@ void AAbstractPlayer::ResetAttack()
 
 void AAbstractPlayer::TriggerTimeAttack()
 {
-	//show the arrow
-	//_arrow->SetSpriteColor(FLinearColor(1.0, 1.0, 1.0, 1.0));
+	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
+	
+	SpiritRangeParticle();
 
-	//Retrieving all the actor in the game
+	// Dilate the Time for all actors but spirit
+	//_spiritCharacter->CustomTimeDilation = 10.0f;
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .1);
+	
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
 	//Dilating the time for all actors
-	for ( int i = 0; i < arrayOfActor.Num();i++)
+	for (int i = 0; i < arrayOfActor.Num(); i++)
 		arrayOfActor[i]->CustomTimeDilation = .1f;
 	//except the time dilation of the spirit
 	_spiritCharacter->CustomTimeDilation = 1.0f;
+	
+	_spiritCharacter->IsTimeDilated(true);
 
-	_spiritCharacter->SetAttacking(true);
-	_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
-
-}
+	//_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
+} 
 
 void AAbstractPlayer::StopSpiritAttack()
 {
-	//make the arrow transparent
-	//_arrow->SetSpriteColor(FLinearColor(0.0, 0.0, 0.0, 0.0));
-
+	_spiritCharacter->IsTimeDilated(false);
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0);
+	
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
+	//Dilating the time for all actors
 	for (int i = 0; i < arrayOfActor.Num(); i++)
-		arrayOfActor[i]->CustomTimeDilation = 1.0f;
+		arrayOfActor[i]->CustomTimeDilation = 1.f;
+	
+	
+	
+	if (_emitterTemplate)
+		_emitterTemplate->DestroyComponent();
 
-	_spiritCharacter->SetAttacking(false);
-	_targetArrow->GetChildComponent(0)->bHiddenInGame = true;
+//	_targetArrow->GetChildComponent(0)->bHiddenInGame = true;
+	
+}
 
+void AAbstractPlayer::SpiritRangeParticle()
+{
+	
+	float spiritRange = _spiritCharacter->GetRangeAttack() * 0.87;
+
+	_emitterTemplate = (UGameplayStatics::SpawnEmitterAttached(
+							LoadParticle("/Game/Azrael/Gameplay/Content/Particle/SpiritRange.SpiritRange"),
+							_spiritCharacter->GetSprite()));
+	_emitterTemplate->SetFloatParameter("SpiritRange", spiritRange );
+
+	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
+			&AAbstractPlayer::StopSpiritAttack, _spiritCharacter->GetTimeMastering(), false);
 }
 
 void AAbstractPlayer::WallJump()
@@ -274,7 +306,8 @@ void AAbstractPlayer::WallJump()
 
 void AAbstractPlayer::EnablingCrouch()
 {
-	if(!IsPawnJumping())_canCrouch = true;
+	if(!IsPawnJumping() && !_spiritCharacter->IsMasteringTime())
+		_canCrouch = true;
 }
 
 void AAbstractPlayer::DisablingCrouch()
@@ -286,13 +319,129 @@ void AAbstractPlayer::DisablingCrouch()
 
 void AAbstractPlayer::EnablingPilon()
 {
-	if (IsPawnJumping())
-		_canPilon = true;
+	if (IsPawnJumping() && ++_triggerPilon == 2)
+	{
+		_isPiloning = true;
+		GetCharacterMovement()->Velocity = FVector(0.0, 0.0, -2500.0);
+	}
+	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
+		&AAbstractPlayer::ResetPilon, .3f, false);
+	
 }
 
 void AAbstractPlayer::DisablingPilon()
 {
-	_canPilon = false;
+	_isPiloning = false;
+}
+
+void AAbstractPlayer::ResetPilon()
+{
+	_triggerPilon = 0;
+}
+
+void AAbstractPlayer::SpiritX(float value)
+{
+	_angleSpiritCosinus = value;
+}
+
+void AAbstractPlayer::SpiritY(float value)
+{
+	_angleSpiritSinus = value;
+}
+
+void AAbstractPlayer::Anchor()
+{
+	if (_anchorMovement)
+		return;
+	float time = 0.5f;
+
+	MakeCircleTrigo();
+
+	if (_spiritCharacter->IsMasteringTime())
+	{
+		float x = _spiritCharacter->GetRangeAttack() * cos(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
+		float z = _spiritCharacter->GetRangeAttack() * sin(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
+
+		FHitResult OutHits;
+		FVector end = _spiritCharacter->GetActorLocation() + FVector(x, 0.0, z);
+
+		bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
+											_spiritCharacter->GetActorLocation(),
+											end,
+											GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS / 5.0,
+											ETraceTypeQuery::TraceTypeQuery1,
+											false,
+											TArray<AActor*>(),
+											EDrawDebugTrace::Type::ForDuration,
+											OutHits,
+											true);
+
+		_anchorSelected = Cast<AAnchor>(OutHits.GetActor());
+
+		if (_anchorSelected)
+		{
+			//if (GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
+			{
+				_anchorMovement = true;
+				FLatentActionInfo LatentInfo;
+				LatentInfo.CallbackTarget = this;
+				UKismetSystemLibrary::MoveComponentTo(RootComponent,
+					_anchorSelected->GetActorLocation(),
+					GetActorRotation(),
+					true,
+					true,
+					time,
+					EMoveComponentAction::Move,
+					LatentInfo);
+				if (_emitterTemplate)
+					_emitterTemplate->DestroyComponent();
+			}
+		}
+	}
+	//GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
+	//	&AAbstractPlayer::ResetAnchorTarget, time, false);
+	StopSpiritAttack();
+	ResetAnchorTarget();
+}
+
+void AAbstractPlayer::MakeCircleTrigo()
+{
+	_angleSpirit = UKismetMathLibrary::DegAtan((_angleSpiritSinus / _angleSpiritCosinus));
+
+	if (_angleSpiritCosinus <= 0)
+	{
+		if (_angleSpiritCosinus == 0.0f && _angleSpiritSinus == -1.0f)
+		{
+			_angleSpirit = 270;
+			return;
+		}
+		if (_angleSpiritSinus >= 0)
+		{
+			if (_angleSpiritSinus == 0.f)
+			{
+				_angleSpirit = 180.0f;
+				return;
+			}
+			else if (_angleSpirit != 90.f)
+			{
+				_angleSpirit = 180.0f + _angleSpirit;
+				return;
+			}
+		}
+		else
+			_angleSpirit += 180.0f;
+	}
+	else
+	{
+		if (_angleSpiritSinus <= 0.0f)
+			_angleSpirit = 360.0f + _angleSpirit;
+	}
+}
+
+void AAbstractPlayer::ResetAnchorTarget()
+{
+	_anchorSelected = nullptr;
+	_anchorMovement = false;
 }
 
 void AAbstractPlayer::CrouchAction(bool crouching)
