@@ -16,16 +16,21 @@ public:
 
 	virtual void Init();
 
-	float GetTimeDelayForAttack();
+	float GetTimeMastering();
+	
+	void IsTimeDilated(bool btimeDilated);
 
+	bool IsMasteringTime();
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
-	float _delayForAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
+	float _delayMasterOfTime;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	uint32 _canAttack:1;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
+	uint32 _masteringTime: 1;
 
 };

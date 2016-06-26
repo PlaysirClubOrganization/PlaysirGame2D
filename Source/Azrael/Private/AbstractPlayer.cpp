@@ -104,15 +104,12 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	/*                                                                      */
 	/************************************************************************/
-	InputComponent->BindAction("TriggerPilon", IE_Pressed, this, &AAbstractPlayer::EnablingPilon);
-	InputComponent->BindAction("TriggerPilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
-
+	InputComponent->BindAction("Pilon", IE_Pressed, this, &AAbstractPlayer::EnablingPilon);
+	InputComponent->BindAction("Pilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
 
 	InputComponent->BindAction("Anchor", IE_Pressed, this, &AAbstractPlayer::Anchor);
 
 }
-
-
 
 void AAbstractPlayer::PlayerAttack()
 {
@@ -125,8 +122,6 @@ void AAbstractPlayer::PlayerAttack()
 			&AAbstractPlayer::ResetAttack, GetCurrentSpriteLength(), false);
 		SetRunning(false);
 	}
-
-	
 }
 
 void AAbstractPlayer::PlayerJump()
@@ -221,41 +216,57 @@ void AAbstractPlayer::TriggerTimeAttack()
 	
 	SpiritRangeParticle();
 
-
-	//Retrieving all the actor in the game
+	// Dilate the Time for all actors but spirit
+	//_spiritCharacter->CustomTimeDilation = 10.0f;
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .1);
+	
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .1);
-	_spiritCharacter->CustomTimeDilation = 10.0f;
+	//Dilating the time for all actors
+	for (int i = 0; i < arrayOfActor.Num(); i++)
+		arrayOfActor[i]->CustomTimeDilation = .1f;
+	//except the time dilation of the spirit
+	_spiritCharacter->CustomTimeDilation = 1.0f;
+	
+	_spiritCharacter->IsTimeDilated(true);
 
-	_spiritCharacter->SetAttacking(true);
 	//_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
-
 } 
 
 void AAbstractPlayer::StopSpiritAttack()
 {
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0);
-
-	_spiritCharacter->SetAttacking(false);
-	_targetArrow->GetChildComponent(0)->bHiddenInGame = true;
+	_spiritCharacter->IsTimeDilated(false);
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0);
 	
-	if(_emitterTemplate)
+	TArray<AActor*> arrayOfActor;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
+
+	//Dilating the time for all actors
+	for (int i = 0; i < arrayOfActor.Num(); i++)
+		arrayOfActor[i]->CustomTimeDilation = 1.f;
+	
+	
+	
+	if (_emitterTemplate)
 		_emitterTemplate->DestroyComponent();
+
+//	_targetArrow->GetChildComponent(0)->bHiddenInGame = true;
+	
 }
 
 void AAbstractPlayer::SpiritRangeParticle()
 {
+	
+	float spiritRange = _spiritCharacter->GetRangeAttack() * 0.87;
+
 	_emitterTemplate = (UGameplayStatics::SpawnEmitterAttached(
-		
 							LoadParticle("/Game/Azrael/Gameplay/Content/Particle/SpiritRange.SpiritRange"),
 							_spiritCharacter->GetSprite()));
-	_emitterTemplate->SetFloatParameter("SpiritRange", _spiritCharacter->GetRangeAttack()*0.8);
+	_emitterTemplate->SetFloatParameter("SpiritRange", spiritRange );
 
 	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
-			&AAbstractPlayer::StopSpiritAttack, _spiritCharacter->GetTimeDelayForAttack(), false);
-
+			&AAbstractPlayer::StopSpiritAttack, _spiritCharacter->GetTimeMastering(), false);
 }
 
 void AAbstractPlayer::WallJump()
@@ -295,7 +306,8 @@ void AAbstractPlayer::WallJump()
 
 void AAbstractPlayer::EnablingCrouch()
 {
-	if(!IsPawnJumping())_canCrouch = true;
+	if(!IsPawnJumping() && !_spiritCharacter->IsMasteringTime())
+		_canCrouch = true;
 }
 
 void AAbstractPlayer::DisablingCrouch()
@@ -307,15 +319,25 @@ void AAbstractPlayer::DisablingCrouch()
 
 void AAbstractPlayer::EnablingPilon()
 {
-	if (IsPawnJumping())
-		_canPilon = true;
+	if (IsPawnJumping() && ++_triggerPilon == 2)
+	{
+		_isPiloning = true;
+		GetCharacterMovement()->Velocity = FVector(0.0, 0.0, -2500.0);
+	}
+	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
+		&AAbstractPlayer::ResetPilon, .3f, false);
+	
 }
 
 void AAbstractPlayer::DisablingPilon()
 {
-	_canPilon = false;
+	_isPiloning = false;
 }
 
+void AAbstractPlayer::ResetPilon()
+{
+	_triggerPilon = 0;
+}
 
 void AAbstractPlayer::SpiritX(float value)
 {
@@ -335,16 +357,16 @@ void AAbstractPlayer::Anchor()
 
 	MakeCircleTrigo();
 
-	if (_spiritCharacter->IsAttacking())
+	if (_spiritCharacter->IsMasteringTime())
 	{
 		float x = _spiritCharacter->GetRangeAttack() * cos(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
 		float z = _spiritCharacter->GetRangeAttack() * sin(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
 
-		TArray<FHitResult> OutHits;
-		FVector end = GetActorLocation() + FVector(x, 0, z);
+		FHitResult OutHits;
+		FVector end = _spiritCharacter->GetActorLocation() + FVector(x, 0.0, z);
 
-		bool hit = UKismetSystemLibrary::SphereTraceMulti_NEW(GetWorld(),
-											GetActorLocation(),
+		bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
+											_spiritCharacter->GetActorLocation(),
 											end,
 											GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS / 5.0,
 											ETraceTypeQuery::TraceTypeQuery1,
@@ -354,16 +376,11 @@ void AAbstractPlayer::Anchor()
 											OutHits,
 											true);
 
-		for (int i = 0; i < OutHits.Num(); ++i)
-		{
-			_anchorSelected = Cast<AAnchor>(OutHits[i].GetActor());
-			if (_anchorSelected)
-				break;
-		}
+		_anchorSelected = Cast<AAnchor>(OutHits.GetActor());
 
 		if (_anchorSelected)
 		{
-			if (GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
+			//if (GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
 			{
 				_anchorMovement = true;
 				FLatentActionInfo LatentInfo;
@@ -376,15 +393,15 @@ void AAbstractPlayer::Anchor()
 					time,
 					EMoveComponentAction::Move,
 					LatentInfo);
-
-				UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0);
 				if (_emitterTemplate)
 					_emitterTemplate->DestroyComponent();
 			}
 		}
 	}
-	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
-		&AAbstractPlayer::ResetAnchorTarget, time, false);
+	//GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
+	//	&AAbstractPlayer::ResetAnchorTarget, time, false);
+	StopSpiritAttack();
+	ResetAnchorTarget();
 }
 
 void AAbstractPlayer::MakeCircleTrigo()

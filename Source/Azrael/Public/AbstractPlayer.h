@@ -77,6 +77,8 @@ public:
 
 	void DisablingPilon();
 
+	void ResetPilon();
+
 	void SpiritX(float value);
 
 	void SpiritY(float value);
@@ -104,7 +106,7 @@ protected:
 	uint32 _canClimb:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
-	uint32 _canPilon:1;
+	uint32 _isPiloning :1;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	uint32 _isClimbing:1;
@@ -132,6 +134,8 @@ protected:
 	int _doubleJumpingTrigger;
 
 	int _dashTrigger;
+
+	int _triggerPilon;
 
 	uint32 _anchorMovement : 1;
 

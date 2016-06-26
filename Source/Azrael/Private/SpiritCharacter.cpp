@@ -7,9 +7,8 @@ void ASpiritCharacter::Init()
 {
 	Super::Init();
 	
-	_rangeAttack = 300.f;
 	_identity = Identity::Golem;
-	_delayForAttack =  2.70f;
+	_delayMasterOfTime =  2.70f;
 
 
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
@@ -21,8 +20,17 @@ void ASpiritCharacter::Init()
 	}
 }
 
-float ASpiritCharacter::GetTimeDelayForAttack()
+float ASpiritCharacter::GetTimeMastering()
 {
-	return (_delayForAttack > 0.f) ? _delayForAttack : .12f; 
+	return (_delayMasterOfTime > 0.f) ? _delayMasterOfTime : .12f; 
+}
+
+void ASpiritCharacter::IsTimeDilated(bool btimeDilated)
+{
+	_masteringTime = btimeDilated;
+}
+bool ASpiritCharacter::IsMasteringTime()
+{
+	return _masteringTime;
 }
 
