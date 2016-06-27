@@ -67,6 +67,16 @@ enum class Identity : uint8 {
 	MAX_ENUM_IDENTITY
 };
 
+/** Defines the different SpiritNature */
+UENUM(BlueprintType)
+enum class SpiritNature: uint8
+{
+	Red,
+	Blue,
+	Green,
+	Yellow
+};
+
 
 //TEMPLATE Load Obj From Path
 template <typename ObjClass>
