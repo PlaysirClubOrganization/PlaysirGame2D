@@ -88,7 +88,12 @@ public:
 
 	void Anchor();
 
-	
+	UFUNCTION(BlueprintCallable, Category = Energy)
+	int GetSpiritEnergy(SpiritNature spiritNature);
+
+	UFUNCTION(BlueprintCallable, Category = Energy)
+	int GetSpiritEnergyMax(SpiritNature spiritNature);
+
  	UFUNCTION(BlueprintCallable, Category = Action)
 	void CrouchAction(bool crouching);
 
@@ -99,10 +104,7 @@ protected:
 	
 	void MakeCircleTrigo();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
-	int _energy;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
-	int _MaxEnergy;
+
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Game)

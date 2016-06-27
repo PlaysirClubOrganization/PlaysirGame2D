@@ -403,6 +403,40 @@ void AAbstractPlayer::Anchor()
 	ResetAnchorTarget();
 }
 
+int AAbstractPlayer::GetSpiritEnergy(SpiritNature spiritNature)
+{
+	switch (spiritNature)
+	{
+	case SpiritNature::Red:
+		return _spiritCharacter->_energyRed;
+	case SpiritNature::Blue:
+		return _spiritCharacter->_energyBlue;
+	case SpiritNature::Green:
+		return _spiritCharacter->_energyGreen;
+	case SpiritNature::Yellow:
+		return _spiritCharacter->_energyYellow;
+	default:
+		return 0;
+	}
+}
+
+int AAbstractPlayer::GetSpiritEnergyMax(SpiritNature spiritNature)
+{
+	switch (spiritNature)
+	{
+	case SpiritNature::Red:
+		return _spiritCharacter->_MaxEnergyRed;
+	case SpiritNature::Blue:
+		return _spiritCharacter->_MaxEnergyBlue;
+	case SpiritNature::Green:
+		return _spiritCharacter->_MaxEnergyGreen;
+	case SpiritNature::Yellow:
+		return _spiritCharacter->_MaxEnergyYellow;
+	default:
+		return 0;
+	}
+}
+
 void AAbstractPlayer::MakeCircleTrigo()
 {
 	_angleSpirit = UKismetMathLibrary::DegAtan((_angleSpiritSinus / _angleSpiritCosinus));

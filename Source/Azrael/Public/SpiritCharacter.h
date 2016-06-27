@@ -7,15 +7,7 @@
 
 
 
-/** Defines the different SpiritNature */
-UENUM(BlueprintType)
-enum class SpiritNature: uint8
-{
-	Red,
-	Blue,
-	Green,
-	Yellow
-};
+
 
 /**
  * 
@@ -38,13 +30,23 @@ public:
 
 	SpiritNature GetSpiritNature();
 
-protected:
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
-	int _energy;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
-	int _MaxEnergy;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
+	int _energyRed;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
+	int _MaxEnergyRed;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
+	int _energyBlue;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
+	int _MaxEnergyBlue;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
+	int _energyGreen;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
+	int _MaxEnergyGreen;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
+	int _energyYellow;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
+	int _MaxEnergyYellow;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	float _specialSpiritRange;
 
