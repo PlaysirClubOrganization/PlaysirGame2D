@@ -7,7 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "AbstractPlayer.h"
 
-#define SCREEN(x) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,FString::Printf(TEXT("~> %f"), x))
+#define SCREEN(x) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,FString::Printf(TEXT("~> %i"), x))
 #define SCREENCOL(x,col) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::##col,FString::Printf(TEXT(" ~> %f"), x))
 
 void AAbstractPlayer::Init()
@@ -26,10 +26,6 @@ void AAbstractPlayer::Init()
 		path += GetTypeAsFString() + GetAnimationNameAsFString(i);
 		GetAnimationPaper()->Add(LoadFlipbook(*path));
 	}
-
-	_targetArrow = RootComponent->GetChildComponent(5);
-	_arrow = (UPaperFlipbookComponent *)(_targetArrow->GetChildComponent(0));
-	
 
 }
 
@@ -104,9 +100,6 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	/*                                                                      */
 	/************************************************************************/
-	InputComponent->BindAction("Pilon", IE_Pressed, this, &AAbstractPlayer::EnablingPilon);
-	InputComponent->BindAction("Pilon", IE_Released, this, &AAbstractPlayer::DisablingPilon);
-
 	InputComponent->BindAction("Anchor", IE_Pressed, this, &AAbstractPlayer::Anchor);
 
 }
@@ -117,10 +110,31 @@ void AAbstractPlayer::PlayerAttack()
 	//if the player is not dead the player attacks and stop running
 	if (!IsDead())
 	{
+		if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::Gamepad_LeftStick_Down))
+		{
+			FHitResult OutHits;
+
+			bool hit = UKismetSystemLibrary::LineTraceSingle_NEW(GetWorld(),
+				GetActorLocation(),
+				GetActorLocation() + FVector(0.0,0.0,-200.0),
+				ETraceTypeQuery::TraceTypeQuery1,
+				false,
+				TArray<AActor*>(),
+				EDrawDebugTrace::Type::ForDuration,
+				OutHits,
+				true);
+			
+			if (hit)
+			{
+				GetCharacterMovement()->Velocity.Z = -2500.0f;
+				_isPiloning = true;
+			}
+		}
+
+		SetRunning(false);
 		SetAttacking(true);
 		GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::ResetAttack, GetCurrentSpriteLength(), false);
-		SetRunning(false);
 	}
 }
 
@@ -134,9 +148,6 @@ void AAbstractPlayer::PlayerJump()
 	if (++_doubleJumpingTrigger == 1 && IsPawnJumping())
 		WallJump();
 
-	// Climbing ??? 
-	//if (_canClimb)
-	//	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	if (IsPawnJumping())
 	{
 		//Double Jumping if the doubleJumpTrigger equals to 1
@@ -148,6 +159,9 @@ void AAbstractPlayer::PlayerJump()
 	}
 	else
 	{
+		if (_dashTrigger)
+			_dashTrigger = 0;
+
 		//if the is the player is on the ground : he jumps normally
 		Jump();
 		//set the timer to reset the double jump trigger
@@ -168,6 +182,9 @@ void AAbstractPlayer::Dash()
 		GetCharacterMovement()->BrakingDecelerationWalking = boost * 4.f;
 		GetCharacterMovement()->Velocity = FVector(-boost * GetPawnDirection(), 0.0f, 0.0f);
 		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		FLatentActionInfo LatentInfo;
+		LatentInfo.CallbackTarget = this;
+		UKismetSystemLibrary::Delay(GetWorld(), _dashDelay, LatentInfo);
 	}
 }
 
@@ -212,14 +229,9 @@ void AAbstractPlayer::ResetAttack()
 
 void AAbstractPlayer::TriggerTimeAttack()
 {
-	GetWorldTimerManager().ClearTimer(_countdownTimerHandle);
-	
 	SpiritRangeParticle();
 
 	// Dilate the Time for all actors but spirit
-	//_spiritCharacter->CustomTimeDilation = 10.0f;
-	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .1);
-	
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 
@@ -230,29 +242,20 @@ void AAbstractPlayer::TriggerTimeAttack()
 	_spiritCharacter->CustomTimeDilation = 1.0f;
 	
 	_spiritCharacter->IsTimeDilated(true);
-
-	//_targetArrow->GetChildComponent(0)->bHiddenInGame = false;
 } 
 
 void AAbstractPlayer::StopSpiritAttack()
 {
 	_spiritCharacter->IsTimeDilated(false);
-	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0);
 	
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
-
 	//Dilating the time for all actors
 	for (int i = 0; i < arrayOfActor.Num(); i++)
 		arrayOfActor[i]->CustomTimeDilation = 1.f;
 	
-	
-	
 	if (_emitterTemplate)
 		_emitterTemplate->DestroyComponent();
-
-//	_targetArrow->GetChildComponent(0)->bHiddenInGame = true;
-	
 }
 
 void AAbstractPlayer::SpiritRangeParticle()
@@ -272,19 +275,19 @@ void AAbstractPlayer::SpiritRangeParticle()
 void AAbstractPlayer::WallJump()
 {
 	float z = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() - GetCapsuleComponent()->GetUnscaledCapsuleRadius();
-	FVector tmp   = FVector(0.0, 0.0, z);
+	FVector tmp   = FVector(GetPawnDirection()*-30.0, 0.0, z/2.0);
 	FVector Start = GetActorLocation() + tmp;
-	FVector End	  = GetActorLocation() - tmp;
+	FVector End	  = Start - FVector(0.0,0.0,z);
 	FHitResult hitRes;
 
 	bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
 					Start,
 					End,
-					GetCapsuleComponent()->GetUnscaledCapsuleRadius() + 5.0f,
+					GetCapsuleComponent()->GetUnscaledCapsuleRadius() + 30.0f,
 					ETraceTypeQuery::TraceTypeQuery1,
 					false,
 					TArray<AActor*>(),
-					EDrawDebugTrace::Type::ForOneFrame,
+					EDrawDebugTrace::Type::ForDuration,
 					hitRes,
 					true);
 
@@ -393,14 +396,10 @@ void AAbstractPlayer::Anchor()
 					time,
 					EMoveComponentAction::Move,
 					LatentInfo);
-				if (_emitterTemplate)
-					_emitterTemplate->DestroyComponent();
+				StopSpiritAttack();
 			}
 		}
 	}
-	//GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
-	//	&AAbstractPlayer::ResetAnchorTarget, time, false);
-	StopSpiritAttack();
 	ResetAnchorTarget();
 }
 
@@ -483,6 +482,4 @@ void AAbstractPlayer::CrouchAction(bool crouching)
 void AAbstractPlayer::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if(_spiritCharacter->IsAttacking())
-		_targetArrow->AddLocalRotation(FQuat(FRotator(1, 0, 0)));
 }

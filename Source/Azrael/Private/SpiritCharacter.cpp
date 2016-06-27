@@ -6,10 +6,8 @@
 void ASpiritCharacter::Init()
 {
 	Super::Init();
-	
 	_identity = Identity::Golem;
 	_delayMasterOfTime =  2.70f;
-
 
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
@@ -32,5 +30,15 @@ void ASpiritCharacter::IsTimeDilated(bool btimeDilated)
 bool ASpiritCharacter::IsMasteringTime()
 {
 	return _masteringTime;
+}
+
+float ASpiritCharacter::GetSpecialSpiritRange()
+{
+	return _specialSpiritRange;
+}
+
+SpiritNature ASpiritCharacter::GetSpiritNature()
+{
+	return _spiritNature;
 }
 

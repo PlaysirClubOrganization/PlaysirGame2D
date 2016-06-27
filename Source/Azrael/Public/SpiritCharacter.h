@@ -5,6 +5,18 @@
 #include "AzraelCharacter.h"
 #include "SpiritCharacter.generated.h"
 
+
+
+/** Defines the different SpiritNature */
+UENUM(BlueprintType)
+enum class SpiritNature: uint8
+{
+	Red,
+	Blue,
+	Green,
+	Yellow
+};
+
 /**
  * 
  */
@@ -22,7 +34,19 @@ public:
 
 	bool IsMasteringTime();
 
+	float GetSpecialSpiritRange();
+
+	SpiritNature GetSpiritNature();
+
 protected:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
+	int _energy;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
+	int _MaxEnergy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
+	float _specialSpiritRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	float _delayMasterOfTime;
@@ -32,5 +56,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	uint32 _masteringTime: 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
+	SpiritNature _spiritNature;
 
 };
