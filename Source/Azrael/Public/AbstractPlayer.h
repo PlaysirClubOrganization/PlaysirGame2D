@@ -5,6 +5,7 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "InputCoreTypes.h"
 #include "Item/Anchor.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "AzraelCharacter.h"
@@ -111,29 +112,29 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	uint32 _isClimbing:1;
 
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
 	float _wallJumpPerf;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)
+	float _dashDelay;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	ASpiritCharacter * _spiritCharacter;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	float _angleSpirit;
-
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	AAnchor * _anchorSelected;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
+	int _dashTrigger;
+
+
+
 	UParticleSystemComponent * _emitterTemplate;
 
-	USceneComponent *  _targetArrow;
-
-	UPaperFlipbookComponent * _arrow;
-	
 	int _doubleJumpingTrigger;
-
-	int _dashTrigger;
 
 	int _triggerPilon;
 
@@ -141,6 +142,7 @@ protected:
 
 	
 	float _angleSpiritCosinus;
+
 	float _angleSpiritSinus;
 
 
