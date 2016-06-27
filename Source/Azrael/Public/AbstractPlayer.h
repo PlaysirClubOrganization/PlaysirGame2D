@@ -99,8 +99,13 @@ protected:
 	
 	void MakeCircleTrigo();
 
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
+	int _energy;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
+	int _MaxEnergy;
+
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Game)
 	int _level;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Action)

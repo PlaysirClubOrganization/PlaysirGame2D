@@ -40,6 +40,11 @@ public:
 
 protected:
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
+	int _energy;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Caracteristics)
+	int _MaxEnergy;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	float _specialSpiritRange;
 

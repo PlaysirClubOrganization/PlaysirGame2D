@@ -222,6 +222,11 @@ int AAzraelCharacter::GetLife() const
 	return _life;
 }
 
+int AAzraelCharacter::GetMaxLife() const
+{
+	return _maxLife;
+}
+
 void AAzraelCharacter::SetLife(int life)
 { 
 	_life = life; 
