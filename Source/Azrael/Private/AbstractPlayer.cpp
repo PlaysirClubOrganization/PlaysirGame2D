@@ -15,7 +15,6 @@ void AAbstractPlayer::Init()
 	//Init the attribute of the player
 	Super::Init();
 	_identity = Identity::Skeleton;
-	_life = 50;
 	_endurance = 5.0f;
 	_wallJumpPerf = .7f;
 	

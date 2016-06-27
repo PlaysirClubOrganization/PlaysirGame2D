@@ -254,11 +254,11 @@ protected:
 	Identity _identity;
 
 	//The life of the Pawn
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = Caracteristics)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = Caracteristics)
 	int _life;
 	
 	//The life of the Pawn
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = Caracteristics)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = Caracteristics)
 	int _maxLife;
 
 	//Is the life of the pawn is less  than 0
