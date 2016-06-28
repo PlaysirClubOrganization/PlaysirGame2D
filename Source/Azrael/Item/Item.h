@@ -23,5 +23,7 @@ public:
 		virtual bool DestroyOnActor(UClass *ClassTarget, AActor* actorBeginOverlap, AActor * ActorToDestroy);
 	UFUNCTION(BlueprintCallable, Category = Item)
 		virtual bool SelfDestroyOnActor(UClass *ClassTarget, AActor* actorBeginOverlap);
+
+
 	
 };

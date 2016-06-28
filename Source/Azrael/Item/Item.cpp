@@ -45,4 +45,3 @@ bool AItem::SelfDestroyOnActor(UClass *ClassTarget, AActor* actorBeginOverlap)
 		Destroy();
 	return res;
 }
-

@@ -4,5 +4,7 @@
 #include "Anchor.h"
 
 
-
-
+bool AAnchor::GetIsSelected()
+{
+	return _isSelected;
+}

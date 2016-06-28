@@ -78,6 +78,8 @@ enum class SpiritNature: uint8
 };
 
 
+
+
 //TEMPLATE Load Obj From Path
 template <typename ObjClass>
 static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path)
@@ -110,6 +112,14 @@ static FORCEINLINE UBlueprint* LoadBlueprint(const FName& Path)
 	//~
 
 	return LoadObjFromPath<UBlueprint>(Path);
+}
+
+static FORCEINLINE UPaperSprite* LoadSprite(const FName& Path)
+{
+	if (Path == NAME_None) return NULL;
+	//~
+
+	return LoadObjFromPath<UPaperSprite>(Path);
 }
 
 /*Used for the LoadObjFromPath*/
