@@ -1,13 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Azrael.h"
+
 #include "SpiritCharacter.h"
+
+ASpiritCharacter::ASpiritCharacter()
+{
+	_specialSpiritAction = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SpecialAction"));
+	_specialSpiritRange = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SpecialRange"));
+	_attackSpiritRange = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("AttackRange"));
+}
 
 void ASpiritCharacter::Init()
 {
 	Super::Init();
 	_identity = Identity::Golem;
 	_delayMasterOfTime =  2.70f;
+
+
 
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
@@ -34,7 +44,7 @@ bool ASpiritCharacter::IsMasteringTime()
 
 float ASpiritCharacter::GetSpecialSpiritRange()
 {
-	return _specialSpiritRange;
+	return _actionSpiritRange;
 }
 
 SpiritNature ASpiritCharacter::GetSpiritNature()

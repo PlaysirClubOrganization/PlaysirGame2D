@@ -18,6 +18,8 @@ class AZRAEL_API ASpiritCharacter : public AAzraelCharacter
 	GENERATED_BODY()
 public:
 
+	ASpiritCharacter();
+
 	virtual void Init();
 
 	float GetTimeMastering();
@@ -29,6 +31,15 @@ public:
 	float GetSpecialSpiritRange();
 
 	SpiritNature GetSpiritNature();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SpiritParticule)
+	UParticleSystemComponent * _specialSpiritRange;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SpiritParticule)
+	UParticleSystemComponent * _attackSpiritRange;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SpiritParticule)
+	UParticleSystemComponent * _specialSpiritAction;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Energy)
 	int _energyRed;
@@ -48,7 +59,7 @@ public:
 	int _MaxEnergyYellow;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
-	float _specialSpiritRange;
+	float _actionSpiritRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	float _delayMasterOfTime;

@@ -7,6 +7,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "InputCoreTypes.h"
 #include "Item/Anchor.h"
+#include "Grapple.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "AzraelCharacter.h"
 #include "AbstractPlayer.generated.h"
@@ -86,6 +87,9 @@ public:
 
 	void ResetAnchorTarget();
 
+	UFUNCTION(BlueprintNativeEvent, Category = Energy)
+	void GrappleLanch();
+	
 	void Anchor();
 
 	UFUNCTION(BlueprintCallable, Category = Energy)
@@ -135,11 +139,10 @@ protected:
 	AAnchor * _anchorSelected;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
+	AGrapple * _grapple;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	int _dashTrigger;
-
-
-
-	UParticleSystemComponent * _emitterTemplate;
 
 	int _doubleJumpingTrigger;
 

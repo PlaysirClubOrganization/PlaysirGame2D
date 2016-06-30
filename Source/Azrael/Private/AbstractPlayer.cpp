@@ -100,6 +100,7 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/*                                                                      */
 	/************************************************************************/
 	InputComponent->BindAction("Anchor", IE_Pressed, this, &AAbstractPlayer::Anchor);
+	InputComponent->BindAction("Anchor", IE_Released, this, &AAbstractPlayer::ResetAnchorTarget);
 
 }
 
@@ -245,7 +246,7 @@ void AAbstractPlayer::TriggerTimeAttack()
 
 void AAbstractPlayer::StopSpiritAttack()
 {
-	_spiritCharacter->IsTimeDilated(false);
+	//_spiritCharacter->IsTimeDilated(false);
 	
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
@@ -253,8 +254,8 @@ void AAbstractPlayer::StopSpiritAttack()
 	for (int i = 0; i < arrayOfActor.Num(); i++)
 		arrayOfActor[i]->CustomTimeDilation = 1.f;
 	
-	if (_emitterTemplate)
-		_emitterTemplate->DestroyComponent();
+	if (_spiritCharacter->_specialSpiritRange)
+		_spiritCharacter->_specialSpiritRange->DestroyComponent();
 }
 
 void AAbstractPlayer::SpiritRangeParticle()
@@ -262,10 +263,10 @@ void AAbstractPlayer::SpiritRangeParticle()
 	
 	float spiritRange = _spiritCharacter->GetRangeAttack() * 0.87;
 
-	_emitterTemplate = (UGameplayStatics::SpawnEmitterAttached(
+	_spiritCharacter->_specialSpiritRange = (UGameplayStatics::SpawnEmitterAttached(
 							LoadParticle("/Game/Azrael/Gameplay/Content/Particle/SpiritRange.SpiritRange"),
 							_spiritCharacter->GetSprite()));
-	_emitterTemplate->SetFloatParameter("SpiritRange", spiritRange );
+	_spiritCharacter->_specialSpiritRange->SetFloatParameter("SpiritRange", spiritRange );
 
 	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::StopSpiritAttack, _spiritCharacter->GetTimeMastering(), false);
@@ -358,7 +359,7 @@ void AAbstractPlayer::Anchor()
 	float time = 0.5f;
 
 	MakeCircleTrigo();
-
+	_spiritCharacter->_masteringTime = true;
 	if (_spiritCharacter->IsMasteringTime())
 	{
 		float x = _spiritCharacter->GetRangeAttack() * cos(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
@@ -379,24 +380,11 @@ void AAbstractPlayer::Anchor()
 											true);
 
 		_anchorSelected = Cast<AAnchor>(OutHits.GetActor());
+		GrappleLanch();
 
 		if (_anchorSelected)
 		{
-			//if (GetDistanceTo(_anchorSelected) < _spiritCharacter->GetRangeAttack())
-			{
-				_anchorMovement = true;
-				FLatentActionInfo LatentInfo;
-				LatentInfo.CallbackTarget = this;
-				UKismetSystemLibrary::MoveComponentTo(RootComponent,
-					_anchorSelected->GetActorLocation(),
-					GetActorRotation(),
-					true,
-					true,
-					time,
-					EMoveComponentAction::Move,
-					LatentInfo);
-				StopSpiritAttack();
-			}
+			StopSpiritAttack();
 		}
 	}
 	ResetAnchorTarget();
@@ -472,8 +460,14 @@ void AAbstractPlayer::MakeCircleTrigo()
 
 void AAbstractPlayer::ResetAnchorTarget()
 {
-	_anchorSelected = nullptr;
-	_anchorMovement = false;
+	//_anchorSelected = nullptr;
+}
+
+void AAbstractPlayer::GrappleLanch_Implementation()
+{
+	int i = 0;
+	//if (!_anchorSelected || _grapple)
+		//return;
 }
 
 void AAbstractPlayer::CrouchAction(bool crouching)
