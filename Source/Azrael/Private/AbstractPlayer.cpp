@@ -7,7 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "AbstractPlayer.h"
 
-#define SCREEN(x) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,FString::Printf(TEXT("~> %i"), x))
+#define SCREEN(x) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,FString::Printf(TEXT("~> %f"), x))
 #define SCREENCOL(x,col) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::##col,FString::Printf(TEXT(" ~> %f"), x))
 
 void AAbstractPlayer::Init()
@@ -63,8 +63,8 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	/* Spirit Attack : LT => trigger the dilatation of time                 */
 	/************************************************************************/
-	InputComponent->BindAction("SpiritAttack", IE_Pressed,  this,  &AAbstractPlayer::TriggerTimeAttack);
-	InputComponent->BindAction("SpiritAttack", IE_Released, this,  &AAbstractPlayer::StopSpiritAttack);
+	InputComponent->BindAction("SpiritAttack", IE_Pressed,  this,  &AAbstractPlayer::SpiritSight);
+	InputComponent->BindAction("SpiritAttack", IE_Released, this,  &AAbstractPlayer::StopSpiritSight);
 	
 
 
@@ -101,6 +101,10 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	InputComponent->BindAction("Anchor", IE_Pressed, this, &AAbstractPlayer::Anchor);
 	InputComponent->BindAction("Anchor", IE_Released, this, &AAbstractPlayer::ResetAnchorTarget);
+
+	InputComponent->BindAction("Sights", IE_Pressed, this, &AAbstractPlayer::EnablingSights);
+	InputComponent->BindAction("Sights", IE_Released, this, &AAbstractPlayer::DisablingSights);
+
 
 }
 
@@ -227,10 +231,9 @@ void AAbstractPlayer::ResetAttack()
 	SetAttacking(false);
 }
 
-void AAbstractPlayer::TriggerTimeAttack()
+void AAbstractPlayer::SpiritSight()
 {
-	_spiritCharacter->IsTimeDilated(true);
-	//MakeCircleTrigo();
+	_spiritCharacter->SetTimeDilated(true);
 	SpiritRangeParticle();
 
 	// Dilate the Time for all actors but spirit
@@ -242,14 +245,12 @@ void AAbstractPlayer::TriggerTimeAttack()
 		arrayOfActor[i]->CustomTimeDilation = .1f;
 	//except the time dilation of the spirit
 	_spiritCharacter->CustomTimeDilation = 1.0f;
-	
-
 } 
 
-void AAbstractPlayer::StopSpiritAttack()
+void AAbstractPlayer::StopSpiritSight()
 {
-	_spiritCharacter->IsTimeDilated(false);
-	
+	_spiritCharacter->SetTimeDilated(false);
+
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
 	//Dilating the time for all actors
@@ -272,7 +273,7 @@ void AAbstractPlayer::SpiritRangeParticle()
 	_spiritCharacter->GetParticuleActionRange()->SetFloatParameter("SpiritRange", spiritRange );
 
 	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
-			&AAbstractPlayer::StopSpiritAttack, _spiritCharacter->GetTimeMastering(), false);
+			&AAbstractPlayer::StopSpiritSight, _spiritCharacter->GetCurrentTimeSlowed(), false);
 }
 
 void AAbstractPlayer::WallJump()
@@ -312,7 +313,7 @@ void AAbstractPlayer::WallJump()
 
 void AAbstractPlayer::EnablingCrouch()
 {
-	if(!IsPawnJumping() && !_spiritCharacter->IsMasteringTime())
+	if(!IsPawnJumping() && !_spiritCharacter->IsTimeDilated())
 		_canCrouch = true;
 }
 
@@ -348,26 +349,24 @@ void AAbstractPlayer::ResetPilon()
 void AAbstractPlayer::SpiritX(float value)
 {
 	_angleSpiritCosinus = value;
-	MakeCircleTrigo();
+
+	if (_spiritCharacter->IsTimeDilated())
+		MakeCircleTrigo();
 }
 
 void AAbstractPlayer::SpiritY(float value)
 {
 	_angleSpiritSinus = value;
-	MakeCircleTrigo();
+	if (_spiritCharacter->IsTimeDilated())
+		MakeCircleTrigo();
 }
 
 void AAbstractPlayer::Anchor()
 {
-	if (!UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::Gamepad_LeftTrigger))
+	if (!_spiritCharacter->IsTimeDilated())
 		return;
 	float time = 0.5f;
-
-	_spiritCharacter->SetMasteringTime(true);
-	//if (_spiritCharacter->IsMasteringTime())
 	{
-		MakeCircleTrigo();
-
 		float x = _spiritCharacter->GetRangeAttack() * cos(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
 		float z = _spiritCharacter->GetRangeAttack() * sin(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
 
@@ -390,7 +389,7 @@ void AAbstractPlayer::Anchor()
 
 		if (_anchorSelected)
 		{
-			StopSpiritAttack();
+			StopSpiritSight();
 		}
 	}
 	ResetAnchorTarget();
@@ -410,18 +409,27 @@ void AAbstractPlayer::MakeCircleTrigo()
 {
 	_angleSpirit = UKismetMathLibrary::DegAtan((_angleSpiritSinus / _angleSpiritCosinus));
 
+
 	if (_angleSpiritCosinus <= 0)
 	{
-		if (_angleSpiritCosinus == 0.0f && _angleSpiritSinus == -1.0f)
+		if (_angleSpiritCosinus == 0.0f)
 		{
-			_angleSpirit = 270;
-			return;
+			if (_angleSpiritSinus == -1.0f)
+			{
+				_angleSpirit = 270;
+				return;
+			}
+			if (_angleSpiritSinus==0.0f)
+			{
+				_angleSpirit = 0.0f;
+				return;
+			}
 		}
 		if (_angleSpiritSinus >= 0)
 		{
 			if (_angleSpiritSinus == 0.f)
 			{
-				_angleSpirit = 180.0f;
+				_angleSpirit = 180.0;
 				return;
 			}
 			else if (_angleSpirit != 90.f)
@@ -449,6 +457,17 @@ void AAbstractPlayer::GrappleLanch_Implementation()
 {
 	if (!_anchorSelected || _grapple)
 		return;
+}
+
+void AAbstractPlayer::EnablingSights()
+{
+	if(_spiritCharacter->IsTimeDilated())
+		_isSightsEnable = true;
+}
+
+void AAbstractPlayer::DisablingSights()
+{
+	_isSightsEnable = false;
 }
 
 void AAbstractPlayer::CrouchAction(bool crouching)

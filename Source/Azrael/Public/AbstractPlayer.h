@@ -64,9 +64,9 @@ public:
 
 	void ResetAttack();
 
-	virtual	void TriggerTimeAttack();
+	virtual	void SpiritSight();
 
-	virtual void StopSpiritAttack();
+	virtual void StopSpiritSight();
 
 	void SpiritRangeParticle();
 
@@ -101,6 +101,10 @@ public:
 
  	UFUNCTION(BlueprintCallable, Category = Action)
 	void CrouchAction(bool crouching);
+
+	void EnablingSights();
+
+	void DisablingSights();
 
 	virtual void Tick(float DeltaSeconds);
 
@@ -146,14 +150,14 @@ protected:
 	UWidgetComponent * _sightWidget;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
+	uint32 _isSightsEnable : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	int _dashTrigger;
 
 	int _doubleJumpingTrigger;
 
 	int _triggerPilon;
-
-	uint32 _anchorMovement : 1;
-
 	
 	float _angleSpiritCosinus;
 

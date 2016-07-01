@@ -27,18 +27,9 @@ void ASpiritCharacter::Init()
 	}
 }
 
-float ASpiritCharacter::GetTimeMastering()
+bool ASpiritCharacter::IsTimeDilated()
 {
-	return (_delayMasterOfTime > 0.f) ? _delayMasterOfTime : .12f; 
-}
-
-void ASpiritCharacter::IsTimeDilated(bool btimeDilated)
-{
-	_masteringTime = btimeDilated;
-}
-bool ASpiritCharacter::IsMasteringTime()
-{
-	return _masteringTime;
+	return _isTimeDilated;
 }
 
 float ASpiritCharacter::GetSpecialSpiritRange()
@@ -112,9 +103,9 @@ UParticleSystemComponent * ASpiritCharacter::GetParticuleActionRange()
 	return _particuleActionRange;
 }
 
-void ASpiritCharacter::SetMasteringTime(bool isTimeSlowed)
+void ASpiritCharacter::SetTimeDilated(bool isTimeSlowed)
 {
-	_masteringTime = isTimeSlowed;
+	_isTimeDilated = isTimeSlowed;
 }
 
 void ASpiritCharacter::SetParticuleActionRange(UParticleSystemComponent * particule)

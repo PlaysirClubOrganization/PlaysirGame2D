@@ -83,32 +83,14 @@ public:
 	virtual void Init();
 
 	//************************************
-	// Method:    GetTimeMastering
-	// FullName:  ASpiritCharacter::GetTimeMastering
-	// Access:    public 
-	// Returns:   float
-	// Qualifier:
-	//************************************
-	float GetTimeMastering();
-	
-	//************************************
-	// Method:    IsTimeDilated
-	// FullName:  ASpiritCharacter::IsTimeDilated
-	// Access:    public 
-	// Returns:   void
-	// Qualifier:
-	// Parameter: bool btimeDilated
-	//************************************
-	void IsTimeDilated(bool btimeDilated);
-
-	//************************************
 	// Method:    IsMasteringTime
 	// FullName:  ASpiritCharacter::IsMasteringTime
 	// Access:    public 
 	// Returns:   bool
 	// Qualifier:
 	//************************************
-	bool IsMasteringTime();
+	UFUNCTION(BlueprintPure, Category = spirit)
+	bool IsTimeDilated();
 
 	//************************************
 	// Method:    GetSpecialSpiritRange
@@ -239,8 +221,11 @@ public:
 	SpiritNature GetCurrentSpiritNature();
 	
 	UParticleSystemComponent * GetParticuleActionRange();
-	void SetMasteringTime(bool isTimeSlowed);
+
+	void SetTimeDilated(bool isTimeSlowed);
+
 	void SetParticuleActionRange(UParticleSystemComponent * particule);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	float _actionSpiritRange;
@@ -252,7 +237,7 @@ protected:
 	uint32 _canAttack:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
-	uint32 _masteringTime: 1;
+	uint32 _isTimeDilated : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	SpiritNature _currentSpiritNature;
