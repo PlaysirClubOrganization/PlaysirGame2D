@@ -8,6 +8,7 @@
 #include "InputCoreTypes.h"
 #include "Item/Anchor.h"
 #include "Grapple.h"
+#include "../UMG/Public/Components/WidgetComponent.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "AzraelCharacter.h"
 #include "AbstractPlayer.generated.h"
@@ -92,10 +93,10 @@ public:
 	
 	void Anchor();
 
-	UFUNCTION(BlueprintCallable, Category = Energy)
+	UFUNCTION(BlueprintPure, Category = Energy)
 	int GetSpiritEnergy(SpiritNature spiritNature);
 
-	UFUNCTION(BlueprintCallable, Category = Energy)
+	UFUNCTION(BlueprintPure, Category = Energy)
 	int GetSpiritEnergyMax(SpiritNature spiritNature);
 
  	UFUNCTION(BlueprintCallable, Category = Action)
@@ -140,6 +141,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	AGrapple * _grapple;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
+	UWidgetComponent * _sightWidget;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Spirit)
 	int _dashTrigger;

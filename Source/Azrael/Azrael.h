@@ -74,7 +74,7 @@ enum class SpiritNature: uint8
 	Red,
 	Blue,
 	Green,
-	Yellow
+	White
 };
 
 

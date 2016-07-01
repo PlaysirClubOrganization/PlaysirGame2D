@@ -229,6 +229,8 @@ void AAbstractPlayer::ResetAttack()
 
 void AAbstractPlayer::TriggerTimeAttack()
 {
+	_spiritCharacter->IsTimeDilated(true);
+	//MakeCircleTrigo();
 	SpiritRangeParticle();
 
 	// Dilate the Time for all actors but spirit
@@ -241,12 +243,12 @@ void AAbstractPlayer::TriggerTimeAttack()
 	//except the time dilation of the spirit
 	_spiritCharacter->CustomTimeDilation = 1.0f;
 	
-	_spiritCharacter->IsTimeDilated(true);
+
 } 
 
 void AAbstractPlayer::StopSpiritAttack()
 {
-	//_spiritCharacter->IsTimeDilated(false);
+	_spiritCharacter->IsTimeDilated(false);
 	
 	TArray<AActor*> arrayOfActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), arrayOfActor);
@@ -254,8 +256,8 @@ void AAbstractPlayer::StopSpiritAttack()
 	for (int i = 0; i < arrayOfActor.Num(); i++)
 		arrayOfActor[i]->CustomTimeDilation = 1.f;
 	
-	if (_spiritCharacter->_specialSpiritRange)
-		_spiritCharacter->_specialSpiritRange->DestroyComponent();
+	if (_spiritCharacter->GetParticuleActionRange() && !_spiritCharacter->GetParticuleActionRange()->IsPendingKill())
+		_spiritCharacter->GetParticuleActionRange()->DestroyComponent();
 }
 
 void AAbstractPlayer::SpiritRangeParticle()
@@ -263,10 +265,11 @@ void AAbstractPlayer::SpiritRangeParticle()
 	
 	float spiritRange = _spiritCharacter->GetRangeAttack() * 0.87;
 
-	_spiritCharacter->_specialSpiritRange = (UGameplayStatics::SpawnEmitterAttached(
-							LoadParticle("/Game/Azrael/Gameplay/Content/Particle/SpiritRange.SpiritRange"),
+	_spiritCharacter->SetParticuleActionRange(UGameplayStatics::SpawnEmitterAttached(
+							LoadParticle("/Game/Azrael/Gameplay/Content/Blueprint/SpiritBlue/Particle/SpiritRange.SpiritRange"),
 							_spiritCharacter->GetSprite()));
-	_spiritCharacter->_specialSpiritRange->SetFloatParameter("SpiritRange", spiritRange );
+
+	_spiritCharacter->GetParticuleActionRange()->SetFloatParameter("SpiritRange", spiritRange );
 
 	GetWorldTimerManager().SetTimer(_countdownTimerHandle, this,
 			&AAbstractPlayer::StopSpiritAttack, _spiritCharacter->GetTimeMastering(), false);
@@ -345,23 +348,26 @@ void AAbstractPlayer::ResetPilon()
 void AAbstractPlayer::SpiritX(float value)
 {
 	_angleSpiritCosinus = value;
+	MakeCircleTrigo();
 }
 
 void AAbstractPlayer::SpiritY(float value)
 {
 	_angleSpiritSinus = value;
+	MakeCircleTrigo();
 }
 
 void AAbstractPlayer::Anchor()
 {
-	if (_anchorMovement)
+	if (!UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::Gamepad_LeftTrigger))
 		return;
 	float time = 0.5f;
 
-	MakeCircleTrigo();
-	_spiritCharacter->_masteringTime = true;
-	if (_spiritCharacter->IsMasteringTime())
+	_spiritCharacter->SetMasteringTime(true);
+	//if (_spiritCharacter->IsMasteringTime())
 	{
+		MakeCircleTrigo();
+
 		float x = _spiritCharacter->GetRangeAttack() * cos(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
 		float z = _spiritCharacter->GetRangeAttack() * sin(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
 
@@ -392,36 +398,12 @@ void AAbstractPlayer::Anchor()
 
 int AAbstractPlayer::GetSpiritEnergy(SpiritNature spiritNature)
 {
-	switch (spiritNature)
-	{
-	case SpiritNature::Red:
-		return _spiritCharacter->_energyRed;
-	case SpiritNature::Blue:
-		return _spiritCharacter->_energyBlue;
-	case SpiritNature::Green:
-		return _spiritCharacter->_energyGreen;
-	case SpiritNature::Yellow:
-		return _spiritCharacter->_energyYellow;
-	default:
-		return 0;
-	}
+	return _spiritCharacter->GetEnergy(spiritNature);
 }
 
 int AAbstractPlayer::GetSpiritEnergyMax(SpiritNature spiritNature)
 {
-	switch (spiritNature)
-	{
-	case SpiritNature::Red:
-		return _spiritCharacter->_MaxEnergyRed;
-	case SpiritNature::Blue:
-		return _spiritCharacter->_MaxEnergyBlue;
-	case SpiritNature::Green:
-		return _spiritCharacter->_MaxEnergyGreen;
-	case SpiritNature::Yellow:
-		return _spiritCharacter->_MaxEnergyYellow;
-	default:
-		return 0;
-	}
+	return _spiritCharacter->GetEnergyMax(spiritNature);
 }
 
 void AAbstractPlayer::MakeCircleTrigo()
@@ -465,9 +447,8 @@ void AAbstractPlayer::ResetAnchorTarget()
 
 void AAbstractPlayer::GrappleLanch_Implementation()
 {
-	int i = 0;
-	//if (!_anchorSelected || _grapple)
-		//return;
+	if (!_anchorSelected || _grapple)
+		return;
 }
 
 void AAbstractPlayer::CrouchAction(bool crouching)
