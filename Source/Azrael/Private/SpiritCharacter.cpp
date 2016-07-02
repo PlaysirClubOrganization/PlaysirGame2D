@@ -6,17 +6,14 @@
 
 ASpiritCharacter::ASpiritCharacter()
 {
-	for (uint8 i = 0; i < 4; ++i)
-		_spiritNatureParameter.Add((SpiritNature)i);
+	for (uint8 i = 0; (ESpiritNature)i < ESpiritNature::MAX_ENUM; ++i)
+		_spiritNatureParameter.Add((ESpiritNature)i);
 }
 
 void ASpiritCharacter::Init()
 {
 	Super::Init();
 	_identity = Identity::Golem;
-	_delayMasterOfTime =  2.70f;
-
-
 
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	for (int i = 0; i < AnimationState::MAX_ENUM_ANIMATION_STATE; ++i)
@@ -37,7 +34,7 @@ float ASpiritCharacter::GetSpecialSpiritRange()
 	return _actionSpiritRange;
 }
 
-int ASpiritCharacter::GetSpiritRangeAttack(SpiritNature spiritNature)
+int ASpiritCharacter::GetSpiritRangeAttack(ESpiritNature spiritNature)
 {
 	return _spiritNatureParameter[spiritNature].rangeAttack;
 }
@@ -48,7 +45,7 @@ int ASpiritCharacter::GetCurrentSpiritRangeAttack()
 
 }
 
-int ASpiritCharacter::GetRangeAction(SpiritNature spiritNature)
+int ASpiritCharacter::GetRangeAction(ESpiritNature spiritNature)
 {
 	return _spiritNatureParameter[spiritNature].rangeAction;
 
@@ -60,19 +57,19 @@ int ASpiritCharacter::GetCurrentRangeAction()
 
 }
 
-int ASpiritCharacter::GetEnergy(SpiritNature spiritNature)
+int ASpiritCharacter::GetEnergy(ESpiritNature spiritNature)
 {
 	return _spiritNatureParameter[spiritNature].currentEnergy;
 
 }
 
-int ASpiritCharacter::GetEnergyMax(SpiritNature spiritNature)
+int ASpiritCharacter::GetEnergyMax(ESpiritNature spiritNature)
 {
 	return _spiritNatureParameter[spiritNature].energyMax;
 
 }
 
-float ASpiritCharacter::GetTimeBetweenAction(SpiritNature spiritNature)
+float ASpiritCharacter::GetTimeBetweenAction(ESpiritNature spiritNature)
 {
 	return _spiritNatureParameter[spiritNature].delayBetweenAction;
 }
@@ -82,7 +79,7 @@ float ASpiritCharacter::GetCurrentTimeBetweenAction()
 	return _spiritNatureParameter[_currentSpiritNature].energyMax;
 }
 
-float ASpiritCharacter::GetTimeSlowed(SpiritNature spiritNature)
+float ASpiritCharacter::GetTimeSlowed(ESpiritNature spiritNature)
 {
 	return _spiritNatureParameter[spiritNature].timeSlowed;
 }
@@ -93,7 +90,7 @@ float ASpiritCharacter::GetCurrentTimeSlowed()
 
 }
 
-SpiritNature ASpiritCharacter::GetCurrentSpiritNature()
+ESpiritNature ASpiritCharacter::GetCurrentSpiritNature()
 {
 	return _currentSpiritNature;
 }

@@ -7,8 +7,10 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "AbstractPlayer.h"
 
-#define SCREEN(x) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,FString::Printf(TEXT("~> %f"), x))
-#define SCREENCOL(x,col) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::##col,FString::Printf(TEXT(" ~> %f"), x))
+#define SCREEN(x) GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red,FString::Printf(TEXT("~> %f"), x))
+#define SCREENCOL(x,col) GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::##col,FString::Printf(TEXT(" ~> %f"), x))
+
+
 
 void AAbstractPlayer::Init()
 {
@@ -99,8 +101,8 @@ void AAbstractPlayer::SetupPlayerInputComponent(class UInputComponent* InputComp
 	/************************************************************************/
 	/*                                                                      */
 	/************************************************************************/
-	InputComponent->BindAction("Anchor", IE_Pressed, this, &AAbstractPlayer::Anchor);
-	InputComponent->BindAction("Anchor", IE_Released, this, &AAbstractPlayer::ResetAnchorTarget);
+	InputComponent->BindAction("Anchor", IE_Pressed, this, &AAbstractPlayer::ExecAction);
+	InputComponent->BindAction("Anchor", IE_Released, this, &AAbstractPlayer::ResetAction);
 
 	InputComponent->BindAction("Sights", IE_Pressed, this, &AAbstractPlayer::EnablingSights);
 	InputComponent->BindAction("Sights", IE_Released, this, &AAbstractPlayer::DisablingSights);
@@ -361,46 +363,126 @@ void AAbstractPlayer::SpiritY(float value)
 		MakeCircleTrigo();
 }
 
-void AAbstractPlayer::Anchor()
+void AAbstractPlayer::ExecAction()
 {
 	if (!_spiritCharacter->IsTimeDilated())
 		return;
-	float time = 0.5f;
+
+	switch (_spiritCharacter->GetCurrentSpiritNature())
 	{
-		float x = _spiritCharacter->GetRangeAttack() * cos(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
-		float z = _spiritCharacter->GetRangeAttack() * sin(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
-
-		FHitResult OutHits;
-		FVector end = _spiritCharacter->GetActorLocation() + FVector(x, 0.0, z);
-
-		bool hit = UKismetSystemLibrary::SphereTraceSingle_NEW(GetWorld(),
-											_spiritCharacter->GetActorLocation(),
-											end,
-											GetCapsuleComponent()->GetUnscaledCapsuleRadius() + RADIUS / 5.0,
-											ETraceTypeQuery::TraceTypeQuery1,
-											false,
-											TArray<AActor*>(),
-											EDrawDebugTrace::Type::ForDuration,
-											OutHits,
-											true);
-
-		_anchorSelected = Cast<AAnchor>(OutHits.GetActor());
-		GrappleLanch();
-
-		if (_anchorSelected)
-		{
-			StopSpiritSight();
-		}
+	case ESpiritNature::Red :
+		ExplodeAction();
+		break;
+	case ESpiritNature::Blue :
+		AnchorAction();
+		break;
+	case ESpiritNature::Green:
+		TranspositionAction();
+		break;
+	case ESpiritNature::Black:
+		FreezeAction();
+		break;
+	default:
+		break;
 	}
-	ResetAnchorTarget();
 }
 
-int AAbstractPlayer::GetSpiritEnergy(SpiritNature spiritNature)
+void AAbstractPlayer::ResetAction()
+{
+
+}
+
+void AAbstractPlayer::AnchorAction_Implementation()
+{
+	FHitResult OutHits;
+	FVector begin = _spiritCharacter->GetActorLocation();
+
+	float time = 0.5f;
+	float x = _spiritCharacter->GetRangeAttack() * cos(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
+	float z = _spiritCharacter->GetRangeAttack() * sin(UKismetMathLibrary::DegreesToRadians(_angleSpirit));
+
+
+
+	TArray<AActor*> anchors;
+	TArray<AAnchor*> anchorsInRange ;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAnchor::StaticClass(), anchors);
+	for (int i = 0; i < anchors.Num(); ++i)
+	{
+		if (_spiritCharacter->GetDistanceTo(anchors[i]) < _spiritCharacter->GetRangeAction(ESpiritNature::Blue)
+			&& _spiritCharacter->GetDistanceTo(anchors[i]) > 150.0f)
+			anchorsInRange.Add(Cast<AAnchor>(anchors[i]));
+	}
+
+	if (anchorsInRange.Num() == 0) return;
+
+	if (anchorsInRange.Num() == 1)
+		_anchorSelected = Cast<AAnchor>(anchorsInRange[0]);
+	else
+	{
+		int min = 0;
+		for (int i = 0; i < anchorsInRange.Num()-1; ++i)
+		{
+			FVector spiritToAnchor = anchorsInRange[min]->GetActorLocation() - begin;
+			FVector spiritToAnchorLast = anchorsInRange[i+1]->GetActorLocation() - begin;
+
+			float FirstAngle  = (UFunctionLibrary::AngleBetweenVector(spiritToAnchor,FVector::ForwardVector));
+			float SecondAngle = (UFunctionLibrary::AngleBetweenVector(spiritToAnchorLast, FVector::ForwardVector));
+			if(abs(FirstAngle - _angleSpirit) > abs(SecondAngle - _angleSpirit))
+				min = i+1;
+			SCREEN(abs(FirstAngle - _angleSpirit));
+			SCREENCOL(abs(SecondAngle - _angleSpirit), Blue);
+			SCREENCOL(_angleSpirit, Green);
+
+		}
+		_anchorSelected = Cast<AAnchor>(anchorsInRange[min]);
+
+	}
+
+	if(_anchorSelected)
+	{
+		_angleSpirit = UFunctionLibrary::AngleBetweenVector(_anchorSelected->GetActorLocation()-_spiritCharacter->GetActorLocation(),
+															FVector::ForwardVector);
+		FVector end = _anchorSelected->GetActorLocation();
+		bool hit = UKismetSystemLibrary::LineTraceSingle_NEW(GetWorld(),
+			begin,
+			end,
+			ETraceTypeQuery::TraceTypeQuery1,
+			false,
+			TArray<AActor*>(),
+			EDrawDebugTrace::Type::ForDuration,
+			OutHits,
+			true);
+
+		if (Cast<AAnchor>(OutHits.GetActor()))
+			GrappleLanch();
+
+		if (_anchorSelected)
+			StopSpiritSight();
+	}
+}
+
+void AAbstractPlayer::ExplodeAction_Implementation()
+{
+
+}
+
+void AAbstractPlayer::FreezeAction_Implementation()
+{
+
+}
+
+void AAbstractPlayer::TranspositionAction_Implementation()
+{
+
+}
+
+int AAbstractPlayer::GetSpiritEnergy(ESpiritNature spiritNature)
 {
 	return _spiritCharacter->GetEnergy(spiritNature);
 }
 
-int AAbstractPlayer::GetSpiritEnergyMax(SpiritNature spiritNature)
+int AAbstractPlayer::GetSpiritEnergyMax(ESpiritNature spiritNature)
 {
 	return _spiritCharacter->GetEnergyMax(spiritNature);
 }
@@ -448,7 +530,7 @@ void AAbstractPlayer::MakeCircleTrigo()
 	}
 }
 
-void AAbstractPlayer::ResetAnchorTarget()
+void AAbstractPlayer::ResetAnchor()
 {
 	//_anchorSelected = nullptr;
 }

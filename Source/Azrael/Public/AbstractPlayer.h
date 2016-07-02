@@ -86,18 +86,32 @@ public:
 
 	void SpiritY(float value);
 
-	void ResetAnchorTarget();
+	void ExecAction();
 
-	UFUNCTION(BlueprintNativeEvent, Category = Energy)
+	void ResetAction();
+
+	void ResetAnchor();
+
+	UFUNCTION(BlueprintNativeEvent, Category = SpiritAction)
 	void GrappleLanch();
 	
-	void Anchor();
+	UFUNCTION(BlueprintNativeEvent, Category = SpiritAction)
+	void AnchorAction();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = SpiritAction)
+	void ExplodeAction();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = SpiritAction)
+	void FreezeAction();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = SpiritAction)
+	void TranspositionAction();
 
 	UFUNCTION(BlueprintPure, Category = Energy)
-	int GetSpiritEnergy(SpiritNature spiritNature);
+	int GetSpiritEnergy(ESpiritNature spiritNature);
 
 	UFUNCTION(BlueprintPure, Category = Energy)
-	int GetSpiritEnergyMax(SpiritNature spiritNature);
+	int GetSpiritEnergyMax(ESpiritNature spiritNature);
 
  	UFUNCTION(BlueprintCallable, Category = Action)
 	void CrouchAction(bool crouching);

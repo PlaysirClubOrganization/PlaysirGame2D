@@ -69,12 +69,13 @@ enum class Identity : uint8 {
 
 /** Defines the different SpiritNature */
 UENUM(BlueprintType)
-enum class SpiritNature: uint8
+enum class ESpiritNature: uint8
 {
-	Red,
-	Blue,
-	Green,
-	White
+	Red UMETA(DisplayName = "Red Spirit"),
+	Blue UMETA(DisplayName = "Blue Spirit"),
+	Green UMETA(DisplayName = "Green Spirit"),
+	Black UMETA(DisplayName = "Black Spirit"),
+	MAX_ENUM
 };
 
 

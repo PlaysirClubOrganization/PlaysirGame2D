@@ -46,8 +46,8 @@ struct FSpiritParameter{
 
 	FSpiritParameter()
 	{
-		rangeAttack = 200;
-		rangeAction = 200;
+		rangeAttack = 700;
+		rangeAction = 700;
 		energyMax = currentEnergy = 100;
 		delayBetweenAction = 2.0;
 		timeSlowed = 2.0;
@@ -110,7 +110,7 @@ public:
 	// Parameter: SpiritNature spiritNature
 	//************************************
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = SpiritParameter)
-	int GetSpiritRangeAttack(SpiritNature spiritNature);
+	int GetSpiritRangeAttack(ESpiritNature spiritNature);
 	
 	//************************************
 	// Method:    GetCurrentRangeAttack
@@ -131,7 +131,7 @@ public:
 	// Parameter: SpiritNature  spiritNature
 	//************************************
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = SpiritParameter)
-	int GetRangeAction(SpiritNature spiritNature);
+	int GetRangeAction(ESpiritNature spiritNature);
 	
 	//************************************
 	// Method:    GetCurrentRangeAction
@@ -152,7 +152,7 @@ public:
 	// Parameter: SpiritNature  spiritNature
 	//************************************
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = SpiritParameter)
-	int GetEnergy(SpiritNature spiritNature);
+	int GetEnergy(ESpiritNature spiritNature);
 
 	//************************************
 	// Method:    GetEnergyMax
@@ -163,7 +163,7 @@ public:
 	// Parameter: SpiritNature  spiritNature
 	//************************************
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = SpiritParameter)
-	int GetEnergyMax(SpiritNature spiritNature);
+	int GetEnergyMax(ESpiritNature spiritNature);
 
 	//************************************
 	// Method:    GetTimeBetweenAction
@@ -174,7 +174,7 @@ public:
 	// Parameter: SpiritNature  spiritNature
 	//************************************
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = SpiritParameter)
-	float GetTimeBetweenAction(SpiritNature spiritNature);
+	float GetTimeBetweenAction(ESpiritNature spiritNature);
 
 	//************************************
 	// Method:    GetCurrentTimeBetweenAction
@@ -196,7 +196,7 @@ public:
 	// Parameter: SpiritNature  spiritNature
 	//************************************
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = SpiritParameter)
-	float GetTimeSlowed(SpiritNature spiritNature);
+	float GetTimeSlowed(ESpiritNature spiritNature);
 
 	//************************************
 	// Method:    GetCurrentTimeSlowed
@@ -218,7 +218,7 @@ public:
 	// Qualifier:
 	//************************************
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = SpiritParameter)
-	SpiritNature GetCurrentSpiritNature();
+	ESpiritNature GetCurrentSpiritNature();
 	
 	UParticleSystemComponent * GetParticuleActionRange();
 
@@ -231,18 +231,15 @@ protected:
 	float _actionSpiritRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
-	float _delayMasterOfTime;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	uint32 _canAttack:1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
 	uint32 _isTimeDilated : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spirit)
-	SpiritNature _currentSpiritNature;
+	ESpiritNature _currentSpiritNature;
 
-	TMap<SpiritNature, FSpiritParameter> _spiritNatureParameter;
+	TMap<ESpiritNature, FSpiritParameter> _spiritNatureParameter;
 
 	UParticleSystemComponent * _particuleActionRange;
 

@@ -110,7 +110,9 @@ void AAzraelCharacter::Attacking()
 		//Normalize the vector
 		directionBetweenPawn.Normalize();
 		//computing the cosine between the vector direction and the ForwardVector(1,0,0)
-		float cos = abs(FVector::DotProduct(directionBetweenPawn, FVector::ForwardVector));
+
+		//@see UFunctionLibrary
+		float cos = abs(FVector::DotProduct(directionBetweenPawn, FVector::ForwardVector)); 
 		//computing the sinus
 		float sin = sqrt(1 - cos*cos);
 

@@ -28,3 +28,11 @@ bool UFunctionLibrary::RoundedFloat(float low, float high, float valueIn, float 
 	valueOut = valueIn;
 	return isIncremented;
 }
+
+float UFunctionLibrary::AngleBetweenVector(FVector vectorOne, FVector vectorTwo)
+{
+	vectorOne.Normalize();
+	vectorTwo.Normalize();
+
+	return UKismetMathLibrary::DegAcos(FVector::DotProduct(vectorOne, vectorTwo));
+}
