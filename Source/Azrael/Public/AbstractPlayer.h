@@ -21,6 +21,49 @@
  */
 class UAzraelSaver;
 
+
+USTRUCT(BlueprintType)
+struct FWeapon {
+
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponParameter")
+	EWeaponNature weaponNature;
+
+	//damage of the attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponParameter")
+	int32 damage;
+
+	//cooldown of the attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponParameter")
+	float cooldown;
+
+	void init(int32 Fdamage, float Fcooldown)
+	{
+		damage = Fdamage;
+		cooldown = Fcooldown;
+	}
+
+	FWeaponParameter()
+	{
+		switch (weaponNature)
+		{
+		case EWeaponNature::Spear: 
+			init(20, 0.3);
+			break;
+		case EWeaponNature::Sword :
+			init(50, 0.5);
+			break;
+		case EWeaponNature::Hammer :
+			init(100, 1.5);
+			break;
+		case EWeaponNature::Scythe :
+			init(80, 1.0);
+			
+		}
+	}
+};
+
 UCLASS(abstract)
 class AZRAEL_API AAbstractPlayer : public AAzraelCharacter
 {
@@ -128,7 +171,8 @@ protected:
 	void MakeCircleTrigo();
 
 
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Game)
+	FWeapon _weapon;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Game)
 	int _level;

@@ -78,6 +78,17 @@ enum class ESpiritNature: uint8
 	MAX_ENUM
 };
 
+/** Defines the different SpiritNature */
+UENUM(BlueprintType)
+enum class EWeaponNature : uint8
+{
+	Spear, 
+	Sword,
+	Hammer,
+	Scythe,
+	MAX_ENUM
+};
+
 
 
 
