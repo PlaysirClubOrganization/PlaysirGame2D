@@ -11,7 +11,6 @@
 #define SCREENCOL(x,col) GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::##col,FString::Printf(TEXT(" ~> %f"), x))
 
 
-
 void AAbstractPlayer::Init()
 {
 	//Init the attribute of the player
